@@ -1,0 +1,61 @@
+/* theme/casual.css */
+:root {
+  /* Main Colors */
+  --background-color: #f7f7f7;
+  --text-color: #2c2c2c;
+  --svg-color: #5a5a5a;
+
+  /* Button Colors */
+  --button-bg-color: #3c3c3c;
+  --button-hover-bg-color: #4a4a4a;
+  --button-active-bg-color: #5a6d7f;
+  --button-text-color: #ffffff;
+  --button-border: 1px solid #4a4a4a;
+
+  /* Header Colors */
+  --header-bg-color: #3c3c3c;
+  --header-text-color: #ffffff;
+
+  /* Breadcrumb and Label Colors */
+  --breadcrumb-text-color: #7a7a7a;
+  --label-text-color: #3c3c3c;
+
+  /* Dropdown Colors */
+  --dropdown-bg-color: #ffffff;
+  --dropdown-text-color: #3c3c3c;
+  --dropdown-border-color: #cccccc;
+  --dropdown-hover-bg-color: #e1e1e1;
+  --dropdown-active-bg-color: #b9b9b9;
+
+  /* Grid Item Colors */
+  --grid-item-header-color: #5a5a5a;
+  --grid-item-bg-color: #cce6ff;
+
+  /* Footer Colors */
+  --footer-bg-color: #2c2c2c;
+  --footer-text-color: #ffffff;
+
+  /* Placeholder Colors */
+  --placeholder-bg-color: #f7f7f7;
+  --placeholder-border-color: #cfcfcf;
+  --placeholder-text-color: #7a7a7a;
+
+  /* Table Colors */
+  --table-border-color: #dddddd;
+  --table-th-bg-color: #e5e5e5;
+  --table-th-text-color: #2c2c2c;
+  --table-th-padding: 0.5rem;
+  --table-td-text-color: #2c2c2c;
+  --table-row-alt-bg-color: #e1e1e1;
+
+  /* Data Container Text Color */
+  --data-text-color: #5a5a5a;
+
+  /* <hr/> color */
+  --hr-color: #a3dcdc;
+
+  /* Scrollbar Colors */
+  --scrollbar-bg-color: #e0e0e0;
+  --scrollbar-thumb-color: #7a7a7a;
+  --scrollbar-thumb-hover-color: #a0a0a0;
+}

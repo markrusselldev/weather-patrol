@@ -1,0 +1,151 @@
+/* styles/custom.css */
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+  border-radius: 10px;
+  border: 3px solid var(--scrollbar-bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-color);
+}
+
+/* Scrollbar Styles for Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-bg-color);
+}
+
+/* Custom hr Styles */
+hr {
+  border-top: 1px solid var(--hr-color);
+  margin: 0.7rem 0;
+}
+
+/* Header adjustments for mobile */
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+
+  nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--header-bg-color);
+    position: fixed;
+    top: 4.28rem;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+
+  nav.active {
+    display: flex;
+  }
+
+  nav a {
+    margin: 0;
+    padding: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) {
+  .header-left {
+    flex-direction: row;
+  }
+
+  header h1 {
+    font-size: 1rem;
+    display: inline;
+    white-space: nowrap;
+  }
+
+  nav {
+    flex-direction: row;
+    justify-content: flex-end;
+    position: static;
+  }
+}
+
+/* Breadcrumb styles */
+.breadcrumb {
+  background-color: var(--background-color);
+  color: var(--breadcrumb-text-color);
+}
+
+/* Custom styles for ag grid */
+.ag-theme-alpine {
+  --ag-background-color: var(--background-color);
+  --ag-header-background-color: var(--table-th-bg-color);
+  --ag-header-foreground-color: var(--table-th-text-color);
+  --ag-odd-row-background-color: var(--table-row-alt-bg-color);
+  --ag-foreground-color: var(--table-td-text-color);
+  --ag-border-color: var(--table-border-color);
+}
+
+.ag-theme-alpine .ag-cell {
+  color: var(--text-color);
+}
+
+.ag-row-hover .ag-cell {
+}
+
+.ag-theme-alpine .ag-header-cell {
+  font-weight: bold;
+  color: var(--table-th-text-color);
+}
+
+.ag-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ag-cell:hover {
+  overflow: visible;
+  white-space: normal;
+  z-index: 1;
+}
+
+.ag-theme-alpine .ag-status-bar {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.ag-theme-alpine .ag-status-name-value {
+  color: var(--text-color);
+}
+
+.ag-theme-alpine .ag-paging-panel {
+  color: var(--text-color);
+}
+
+.ag-sticky-header .ag-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

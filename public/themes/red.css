@@ -1,0 +1,66 @@
+/* theme/red.css */
+:root {
+  /* Main Colors */
+  --background-color: #ffffff;
+  --text-color: #2c2c2c;
+  --svg-color: #5a5a5a;
+
+  /* Logo Colors */
+  --logo-primary-color: #f23030;
+  --logo-secondary-color: #ffffff;
+
+  /* Button Colors */
+  --button-bg-color: #f23030;
+  --button-hover-bg-color: #c92a2a;
+  --button-active-bg-color: #9f2323;
+  --button-text-color: #ffffff;
+  --button-border: 1px solid #f23030;
+
+  /* Header Colors */
+  --header-bg-color: #f23030;
+  --header-text-color: #ffffff;
+
+  /* Breadcrumb and Label Colors */
+  --breadcrumb-text-color: #7a7a7a;
+  --label-text-color: #2c2c2c;
+
+  /* Dropdown Colors */
+  --dropdown-bg-color: #ffffff;
+  --dropdown-text-color: #2c2c2c;
+  --dropdown-border-color: #cccccc;
+  --dropdown-hover-bg-color: #f7f7f7;
+  --dropdown-active-bg-color: #eeeeee;
+
+  /* Grid Item Colors */
+  --grid-item-header-color: #5a5a5a;
+  --grid-item-bg-color: #f7f7f7;
+  --grid-item-hover-transform: translateY(-0.3125rem);
+
+  /* Footer Colors */
+  --footer-bg-color: #2c2c2c;
+  --footer-text-color: #ffffff;
+
+  /* Placeholder Colors */
+  --placeholder-bg-color: #f7f7f7;
+  --placeholder-border-color: #cfcfcf;
+  --placeholder-text-color: #7a7a7a;
+
+  /* Table Colors */
+  --table-border-color: #dddddd;
+  --table-th-bg-color: #f2c2c2; /* Lightened table header background color */
+  --table-th-text-color: #2c2c2c;
+  --table-th-padding: 0.5rem;
+  --table-th-td-text-color: #2c2c2c;
+  --table-row-alt-bg-color: #f7f7f7;
+
+  /* Data Container Text Color */
+  --data-text-color: #5a5a5a;
+
+  /* <hr/> color */
+  --hr-color: #cfcfcf;
+
+  /* Scrollbar Colors */
+  --scrollbar-bg-color: #f2c2c2; /* Lightened scrollbar track color */
+  --scrollbar-thumb-color: #c92a2a; /* Lightened scrollbar thumb color */
+  --scrollbar-thumb-hover-color: #9f2323;
+}
