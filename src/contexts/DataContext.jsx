@@ -19,54 +19,63 @@ const DataProvider = ({ children }) => {
   // Ref to ensure SSE is only initialized once
   const sseInitialized = useRef(false);
 
-  // Function to fetch initial data from the API
-  const fetchData = useCallback(async () => {
-    try {
-      console.log("Fetching initial data from API...");
-      const response = await getAllWeatherData();
-      console.log("API response:", response);
+  // Function to fetch initial data from the API with retry logic
+  const fetchDataWithRetry = useCallback(async (retries = 3, delay = 5000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        console.log("Fetching initial data from API...");
+        const response = await getAllWeatherData();
+        console.log("API response:", response);
 
-      // Extract environment info and data rows from the response
-      const { environmentInfo, data } = response;
-      const { headers, rows } = data;
+        // Extract environment info and data rows from the response
+        const { environmentInfo, data } = response;
+        const { headers, rows } = data;
 
-      console.log("Extracted environmentInfo:", environmentInfo);
-      console.log("Headers:", headers); // Log headers
-      console.log("Rows:", rows); // Log rows
+        console.log("Extracted environmentInfo:", environmentInfo);
+        console.log("Headers:", headers); // Log headers
+        console.log("Rows:", rows); // Log rows
 
-      // Update environment info state
-      if (environmentInfo) {
-        setEnvironmentInfo(environmentInfo);
-      } else {
-        console.log("No environmentInfo in the response");
-      }
-
-      // Check if headers and rows exist and update state accordingly
-      if (Array.isArray(headers) && headers.length > 0 && Array.isArray(rows) && rows.length > 0) {
-        console.log("Initial data fetched:", rows);
-        const columns = headers.map(key => ({
-          headerName: key,
-          field: key,
-          sortable: true,
-          filter: true,
-          valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
-        }));
-        console.log("Generated columnDefs:", columns); // Log the generated column definitions
-        setColumnDefs(columns);
-        setRowData(rows);
-
-        // Set the latest timestamp
-        const latestRow = rows[0];
-        if (latestRow && latestRow.TIMESTAMP) {
-          setLatestTimestamp(formatTimestamp(latestRow.TIMESTAMP));
+        // Update environment info state
+        if (environmentInfo) {
+          setEnvironmentInfo(environmentInfo);
+        } else {
+          console.log("No environmentInfo in the response");
         }
-      } else {
-        console.error("No data available or headers missing from API");
-        setError("No data available or headers missing from API");
+
+        // Check if headers and rows exist and update state accordingly
+        if (Array.isArray(headers) && headers.length > 0 && Array.isArray(rows) && rows.length > 0) {
+          console.log("Initial data fetched:", rows);
+          const columns = headers.map(key => ({
+            headerName: key,
+            field: key,
+            sortable: true,
+            filter: true,
+            valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
+          }));
+          console.log("Generated columnDefs:", columns); // Log the generated column definitions
+          setColumnDefs(columns);
+          setRowData(rows);
+
+          // Set the latest timestamp
+          const latestRow = rows[0];
+          if (latestRow && latestRow.TIMESTAMP) {
+            setLatestTimestamp(formatTimestamp(latestRow.TIMESTAMP));
+          }
+          return; // Exit if fetchData is successful
+        } else {
+          console.error("No data available or headers missing from API");
+          setError("No data available or headers missing from API");
+          break;
+        }
+      } catch (error) {
+        if (i < retries - 1) {
+          console.warn(`Retrying fetchData (${i + 1}/${retries})...`);
+          await new Promise(res => setTimeout(res, delay)); // Wait before retrying
+        } else {
+          console.error("Error fetching data from API:", error);
+          setError("Error fetching data after retries");
+        }
       }
-    } catch (error) {
-      console.error("Error fetching data from API:", error);
-      setError("Error fetching data");
     }
   }, []);
 
@@ -79,7 +88,7 @@ const DataProvider = ({ children }) => {
     sseInitialized.current = true; // Mark SSE as initialized
 
     console.log("Setting up SSE connection...");
-    const eventSource = new EventSource("https://localhost:3000/api/sse", { withCredentials: true });
+    const eventSource = new EventSource("/api/sse", { withCredentials: true });
 
     // Handle incoming SSE messages with a debounce to limit update frequency
     const handleMessage = debounce(event => {
@@ -126,9 +135,9 @@ const DataProvider = ({ children }) => {
 
   // Fetch initial data and set up SSE on component mount
   useEffect(() => {
-    fetchData();
+    fetchDataWithRetry();
     setupSSE();
-  }, [fetchData, setupSSE]);
+  }, [fetchDataWithRetry, setupSSE]);
 
   return <DataContext.Provider value={{ columnDefs, rowData, environmentInfo, latestTimestamp, error, sseError }}>{children}</DataContext.Provider>;
 };
