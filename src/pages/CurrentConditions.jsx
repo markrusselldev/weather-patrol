@@ -6,25 +6,44 @@ import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
 import { formatTimestamp } from "../utils/utils";
+import logger from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 const CurrentConditions = () => {
   const [latestData, setLatestData] = useState(null);
   const [pastData, setPastData] = useState([]);
   const { rowData, error } = useContext(DataContext);
 
+  // Effect to set the latest and past data when rowData changes
   useEffect(() => {
     if (rowData.length > 0) {
       setLatestData(rowData[0]);
       setPastData(rowData.slice(1, 5)); // Keep past readings in their original order for display
+      logger.info("Latest data and past data set successfully");
+    } else {
+      logger.warn("No rowData available to set latest and past data");
     }
   }, [rowData]);
 
-  if (error) return <ErrorMessages message={error} />;
-  if (!latestData) return <div>Loading...</div>;
+  // Handle errors by displaying an error message
+  if (error) {
+    logger.error(errorHandler(error));
+    return <ErrorMessages message={errorHandler(error)} />;
+  }
 
-  const createDataArray = key => [...pastData.map(row => Math.round(row[key])), Math.round(latestData[key])]; // Ensure the latest data is at the end
+  // Display loading message if latestData is not yet available
+  if (!latestData) {
+    logger.info("Loading latest data...");
+    return <div>Loading...</div>;
+  }
+
+  // Create an array of data for a specific key, ensuring the latest data is at the end
+  const createDataArray = key => [...pastData.map(row => Math.round(row[key])), Math.round(latestData[key])];
+
+  // Create an array of past timestamps
   const createPastTimestampsArray = () => pastData.map(row => formatTimestamp(row.TIMESTAMP, true));
 
+  // Prepare data and timestamps for ConditionCard components
   const data = {
     temperature: createDataArray("AirTF_Avg"),
     windSpeed: createDataArray("WS_mph_Avg"),
@@ -42,8 +61,8 @@ const CurrentConditions = () => {
 
   const pastTimestamps = createPastTimestampsArray();
 
-  console.log("Past timestamps:", pastTimestamps);
-  console.log("Data for temperature:", data.temperature);
+  logger.debug("Past timestamps:", pastTimestamps);
+  logger.debug("Data for temperature:", data.temperature);
 
   return (
     <section className="weather-conditions flex flex-col flex-grow">

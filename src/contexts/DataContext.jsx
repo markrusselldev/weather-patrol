@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { getAllWeatherData } from "../api";
 import { debounce } from "lodash";
 import { formatTimestamp } from "../utils/utils";
+import log from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 // Create a context for sharing data
 const DataContext = createContext();
@@ -23,28 +25,28 @@ const DataProvider = ({ children }) => {
   const fetchDataWithRetry = useCallback(async (retries = 3, delay = 5000) => {
     for (let i = 0; i < retries; i++) {
       try {
-        console.log("Fetching initial data from API...");
+        log.info("Fetching initial data from API...");
         const response = await getAllWeatherData();
-        console.log("API response:", response);
+        log.info("API response:", response);
 
         // Extract environment info and data rows from the response
         const { environmentInfo, data } = response;
         const { headers, rows } = data;
 
-        console.log("Extracted environmentInfo:", environmentInfo);
-        console.log("Headers:", headers); // Log headers
-        console.log("Rows:", rows); // Log rows
+        log.info("Extracted environmentInfo:", environmentInfo);
+        log.info("Headers:", headers); // Log headers
+        log.info("Rows:", rows); // Log rows
 
         // Update environment info state
         if (environmentInfo) {
           setEnvironmentInfo(environmentInfo);
         } else {
-          console.log("No environmentInfo in the response");
+          log.info("No environmentInfo in the response");
         }
 
         // Check if headers and rows exist and update state accordingly
         if (Array.isArray(headers) && headers.length > 0 && Array.isArray(rows) && rows.length > 0) {
-          console.log("Initial data fetched:", rows);
+          log.info("Initial data fetched:", rows);
           const columns = headers.map(key => ({
             headerName: key,
             field: key,
@@ -52,7 +54,7 @@ const DataProvider = ({ children }) => {
             filter: true,
             valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
           }));
-          console.log("Generated columnDefs:", columns); // Log the generated column definitions
+          log.info("Generated columnDefs:", columns); // Log the generated column definitions
           setColumnDefs(columns);
           setRowData(rows);
 
@@ -63,16 +65,17 @@ const DataProvider = ({ children }) => {
           }
           return; // Exit if fetchData is successful
         } else {
-          console.error("No data available or headers missing from API");
+          log.error("No data available or headers missing from API");
           setError("No data available or headers missing from API");
           break;
         }
       } catch (error) {
+        log.error(errorHandler(error));
         if (i < retries - 1) {
-          console.warn(`Retrying fetchData (${i + 1}/${retries})...`);
+          log.warn(`Retrying fetchData (${i + 1}/${retries})...`);
           await new Promise(res => setTimeout(res, delay)); // Wait before retrying
         } else {
-          console.error("Error fetching data from API:", error);
+          log.error("Error fetching data from API:", error);
           setError("Error fetching data after retries");
         }
       }
@@ -82,24 +85,24 @@ const DataProvider = ({ children }) => {
   // Function to set up Server-Sent Events (SSE) for real-time updates
   const setupSSE = useCallback(() => {
     if (sseInitialized.current) {
-      console.log("SSE already initialized, skipping setup.");
+      log.info("SSE already initialized, skipping setup.");
       return; // Prevent duplicate SSE setup
     }
     sseInitialized.current = true; // Mark SSE as initialized
 
-    console.log("Setting up SSE connection...");
+    log.info("Setting up SSE connection...");
     const eventSource = new EventSource("/api/sse", { withCredentials: true });
 
     // Handle incoming SSE messages with a debounce to limit update frequency
     const handleMessage = debounce(event => {
       const newData = JSON.parse(event.data);
-      console.log("New data received from SSE:", newData);
+      log.info("New data received from SSE:", newData);
       setRowData(prevData => {
         if (!prevData.some(row => row.TIMESTAMP === newData.TIMESTAMP)) {
-          console.log("Updating weather data with new record:", newData);
+          log.info("Updating weather data with new record:", newData);
           return [newData, ...prevData];
         }
-        console.log("New data is identical to an existing record, not updating state");
+        log.info("New data is identical to an existing record, not updating state");
         return prevData;
       });
 
@@ -112,22 +115,22 @@ const DataProvider = ({ children }) => {
     eventSource.onmessage = handleMessage;
 
     eventSource.onerror = function () {
-      console.error("Error connecting to the server via SSE");
+      log.error("Error connecting to the server via SSE");
       setSseError(true);
       eventSource.close();
       setTimeout(() => {
-        console.log("Reconnecting SSE after error...");
+        log.info("Reconnecting SSE after error...");
         setupSSE();
       }, 5000);
     };
 
     eventSource.onopen = function () {
-      console.log("SSE connection opened");
+      log.info("SSE connection opened");
       setSseError(false);
     };
 
     return () => {
-      console.log("Closing SSE connection...");
+      log.info("Closing SSE connection...");
       eventSource.close();
       handleMessage.cancel();
     };

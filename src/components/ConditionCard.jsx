@@ -1,9 +1,13 @@
 import { useEffect, useRef, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import logger from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
+// Registering ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+// Function to generate chart data
 const generateChartData = (data, title, pastTimestamps) => ({
   labels: pastTimestamps.length ? [...pastTimestamps, "Now"] : ["-60 min", "-45 min", "-30 min", "-15 min", "Now"],
   datasets: [
@@ -18,6 +22,7 @@ const generateChartData = (data, title, pastTimestamps) => ({
   ]
 });
 
+// Chart options for the line chart
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -34,21 +39,26 @@ const chartOptions = {
 const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps = [], showMinMax }) => {
   const chartRef = useRef(null);
 
+  // Effect to create and destroy the chart instance
   useEffect(() => {
     if (chartRef.current) {
-      const chartInstance = new ChartJS(chartRef.current, {
-        type: "line",
-        data: generateChartData(data, title, pastTimestamps),
-        options: chartOptions
-      });
+      try {
+        const chartInstance = new ChartJS(chartRef.current, {
+          type: "line",
+          data: generateChartData(data, title, pastTimestamps),
+          options: chartOptions
+        });
 
-      return () => {
-        chartInstance.destroy();
-      };
+        return () => {
+          chartInstance.destroy();
+        };
+      } catch (error) {
+        logger.error(errorHandler(error));
+      }
     }
   }, [data, title, pastTimestamps]);
 
-  console.log(`Generating chart data for ${title}`, { data, pastTimestamps });
+  logger.debug(`Generating chart data for ${title}`, { data, pastTimestamps });
 
   return (
     <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full">

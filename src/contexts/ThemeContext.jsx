@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import log from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 const ThemeContext = createContext();
 
@@ -8,39 +10,44 @@ const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const applyTheme = newTheme => {
-      // console.log(`Applying theme: ${newTheme}`);
+      try {
+        log.info(`Applying theme: ${newTheme}`);
 
-      // Remove previous theme class and CSS link
-      const previousTheme = localStorage.getItem("theme");
-      if (previousTheme && previousTheme !== newTheme) {
-        document.documentElement.classList.remove(previousTheme);
-        // console.log(`Removed previous theme class: ${previousTheme}`);
+        // Remove previous theme class and CSS link
+        const previousTheme = localStorage.getItem("theme");
+        if (previousTheme && previousTheme !== newTheme) {
+          document.documentElement.classList.remove(previousTheme);
+          log.info(`Removed previous theme class: ${previousTheme}`);
 
-        // Remove the previous theme's CSS link element
-        const link = document.querySelector(`link[href*="${previousTheme}.css"]`);
-        if (link) {
-          link.remove();
-          // console.log(`Removed previous theme CSS: ${previousTheme}.css`);
-        } else {
-          // console.log(`Previous theme CSS not found: ${previousTheme}.css`);
+          // Remove the previous theme's CSS link element
+          const link = document.querySelector(`link[href*="${previousTheme}.css"]`);
+          if (link) {
+            link.remove();
+            log.info(`Removed previous theme CSS: ${previousTheme}.css`);
+          } else {
+            log.warn(`Previous theme CSS not found: ${previousTheme}.css`);
+          }
         }
+
+        // Check if the new theme's CSS is already added to avoid duplicates
+        if (!document.querySelector(`link[href*="${newTheme}.css"]`)) {
+          // Add new theme class and CSS link
+          document.documentElement.classList.add(newTheme);
+          log.info(`Added new theme class: ${newTheme}`);
+
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = `/themes/${newTheme}.css`;
+          document.head.appendChild(link);
+          log.info(`Added new theme CSS: ${newTheme}.css`);
+        }
+
+        // Save new theme to local storage
+        localStorage.setItem("theme", newTheme);
+      } catch (error) {
+        const errorMessage = errorHandler(error);
+        log.error(errorMessage);
       }
-
-      // Check if the new theme's CSS is already added to avoid duplicates
-      if (!document.querySelector(`link[href*="${newTheme}.css"]`)) {
-        // Add new theme class and CSS link
-        document.documentElement.classList.add(newTheme);
-        // console.log(`Added new theme class: ${newTheme}`);
-
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = `/themes/${newTheme}.css`;
-        document.head.appendChild(link);
-        // console.log(`Added new theme CSS: ${newTheme}.css`);
-      }
-
-      // Save new theme to local storage
-      localStorage.setItem("theme", newTheme);
     };
 
     applyTheme(theme);

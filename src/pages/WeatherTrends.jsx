@@ -6,6 +6,8 @@ import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
 import { formatTimestamp } from "../utils/utils";
+import logger from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 const WeatherTrends = () => {
   const { rowData, error } = useContext(DataContext); // Use DataContext to get weather data and error state
@@ -20,8 +22,7 @@ const WeatherTrends = () => {
   // Effect to filter data based on selected timeframe
   useEffect(() => {
     if (rowData.length > 0) {
-      // Log data availability
-      // console.log("Raw rowData:", rowData.length > 0 ? "Data loaded" : "No data");
+      logger.info("Filtering data based on selected timeframe");
 
       const timeframes = {
         "3hr": 3,
@@ -34,28 +35,22 @@ const WeatherTrends = () => {
 
       // Find the latest record timestamp
       const latestRecordTimestamp = new Date(rowData[0].TIMESTAMP);
-      // Log latest record timestamp
-      // console.log(`Latest Record Timestamp: ${latestRecordTimestamp}`);
+      logger.debug(`Latest Record Timestamp: ${latestRecordTimestamp}`);
 
       // Filter data based on the latest record timestamp
       const filtered = rowData.filter(row => {
         const rowTimestamp = new Date(row.TIMESTAMP);
         const hoursDifference = (latestRecordTimestamp - rowTimestamp) / (1000 * 60 * 60); // Calculate hours difference
-        // Log each row's time and hours difference if it falls within the selected timeframe
-        // if (hoursDifference <= timeframes[timeframe]) {
-        //   console.log(`Row Time: ${rowTimestamp}, Hours Difference: ${hoursDifference}, Timeframe: ${timeframes[timeframe]}`);
-        // }
         return hoursDifference <= timeframes[timeframe];
       });
 
-      // Log filtered data count
-      // console.log(`Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
+      logger.debug(`Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
       setFilteredData(filtered); // Update filteredData state
     }
   }, [rowData, timeframe]); // Re-run effect when rowData or timeframe changes
 
   // Return error message if there's an error
-  if (error) return <ErrorMessages message={error} />;
+  if (error) return <ErrorMessages message={errorHandler(error)} />;
 
   // Transform filteredData to the format required by TrendCard components
   const dataPoints = {
@@ -70,18 +65,17 @@ const WeatherTrends = () => {
     batteryVoltage: filteredData.map(row => row.BattV)
   };
 
-  // Log counts of data points for TrendCards
-  // console.log("Data points for TrendCards count:", {
-  //   labels: dataPoints.labels.length,
-  //   temperature: dataPoints.temperature.length,
-  //   windSpeed: dataPoints.windSpeed.length,
-  //   windDirection: dataPoints.windDirection.length,
-  //   windChill: dataPoints.windChill.length,
-  //   humidity: dataPoints.humidity.length,
-  //   dewPoint: dataPoints.dewPoint.length,
-  //   pressure: dataPoints.pressure.length,
-  //   batteryVoltage: dataPoints.batteryVoltage.length
-  // });
+  logger.debug("Data points for TrendCards count:", {
+    labels: dataPoints.labels.length,
+    temperature: dataPoints.temperature.length,
+    windSpeed: dataPoints.windSpeed.length,
+    windDirection: dataPoints.windDirection.length,
+    windChill: dataPoints.windChill.length,
+    humidity: dataPoints.humidity.length,
+    dewPoint: dataPoints.dewPoint.length,
+    pressure: dataPoints.pressure.length,
+    batteryVoltage: dataPoints.batteryVoltage.length
+  });
 
   return (
     <section className="weather-trends">

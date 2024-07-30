@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
+import log from "../utils/logger"; // Importing the logger
 
 const Header = ({ navigationItems }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   const toggleNav = () => {
     setIsNavOpen(!isNavOpen);
+    log.info(`Navigation menu ${isNavOpen ? "closed" : "opened"}`); // Log nav state change
   };
 
   const navLinkClass = ({ isActive }) => `block md:inline-block no-underline m-1.5 p-4 rounded-lg text-center transition-all ${isActive ? "bg-buttonActiveBg text-buttonText" : "bg-buttonBg text-buttonText"} hover:bg-buttonHoverBg focus:bg-buttonActiveBg active:bg-buttonActiveBg`;
+
+  // Log the navigation items loading
+  log.info("Navigation items loaded:", navigationItems);
 
   return (
     <header className="w-full bg-headerBg text-headerText p-4 flex justify-between items-center sticky top-0 z-20 h-header">

@@ -4,9 +4,11 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { DataContext } from "../contexts/DataContext";
+import logger from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 const WeatherGrid = () => {
-  const { columnDefs, rowData } = useContext(DataContext);
+  const { columnDefs, rowData, error } = useContext(DataContext);
   const gridRef = useRef(null);
 
   // Function to auto-size columns to fit their contents
@@ -40,12 +42,11 @@ const WeatherGrid = () => {
         const existingRow = existingRows.find(row => row.TIMESTAMP === newRow.TIMESTAMP);
 
         if (!existingRow) {
-          console.log("Adding new row data via applyTransaction:", newRow);
+          logger.info("Adding new row data via applyTransaction:", newRow);
           gridRef.current.api.applyTransaction({ add: [newRow], addIndex: 0 });
           autoSizeAllColumns();
-          //  console.log("Grid rows redrawn.");
         } else {
-          //  console.log("Row with this TIMESTAMP already exists. No new row added.");
+          logger.info("Row with this TIMESTAMP already exists. No new row added.");
         }
       }
     },
@@ -63,13 +64,21 @@ const WeatherGrid = () => {
   const memoizedRowData = useMemo(() => rowData, [rowData]);
   const memoizedColumnDefs = useMemo(() => columnDefs, [columnDefs]);
 
+  // Log the current state for debugging
+  logger.info("WeatherGrid columnDefs:", columnDefs);
+  logger.info("WeatherGrid rowData:", rowData);
+
+  // Process the error using errorHandler
+  const processedError = error ? errorHandler(error) : null;
+
   return (
     <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 200px)" }}>
+      {processedError && <div className="error">{processedError}</div>}
       <AgGridReact
         columnDefs={memoizedColumnDefs}
         rowData={memoizedRowData}
         pagination={true}
-        paginationPageSize={50} // Changed the default page size to 50
+        paginationPageSize={50} // Dfault page size
         onGridReady={onGridReady}
         onFirstDataRendered={autoSizeAllColumns}
         defaultColDef={{

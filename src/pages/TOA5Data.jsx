@@ -1,23 +1,32 @@
-import React, { useContext, memo } from "react";
+import { useContext, memo } from "react";
 import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import WeatherGrid from "../components/WeatherGrid";
 import { DataContext } from "../contexts/DataContext";
+import logger from "../utils/logger";
+import errorHandler from "../utils/errorHandler";
 
 const TOA5Data = () => {
+  // Use DataContext to get weather data and error state
   const { columnDefs, rowData, error, sseError } = useContext(DataContext);
 
-  console.log("TOA5Data columnDefs:", columnDefs);
-  console.log("TOA5Data rowData:", rowData);
-  console.log("TOA5Data error:", error);
-  console.log("TOA5Data sseError:", sseError);
+  // Log the current state for debugging
+  logger.info("TOA5Data columnDefs:", columnDefs);
+  logger.info("TOA5Data rowData:", rowData);
+  logger.info("TOA5Data error:", error);
+  logger.info("TOA5Data sseError:", sseError);
 
+  // Process the error using errorHandler
+  const processedError = error ? errorHandler(error) : null;
+
+  // Function to refresh the page
   const handleRefresh = () => {
     window.location.reload();
   };
 
   return (
     <section className="toa5-data">
+      {/* Breadcrumb with refresh button */}
       <MemoizedBreadcrumb
         title="/ TOA5 Data"
         rightContent={
@@ -26,7 +35,9 @@ const TOA5Data = () => {
           </button>
         }
       />
-      <ErrorMessages error={error} sseError={sseError} />
+      {/* Display error messages if any */}
+      <ErrorMessages error={processedError} sseError={sseError} />
+      {/* Display weather data in a grid */}
       <div className="overflow-x-auto">
         <WeatherGrid columnDefs={columnDefs} rowData={rowData} />
       </div>
@@ -34,6 +45,6 @@ const TOA5Data = () => {
   );
 };
 
-// Named export
+// Memoize the component to avoid unnecessary re-renders
 const MemoizedTOA5Data = memo(TOA5Data);
 export default MemoizedTOA5Data;

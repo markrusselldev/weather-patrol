@@ -2,13 +2,15 @@ import { useContext, useEffect } from "react";
 import PropTypes from "prop-types";
 import ThemeSelector from "./ThemeSelector";
 import { DataContext } from "../contexts/DataContext";
+import logger from "../utils/logger";
 
 const Footer = ({ theme, onThemeChange }) => {
   const { environmentInfo } = useContext(DataContext);
 
-  /* useEffect(() => {
-    console.log("Received Environment Info in Footer:", environmentInfo);
-  }, [environmentInfo]); */
+  // Log the environment info
+  useEffect(() => {
+    logger.info("Received Environment Info in Footer:", environmentInfo);
+  }, [environmentInfo]);
 
   return (
     <footer className="w-full bg-footerBg text-footerText flex justify-between p-4 text-xs h-footer">
