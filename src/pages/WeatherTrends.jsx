@@ -1,7 +1,9 @@
 import { useState, useEffect, memo, useContext } from "react";
 import TrendCard from "../components/TrendCard";
-import { FaThermometerHalf, FaWind, FaCompass, FaTint, FaBatteryFull } from "react-icons/fa";
-import { GiWindSlap } from "react-icons/gi";
+import { WiThermometer, WiThermometerExterior, WiStrongWind, WiHumidity, WiBarometer } from "react-icons/wi";
+import { IoBatteryChargingOutline } from "react-icons/io5";
+import { PiCompassRose } from "react-icons/pi";
+import { GiDew } from "react-icons/gi";
 import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
@@ -98,14 +100,14 @@ const WeatherTrends = () => {
         }
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TrendCard title="Temperature" icon={FaThermometerHalf} labels={dataPoints.labels} data={dataPoints.temperature} unit="°F" />
-        <TrendCard title="Wind Speed" icon={FaWind} labels={dataPoints.labels} data={dataPoints.windSpeed} unit="mph" />
-        <TrendCard title="Wind Direction" icon={FaCompass} labels={dataPoints.labels} data={dataPoints.windDirection} unit="°" />
-        <TrendCard title="Wind Chill" icon={GiWindSlap} labels={dataPoints.labels} data={dataPoints.windChill} unit="°F" />
-        <TrendCard title="Humidity" icon={FaTint} labels={dataPoints.labels} data={dataPoints.humidity} unit="%" />
-        <TrendCard title="Dew Point" icon={FaThermometerHalf} labels={dataPoints.labels} data={dataPoints.dewPoint} unit="°F" />
-        <TrendCard title="Barometric Pressure" icon={FaCompass} labels={dataPoints.labels} data={dataPoints.pressure} unit="inHg" />
-        <TrendCard title="Battery Voltage" icon={FaBatteryFull} labels={dataPoints.labels} data={dataPoints.batteryVoltage} unit="V" />
+        <TrendCard title="Temperature" icon={WiThermometer} labels={dataPoints.labels} data={dataPoints.temperature} unit="°F" />
+        <TrendCard title="Wind Speed" icon={WiStrongWind} labels={dataPoints.labels} data={dataPoints.windSpeed} unit="mph" />
+        <TrendCard title="Wind Direction" icon={PiCompassRose} labels={dataPoints.labels} data={dataPoints.windDirection} unit="°" />
+        <TrendCard title="Wind Chill" icon={WiThermometerExterior} labels={dataPoints.labels} data={dataPoints.windChill} unit="°F" />
+        <TrendCard title="Humidity" icon={WiHumidity} labels={dataPoints.labels} data={dataPoints.humidity} unit="%" />
+        <TrendCard title="Dew Point" icon={GiDew} labels={dataPoints.labels} data={dataPoints.dewPoint} unit="°F" />
+        <TrendCard title="Barometric Pressure" icon={WiBarometer} labels={dataPoints.labels} data={dataPoints.pressure} unit="inHg" />
+        <TrendCard title="Battery Voltage" icon={IoBatteryChargingOutline} labels={dataPoints.labels} data={dataPoints.batteryVoltage} unit="V" />
       </div>
     </section>
   );

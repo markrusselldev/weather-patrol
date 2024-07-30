@@ -19,7 +19,7 @@ const Header = ({ navigationItems }) => {
   return (
     <header className="w-full bg-headerBg text-headerText p-4 flex justify-between items-center sticky top-0 z-20 h-header">
       <div className="flex items-center min-w-[11rem] flex-grow">
-        <img src="/images/weather-patrol-logo.png" alt="Logo Placeholder" className="w-10 h-10 mr-4" />
+        <img src="/images/yellow-bear.png" alt="Logo Placeholder" className="w-10 h-10 mr-4" />
         <h1 className="text-lg whitespace-nowrap">Weather Patrol</h1>
       </div>
       <button className="block md:hidden text-2xl cursor-pointer" onClick={toggleNav}>

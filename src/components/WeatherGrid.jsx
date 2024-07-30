@@ -84,7 +84,14 @@ const WeatherGrid = () => {
         defaultColDef={{
           resizable: true,
           maxWidth: 150, // Set maximum column width
-          cellStyle: { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-color)" },
+          cellStyle: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            color: "var(--table-td-text-color)",
+            borderColor: "var(--table-border-color)"
+          },
+          headerClass: "custom-header",
           tooltipField: "value" // Adding tooltip to display the full content on hover
         }}
         paginationPanelClassName="custom-pagination"

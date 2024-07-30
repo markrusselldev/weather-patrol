@@ -81,13 +81,18 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
 
   logger.debug(`Generating chart data for ${title}`, { data, pastTimestamps });
 
+  // Fetch CSS variables to use in styles
+  const cardBackgroundColor = getCssVariable("--card-background-color", "#d4dce3");
+  const cardHeaderTextColor = getCssVariable("--card-header-text-color", "#5a5a5a");
+  const cardBodyTextColor = getCssVariable("--card-body-text-color", "#5a5a5a");
+
   return (
-    <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg">
+    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg" style={{ backgroundColor: cardBackgroundColor, color: cardBodyTextColor }}>
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />
         </div>
-        <div className="flex-grow text-xl flex justify-center text-gridItemHeader" style={{ flex: "1 1 auto" }}>
+        <div className="flex-grow text-xl flex justify-center cardHeaderTextColor" style={{ flex: "1 1 auto", color: cardHeaderTextColor }}>
           {title}
         </div>
         <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>

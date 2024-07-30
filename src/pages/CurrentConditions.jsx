@@ -1,6 +1,8 @@
 import { useEffect, useState, useContext, memo } from "react";
-import { FaThermometerHalf, FaWind, FaCompass, FaTint, FaBatteryFull } from "react-icons/fa";
-import { GiWindSlap } from "react-icons/gi";
+import { WiThermometer, WiThermometerExterior, WiStrongWind, WiHumidity, WiBarometer } from "react-icons/wi";
+import { IoBatteryChargingOutline } from "react-icons/io5";
+import { PiCompassRose } from "react-icons/pi";
+import { GiDew } from "react-icons/gi";
 import ConditionCard from "../components/ConditionCard";
 import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
@@ -23,12 +25,13 @@ const CurrentConditions = () => {
 
   // Effect to set the latest and past data when rowData changes
   useEffect(() => {
-    if (rowData.length > 0) {
+    logger.info("Effect triggered: rowData changed", rowData);
+    if (rowData && rowData.length > 0) {
       setLatestData(rowData[0]);
       // Sort pastData in ascending order based on TIMESTAMP
       const sortedPastData = rowData.slice(1, 5).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
       setPastData(sortedPastData);
-      logger.info("Latest data and past data set successfully");
+      logger.info("Latest data and past data set successfully", { latestData: rowData[0], pastData: sortedPastData });
     } else {
       logger.warn("No rowData available to set latest and past data");
     }
@@ -36,7 +39,7 @@ const CurrentConditions = () => {
 
   // Handle errors by displaying an error message
   if (error) {
-    logger.error(errorHandler(error));
+    logger.error("Error in CurrentConditions component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
@@ -47,7 +50,13 @@ const CurrentConditions = () => {
   }
 
   // Create an array of data for a specific key, ensuring the latest data is at the end
-  const createDataArray = key => [...pastData.map(row => Math.round(row[key])), Math.round(latestData[key])];
+  const createDataArray = key => {
+    if (!latestData[key]) {
+      logger.warn(`No data available for key: ${key}`);
+      return [null];
+    }
+    return [...pastData.map(row => Math.round(row[key])), Math.round(latestData[key])];
+  };
 
   // Create an array of past timestamps
   const createPastTimestampsArray = () => pastData.map(row => formatTimestamp(row.TIMESTAMP, true));
@@ -79,14 +88,14 @@ const CurrentConditions = () => {
     <section className="weather-conditions flex flex-col flex-grow">
       <MemoizedBreadcrumb title="/ Current Conditions" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
-        <ConditionCard title="Temperature" icon={FaThermometerHalf} data={data.temperature} unit="°F" min={data.temperatureMin} max={data.temperatureMax} pastTimestamps={pastTimestamps} showMinMax />
-        <ConditionCard title="Wind Speed" icon={FaWind} data={data.windSpeed} unit="mph" min={data.windSpeedMin} max={data.windSpeedMax} pastTimestamps={pastTimestamps} showMinMax />
-        <ConditionCard title="Wind Direction" icon={FaCompass} data={data.windDirection} unit="°" min={265} max={280} pastTimestamps={pastTimestamps} cardinalDirection={windDirectionCardinal} showMinMax={false} />
-        <ConditionCard title="Wind Chill" icon={GiWindSlap} data={data.windChill} unit="°F" min={13} max={15} pastTimestamps={pastTimestamps} showMinMax={false} />
-        <ConditionCard title="Humidity" icon={FaTint} data={data.humidity} unit="%" min={65} max={72} pastTimestamps={pastTimestamps} showMinMax={false} />
-        <ConditionCard title="Dew Point" icon={FaThermometerHalf} data={data.dewPoint} unit="°F" min={8} max={10} pastTimestamps={pastTimestamps} showMinMax={false} />
-        <ConditionCard title="Barometric Pressure" icon={FaCompass} data={data.pressure} unit="inHg" min={29.8} max={29.95} pastTimestamps={pastTimestamps} showMinMax={false} />
-        <ConditionCard title="Battery Voltage" icon={FaBatteryFull} data={data.batteryVoltage} unit="V" min={12.4} max={12.7} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Temperature" icon={WiThermometer} data={data.temperature} unit="°F" min={data.temperatureMin} max={data.temperatureMax} pastTimestamps={pastTimestamps} showMinMax />
+        <ConditionCard title="Wind Speed" icon={WiStrongWind} data={data.windSpeed} unit="mph" min={data.windSpeedMin} max={data.windSpeedMax} pastTimestamps={pastTimestamps} showMinMax />
+        <ConditionCard title="Wind Direction" icon={PiCompassRose} data={data.windDirection} unit="°" min={265} max={280} pastTimestamps={pastTimestamps} cardinalDirection={windDirectionCardinal} showMinMax={false} />
+        <ConditionCard title="Wind Chill" icon={WiThermometerExterior} data={data.windChill} unit="°F" min={13} max={15} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Humidity" icon={WiHumidity} data={data.humidity} unit="%" min={65} max={72} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Dew Point" icon={GiDew} data={data.dewPoint} unit="°F" min={8} max={10} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Barometric Pressure" icon={WiBarometer} data={data.pressure} unit="inHg" min={29.8} max={29.95} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Battery Voltage" icon={IoBatteryChargingOutline} data={data.batteryVoltage} unit="V" min={12.4} max={12.7} pastTimestamps={pastTimestamps} showMinMax={false} />
       </div>
     </section>
   );

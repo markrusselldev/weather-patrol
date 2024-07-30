@@ -34,8 +34,8 @@ const DataProvider = ({ children }) => {
         const { headers, rows } = data;
 
         log.info("Extracted environmentInfo:", environmentInfo);
-        log.info("Headers:", headers); // Log headers
-        log.info("Rows:", rows); // Log rows
+        log.info("Extracted headers:", headers); // Log headers
+        log.info("Extracted rows:", rows); // Log rows
 
         // Update environment info state
         if (environmentInfo) {
@@ -44,9 +44,15 @@ const DataProvider = ({ children }) => {
           log.info("No environmentInfo in the response");
         }
 
-        // Check if headers and rows exist and update state accordingly
+        // Validate headers and rows
         if (Array.isArray(headers) && headers.length > 0 && Array.isArray(rows) && rows.length > 0) {
-          log.info("Initial data fetched:", rows);
+          log.info("Valid headers and rows found");
+
+          // Log the actual headers and rows for debugging
+          log.info("Headers: ", headers);
+          log.info("First row: ", rows[0]);
+          log.info("Number of rows: ", rows.length);
+
           const columns = headers.map(key => ({
             headerName: key,
             field: key,
@@ -54,9 +60,11 @@ const DataProvider = ({ children }) => {
             filter: true,
             valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
           }));
+
           log.info("Generated columnDefs:", columns); // Log the generated column definitions
           setColumnDefs(columns);
           setRowData(rows);
+          log.info("RowData set:", rows); // Log the rowData set
 
           // Set the latest timestamp
           const latestRow = rows[0];
@@ -65,8 +73,8 @@ const DataProvider = ({ children }) => {
           }
           return; // Exit if fetchData is successful
         } else {
-          log.error("No data available or headers missing from API");
-          setError("No data available or headers missing from API");
+          log.error("No valid headers or rows in API response");
+          setError("No valid headers or rows in API response");
           break;
         }
       } catch (error) {
@@ -97,10 +105,14 @@ const DataProvider = ({ children }) => {
     const handleMessage = debounce(event => {
       const newData = JSON.parse(event.data);
       log.info("New data received from SSE:", newData);
+
+      // Assuming newData has the same structure as the rows in the API response
       setRowData(prevData => {
         if (!prevData.some(row => row.TIMESTAMP === newData.TIMESTAMP)) {
           log.info("Updating weather data with new record:", newData);
-          return [newData, ...prevData];
+          const updatedData = [newData, ...prevData];
+          log.info("RowData after SSE update:", updatedData);
+          return updatedData;
         }
         log.info("New data is identical to an existing record, not updating state");
         return prevData;
