@@ -1,11 +1,17 @@
 import { useEffect, useRef, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import { WiWindDeg } from "react-icons/wi";
 import logger from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 
 // Registering ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+// Get CSS variable with default fallback
+function getCssVariable(varName, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName) || fallback;
+}
 
 // Function to generate chart data
 const generateChartData = (data, title, pastTimestamps) => ({
@@ -15,9 +21,15 @@ const generateChartData = (data, title, pastTimestamps) => ({
       label: title,
       data: data,
       fill: false,
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgba(75, 192, 192, 1)",
-      tension: 0.1
+      backgroundColor: getCssVariable("--chart-bg-color", "rgba(75, 192, 192, 0.2)"), // Line fill color
+      borderColor: getCssVariable("--chart-line-color", "rgba(75, 192, 192, 1)"), // Line border color
+      pointBackgroundColor: getCssVariable("--chart-point-bg-color", "rgba(75, 192, 192, 1)"),
+      pointBorderColor: getCssVariable("--chart-point-border-color", "rgba(75, 192, 192, 1)"),
+      pointHoverBackgroundColor: getCssVariable("--chart-point-hover-bg-color", "rgba(255, 99, 132, 1)"),
+      pointHoverBorderColor: getCssVariable("--chart-point-hover-border-color", "rgba(255, 99, 132, 1)"),
+      tension: 0.1,
+      hoverBackgroundColor: getCssVariable("--chart-hover-bg-color", "rgba(75, 192, 192, 0.2)"),
+      hoverBorderColor: getCssVariable("--chart-hover-border-color", "rgba(75, 192, 192, 1)")
     }
   ]
 });
@@ -33,10 +45,19 @@ const chartOptions = {
     y: {
       beginAtZero: true
     }
+  },
+  onClick: (event, elements) => {
+    if (elements.length > 0) {
+      const element = elements[0];
+      const dataset = element.datasetIndex;
+      const index = element.index;
+      logger.info(`Clicked on dataset index: ${dataset}, data index: ${index}`);
+      // Handle the click event here
+    }
   }
 };
 
-const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps = [], showMinMax }) => {
+const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps = [], showMinMax, cardinalDirection }) => {
   const chartRef = useRef(null);
 
   // Effect to create and destroy the chart instance
@@ -61,15 +82,15 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   logger.debug(`Generating chart data for ${title}`, { data, pastTimestamps });
 
   return (
-    <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full">
+    <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg">
       <div className="flex items-center mb-2">
-        <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
+        <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
+          <Icon className="text-4xl text-svg" />
+        </div>
         <div className="flex-grow text-xl flex justify-center text-gridItemHeader" style={{ flex: "1 1 auto" }}>
           {title}
         </div>
-        <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}>
-          <Icon className="text-4xl text-svg" />
-        </div>
+        <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>
       </div>
       <hr className="border-hrColor" />
       <div className="flex items-center mb-2">
@@ -80,7 +101,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
             {unit}
           </span>
         </div>
-        {showMinMax && (
+        {showMinMax ? (
           <div className="flex-shrink-0 w-16 flex flex-col items-start" style={{ flex: "0 0 4rem" }}>
             <div className="flex items-center">
               <span className="text-xs text-breadcrumbText mr-1">Hi</span>{" "}
@@ -97,8 +118,20 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
               </span>
             </div>
           </div>
+        ) : cardinalDirection ? (
+          <div className="flex-shrink-0 w-16 flex flex-col items-start" style={{ flex: "0 0 4rem" }}>
+            <div className="flex items-center">
+              <span className="text-xs text-breadcrumbText mr-1">
+                <WiWindDeg className="text-2xl" style={{ transform: `rotate(${data[data.length - 1]}deg)` }} />
+              </span>{" "}
+              <span className="text-sm" style={{ color: "var(--data-text-color)" }}>
+                {cardinalDirection}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
         )}
-        {!showMinMax && <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>}
       </div>
       <hr className="border-hrColor" />
       <div className="grid grid-cols-4 gap-2 mb-2">
@@ -128,7 +161,8 @@ ConditionCard.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   pastTimestamps: PropTypes.arrayOf(PropTypes.string).isRequired,
-  showMinMax: PropTypes.bool
+  showMinMax: PropTypes.bool,
+  cardinalDirection: PropTypes.string
 };
 
 const MemoizedConditionCard = memo(ConditionCard);

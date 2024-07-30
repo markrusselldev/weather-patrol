@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 wireframe3
+test
 
 # Editor directories and files
 .vscode/*
@@ -24,4 +25,3 @@ wireframe3
 *.sln
 *.sw?
 *.txt
-test/

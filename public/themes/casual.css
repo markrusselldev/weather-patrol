@@ -3,7 +3,7 @@
   /* Main Colors */
   --background-color: #f7f7f7;
   --text-color: #2c2c2c;
-  --svg-color: #5a5a5a;
+  --svg-color: rgba(75, 192, 192, 0.5);
 
   /* Button Colors */
   --button-bg-color: #3c3c3c;
@@ -29,7 +29,7 @@
 
   /* Grid Item Colors */
   --grid-item-header-color: #5a5a5a;
-  --grid-item-bg-color: #cce6ff;
+  --grid-item-bg-color: #d4dce3;
 
   /* Footer Colors */
   --footer-bg-color: #2c2c2c;
@@ -58,4 +58,14 @@
   --scrollbar-bg-color: #e0e0e0;
   --scrollbar-thumb-color: #7a7a7a;
   --scrollbar-thumb-hover-color: #a0a0a0;
+
+  /* Chart Colors */
+  --chart-line-color: rgba(75, 192, 192, 1);
+  --chart-bg-color: rgba(75, 192, 192, 0.2);
+  --chart-point-bg-color: rgba(75, 192, 192, 1);
+  --chart-point-border-color: rgba(75, 192, 192, 1);
+  --chart-point-hover-bg-color: rgba(255, 99, 132, 1);
+  --chart-point-hover-border-color: rgba(255, 99, 132, 1);
+  --chart-hover-bg-color: rgba(75, 192, 192, 0.2);
+  --chart-hover-border-color: rgba(75, 192, 192, 1);
 }

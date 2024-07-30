@@ -9,6 +9,13 @@ import { formatTimestamp } from "../utils/utils";
 import logger from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 
+// Function to convert wind direction degrees to cardinal direction
+const getCardinalDirection = degrees => {
+  const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+  const index = Math.round((degrees % 360) / 45) % 8;
+  return directions[index];
+};
+
 const CurrentConditions = () => {
   const [latestData, setLatestData] = useState(null);
   const [pastData, setPastData] = useState([]);
@@ -18,7 +25,9 @@ const CurrentConditions = () => {
   useEffect(() => {
     if (rowData.length > 0) {
       setLatestData(rowData[0]);
-      setPastData(rowData.slice(1, 5)); // Keep past readings in their original order for display
+      // Sort pastData in ascending order based on TIMESTAMP
+      const sortedPastData = rowData.slice(1, 5).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
+      setPastData(sortedPastData);
       logger.info("Latest data and past data set successfully");
     } else {
       logger.warn("No rowData available to set latest and past data");
@@ -61,6 +70,8 @@ const CurrentConditions = () => {
 
   const pastTimestamps = createPastTimestampsArray();
 
+  const windDirectionCardinal = getCardinalDirection(latestData.WindDir);
+
   logger.debug("Past timestamps:", pastTimestamps);
   logger.debug("Data for temperature:", data.temperature);
 
@@ -70,7 +81,7 @@ const CurrentConditions = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
         <ConditionCard title="Temperature" icon={FaThermometerHalf} data={data.temperature} unit="°F" min={data.temperatureMin} max={data.temperatureMax} pastTimestamps={pastTimestamps} showMinMax />
         <ConditionCard title="Wind Speed" icon={FaWind} data={data.windSpeed} unit="mph" min={data.windSpeedMin} max={data.windSpeedMax} pastTimestamps={pastTimestamps} showMinMax />
-        <ConditionCard title="Wind Direction" icon={FaCompass} data={data.windDirection} unit="°" min={265} max={280} pastTimestamps={pastTimestamps} showMinMax={false} />
+        <ConditionCard title="Wind Direction" icon={FaCompass} data={data.windDirection} unit="°" min={265} max={280} pastTimestamps={pastTimestamps} cardinalDirection={windDirectionCardinal} showMinMax={false} />
         <ConditionCard title="Wind Chill" icon={GiWindSlap} data={data.windChill} unit="°F" min={13} max={15} pastTimestamps={pastTimestamps} showMinMax={false} />
         <ConditionCard title="Humidity" icon={FaTint} data={data.humidity} unit="%" min={65} max={72} pastTimestamps={pastTimestamps} showMinMax={false} />
         <ConditionCard title="Dew Point" icon={FaThermometerHalf} data={data.dewPoint} unit="°F" min={8} max={10} pastTimestamps={pastTimestamps} showMinMax={false} />

@@ -6,6 +6,11 @@ import logger from "../utils/logger";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+// Helper function to get CSS variable with default fallback
+function getCssVariable(varName, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName) || fallback;
+}
+
 // Function to generate chart data
 const generateChartData = (labels, data, title) => ({
   labels: labels,
@@ -14,9 +19,15 @@ const generateChartData = (labels, data, title) => ({
       label: title,
       data: data,
       fill: false,
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgba(75, 192, 192, 1)",
-      tension: 0.1
+      backgroundColor: getCssVariable("--chart-bg-color", "rgba(75, 192, 192, 0.2)"),
+      borderColor: getCssVariable("--chart-line-color", "rgba(75, 192, 192, 1)"),
+      pointBackgroundColor: getCssVariable("--chart-point-bg-color", "rgba(75, 192, 192, 1)"),
+      pointBorderColor: getCssVariable("--chart-point-border-color", "rgba(75, 192, 192, 1)"),
+      pointHoverBackgroundColor: getCssVariable("--chart-point-hover-bg-color", "rgba(255, 99, 132, 1)"),
+      pointHoverBorderColor: getCssVariable("--chart-point-hover-border-color", "rgba(255, 99, 132, 1)"),
+      tension: 0.1,
+      hoverBackgroundColor: getCssVariable("--chart-hover-bg-color", "rgba(75, 192, 192, 0.2)"),
+      hoverBorderColor: getCssVariable("--chart-hover-border-color", "rgba(75, 192, 192, 1)")
     }
   ]
 });
@@ -54,15 +65,15 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
   }, [title]);
 
   return (
-    <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full">
+    <div className="bg-gridItemBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg">
       <div className="flex items-center mb-2">
-        <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
+        <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
+          <Icon className="text-4xl text-svg" />
+        </div>
         <div className="flex-grow text-xl flex justify-center text-gridItemHeader" style={{ flex: "1 1 auto" }}>
           {title}
         </div>
-        <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}>
-          <Icon className="text-4xl text-svg" />
-        </div>
+        <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>
       </div>
       <hr className="border-hrColor" />
       <div className="h-48">
