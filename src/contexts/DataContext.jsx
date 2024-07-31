@@ -29,61 +29,76 @@ const DataProvider = ({ children }) => {
         const response = await getAllWeatherData();
         log.info("API response:", response);
 
-        // Extract environment info and data rows from the response
-        const { environmentInfo, data } = response;
-        const { headers, rows } = data;
+        // Ensure response structure is as expected
+        if (response && typeof response === "object" && response.environmentInfo && response.data && (Array.isArray(response.data.headers) || typeof response.data.headers === "string") && Array.isArray(response.data.rows)) {
+          log.info("API response structure is valid");
 
-        log.info("Extracted environmentInfo:", environmentInfo);
-        log.info("Extracted headers:", headers); // Log headers
-        log.info("Extracted rows:", rows); // Log rows
+          // Extract environment info and data rows from the response
+          const { environmentInfo, data } = response;
+          let { headers, rows } = data;
 
-        // Update environment info state
-        if (environmentInfo) {
-          setEnvironmentInfo(environmentInfo);
-        } else {
-          log.info("No environmentInfo in the response");
-        }
-
-        // Validate headers and rows
-        if (Array.isArray(headers) && headers.length > 0 && Array.isArray(rows) && rows.length > 0) {
-          log.info("Valid headers and rows found");
-
-          // Log the actual headers and rows for debugging
-          log.info("Headers: ", headers);
-          log.info("First row: ", rows[0]);
-          log.info("Number of rows: ", rows.length);
-
-          const columns = headers.map(key => ({
-            headerName: key,
-            field: key,
-            sortable: true,
-            filter: true,
-            valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
-          }));
-
-          log.info("Generated columnDefs:", columns); // Log the generated column definitions
-          setColumnDefs(columns);
-          setRowData(rows);
-          log.info("RowData set:", rows); // Log the rowData set
-
-          // Set the latest timestamp
-          const latestRow = rows[0];
-          if (latestRow && latestRow.TIMESTAMP) {
-            setLatestTimestamp(formatTimestamp(latestRow.TIMESTAMP));
+          // Convert headers to array if it's a string
+          if (typeof headers === "string") {
+            headers = headers.split(",");
           }
-          return; // Exit if fetchData is successful
+
+          log.info("Extracted environmentInfo:", environmentInfo);
+          log.info("Extracted headers:", headers);
+          log.info("Extracted rows:", rows);
+
+          // Update environment info state
+          setEnvironmentInfo(environmentInfo || "Default environment info");
+
+          // Validate headers and rows
+          if (headers.length > 0 && rows.length > 0) {
+            log.info("Valid headers and rows found");
+
+            const columns = headers.map(key => ({
+              headerName: key,
+              field: key,
+              sortable: true,
+              filter: true,
+              valueFormatter: key === "TIMESTAMP" ? ({ value }) => formatTimestamp(value) : undefined
+            }));
+
+            log.info("Generated columnDefs:", columns);
+            setColumnDefs(columns);
+
+            // Transform rows to match headers
+            const transformedRows = rows.map(row => {
+              const rowObj = {};
+              headers.forEach((header, index) => {
+                rowObj[header] = row[index];
+              });
+              return rowObj;
+            });
+
+            log.info("Transformed rows:", transformedRows);
+            setRowData(transformedRows);
+
+            // Set the latest timestamp
+            const latestRow = transformedRows[0];
+            if (latestRow && latestRow.TIMESTAMP) {
+              setLatestTimestamp(formatTimestamp(latestRow.TIMESTAMP));
+            }
+            return; // Exit if fetchData is successful
+          } else {
+            log.error("No valid headers or rows in API response", response);
+            setError("No valid headers or rows in API response");
+            break;
+          }
         } else {
-          log.error("No valid headers or rows in API response");
-          setError("No valid headers or rows in API response");
+          log.error("API response does not contain expected structure", response);
+          setError("API response does not contain expected structure");
           break;
         }
       } catch (error) {
-        log.error(errorHandler(error));
+        log.error("Error fetching data from API:", errorHandler(error));
         if (i < retries - 1) {
           log.warn(`Retrying fetchData (${i + 1}/${retries})...`);
           await new Promise(res => setTimeout(res, delay)); // Wait before retrying
         } else {
-          log.error("Error fetching data from API:", error);
+          log.error("Error fetching data after retries");
           setError("Error fetching data after retries");
         }
       }
@@ -106,21 +121,23 @@ const DataProvider = ({ children }) => {
       const newData = JSON.parse(event.data);
       log.info("New data received from SSE:", newData);
 
-      // Assuming newData has the same structure as the rows in the API response
-      setRowData(prevData => {
-        if (!prevData.some(row => row.TIMESTAMP === newData.TIMESTAMP)) {
-          log.info("Updating weather data with new record:", newData);
-          const updatedData = [newData, ...prevData];
-          log.info("RowData after SSE update:", updatedData);
-          return updatedData;
-        }
-        log.info("New data is identical to an existing record, not updating state");
-        return prevData;
-      });
+      // Validate newData structure
+      if (newData && typeof newData === "object" && newData.TIMESTAMP) {
+        setRowData(prevData => {
+          if (!prevData.some(row => row.TIMESTAMP === newData.TIMESTAMP)) {
+            log.info("Updating weather data with new record:", newData);
+            const updatedData = [newData, ...prevData];
+            log.info("RowData after SSE update:", updatedData);
+            return updatedData;
+          }
+          log.info("New data is identical to an existing record, not updating state");
+          return prevData;
+        });
 
-      // Update the latest timestamp
-      if (newData && newData.TIMESTAMP) {
+        // Update the latest timestamp
         setLatestTimestamp(formatTimestamp(newData.TIMESTAMP));
+      } else {
+        log.error("Invalid data structure received from SSE", newData);
       }
     }, 300);
 

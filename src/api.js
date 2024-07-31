@@ -23,11 +23,21 @@ export const getAllWeatherData = async () => {
     const response = await axiosInstance.get("/data");
     const data = response.data;
 
-    // Extract headers from the second row of headers in the API response
-    if (data.data && data.data.rows.length > 0) {
-      const headers = data.data.headers && data.data.headers.length > 1 ? data.data.headers[1] : Object.keys(data.data.rows[0]);
-      data.data.headers = headers;
-      logger.info("Extracted headers from the API response:", headers);
+    // Log the full response data
+    logger.debug("Full API response data:", data);
+
+    // Ensure data and rows exist before processing
+    if (data.data && Array.isArray(data.data.rows) && data.data.rows.length > 0) {
+      const headers = Array.isArray(data.data.headers) && data.data.headers.length > 1 ? data.data.headers[1] : Object.keys(data.data.rows[0]);
+
+      if (headers && headers.length > 0) {
+        data.data.headers = headers;
+        logger.info("Extracted headers from the API response:", headers);
+      } else {
+        logger.warn("No headers found in the API response.");
+      }
+    } else {
+      logger.warn("No rows found in the API response.");
     }
 
     logger.info("Fetched all weather data:", data);

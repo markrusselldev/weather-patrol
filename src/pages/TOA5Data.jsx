@@ -36,11 +36,9 @@ const TOA5Data = () => {
         }
       />
       {/* Display error messages if any */}
-      <ErrorMessages error={processedError} sseError={sseError} />
+      {processedError || sseError ? <ErrorMessages error={processedError} sseError={sseError} /> : null}
       {/* Display weather data in a grid */}
-      <div className="overflow-x-auto">
-        <WeatherGrid columnDefs={columnDefs} rowData={rowData} />
-      </div>
+      <div className="overflow-x-auto">{rowData && columnDefs ? <WeatherGrid columnDefs={columnDefs} rowData={rowData} /> : <div>No data available</div>}</div>
     </section>
   );
 };

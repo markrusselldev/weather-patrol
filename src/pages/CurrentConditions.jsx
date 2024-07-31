@@ -26,7 +26,14 @@ const CurrentConditions = () => {
   // Effect to set the latest and past data when rowData changes
   useEffect(() => {
     logger.info("Effect triggered: rowData changed", rowData);
+
+    // Log the structure of rowData
+    if (rowData) {
+      logger.debug("rowData structure", JSON.stringify(rowData, null, 2));
+    }
+
     if (rowData && rowData.length > 0) {
+      logger.debug("rowData is available, setting latest and past data");
       setLatestData(rowData[0]);
       // Sort pastData in ascending order based on TIMESTAMP
       const sortedPastData = rowData.slice(1, 5).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
@@ -55,7 +62,7 @@ const CurrentConditions = () => {
       logger.warn(`No data available for key: ${key}`);
       return [null];
     }
-    return [...pastData.map(row => Math.round(row[key])), Math.round(latestData[key])];
+    return [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
   };
 
   // Create an array of past timestamps
@@ -71,10 +78,10 @@ const CurrentConditions = () => {
     dewPoint: createDataArray("DP_F_Avg"),
     pressure: createDataArray("BP_inHg_Avg"),
     batteryVoltage: createDataArray("BattV"),
-    temperatureMin: Math.round(latestData.AirTF_Min),
-    temperatureMax: Math.round(latestData.AirTF_Max),
-    windSpeedMin: Math.round(latestData.WS_mph_Min),
-    windSpeedMax: Math.round(latestData.WS_mph_Max)
+    temperatureMin: latestData.AirTF_Min !== undefined ? Math.round(latestData.AirTF_Min) : null,
+    temperatureMax: latestData.AirTF_Max !== undefined ? Math.round(latestData.AirTF_Max) : null,
+    windSpeedMin: latestData.WS_mph_Min !== undefined ? Math.round(latestData.WS_mph_Min) : null,
+    windSpeedMax: latestData.WS_mph_Max !== undefined ? Math.round(latestData.WS_mph_Max) : null
   };
 
   const pastTimestamps = createPastTimestampsArray();
@@ -83,6 +90,13 @@ const CurrentConditions = () => {
 
   logger.debug("Past timestamps:", pastTimestamps);
   logger.debug("Data for temperature:", data.temperature);
+  logger.debug("Data for wind speed:", data.windSpeed);
+  logger.debug("Data for wind direction:", data.windDirection);
+  logger.debug("Data for wind chill:", data.windChill);
+  logger.debug("Data for humidity:", data.humidity);
+  logger.debug("Data for dew point:", data.dewPoint);
+  logger.debug("Data for pressure:", data.pressure);
+  logger.debug("Data for battery voltage:", data.batteryVoltage);
 
   return (
     <section className="weather-conditions flex flex-col flex-grow">

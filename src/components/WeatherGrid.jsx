@@ -65,8 +65,8 @@ const WeatherGrid = () => {
   const memoizedColumnDefs = useMemo(() => columnDefs, [columnDefs]);
 
   // Log the current state for debugging
-  logger.info("WeatherGrid columnDefs:", columnDefs);
-  logger.info("WeatherGrid rowData:", rowData);
+  logger.info("WeatherGrid columnDefs:", memoizedColumnDefs);
+  logger.info("WeatherGrid rowData:", memoizedRowData);
 
   // Process the error using errorHandler
   const processedError = error ? errorHandler(error) : null;
@@ -78,7 +78,7 @@ const WeatherGrid = () => {
         columnDefs={memoizedColumnDefs}
         rowData={memoizedRowData}
         pagination={true}
-        paginationPageSize={50} // Dfault page size
+        paginationPageSize={50} // Default page size
         onGridReady={onGridReady}
         onFirstDataRendered={autoSizeAllColumns}
         defaultColDef={{

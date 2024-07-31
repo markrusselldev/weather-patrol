@@ -23,9 +23,10 @@ const WeatherTrends = () => {
 
   // Effect to filter data based on selected timeframe
   useEffect(() => {
-    if (rowData.length > 0) {
+    if (rowData && rowData.length > 0) {
       logger.info("Filtering data based on selected timeframe");
 
+      // Define timeframes in hours
       const timeframes = {
         "3hr": 3,
         "6hr": 6,
@@ -48,11 +49,23 @@ const WeatherTrends = () => {
 
       logger.debug(`Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
       setFilteredData(filtered); // Update filteredData state
+    } else {
+      logger.warn("rowData is empty or undefined");
+      setFilteredData([]);
     }
   }, [rowData, timeframe]); // Re-run effect when rowData or timeframe changes
 
   // Return error message if there's an error
-  if (error) return <ErrorMessages message={errorHandler(error)} />;
+  if (error) {
+    logger.error("Error in WeatherTrends component:", error);
+    return <ErrorMessages message={errorHandler(error)} />;
+  }
+
+  // Display message if no data is available
+  if (!filteredData || filteredData.length === 0) {
+    logger.info("No filtered data available.");
+    return <div>No data available for the selected timeframe.</div>;
+  }
 
   // Transform filteredData to the format required by TrendCard components
   const dataPoints = {
