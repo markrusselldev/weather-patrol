@@ -3,12 +3,33 @@ import log from "loglevel";
 const logLevel = import.meta.env.VITE_LOG_LEVEL || "debug"; // Set to 'debug' by default
 log.setLevel(logLevel);
 
-// Enhance loglevel to include timestamps and log levels
+const recentLogs = new Set();
+
+const clearRecentLogs = () => {
+  recentLogs.clear();
+  setTimeout(clearRecentLogs, 5000); // Clear recent logs every 5 seconds
+};
+
+clearRecentLogs();
+
+// Enhance loglevel to include timestamps, log levels, and structured context
 const originalFactory = log.methodFactory;
 log.methodFactory = function (methodName, logLevel, loggerName) {
   const rawMethod = originalFactory(methodName, logLevel, loggerName);
   return function (...args) {
     try {
+      let context = "";
+      if (args.length > 0 && typeof args[0] === "object" && args[0].page && args[0].component && args[0].func) {
+        const { page, component, func } = args.shift();
+        context = `[Page: ${page}, Component: ${component}, Function: ${func}]`;
+      }
+
+      const logEntry = `[${new Date().toISOString()}] ${methodName.toUpperCase()}${context ? " " + context : ""}: ${args.join(" ")}`;
+      if (recentLogs.has(logEntry)) {
+        return; // Skip logging if duplicate
+      }
+      recentLogs.add(logEntry);
+
       const messages = args.map(arg => {
         if (typeof arg === "object") {
           return JSON.stringify(
@@ -24,7 +45,7 @@ log.methodFactory = function (methodName, logLevel, loggerName) {
         }
         return arg;
       });
-      rawMethod(`[${new Date().toISOString()}] ${methodName.toUpperCase()}:`, ...messages);
+      rawMethod(logEntry, ...messages);
     } catch (error) {
       rawMethod(`[${new Date().toISOString()}] ${methodName.toUpperCase()}: Error in logging -`, error);
     }

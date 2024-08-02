@@ -4,11 +4,10 @@ import { IoBatteryChargingOutline } from "react-icons/io5";
 import { PiCompassRose } from "react-icons/pi";
 import { GiDew } from "react-icons/gi";
 import ConditionCard from "../components/ConditionCard";
-import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
 import { formatTimestamp } from "../utils/utils";
-import logger from "../utils/logger";
+import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 
 // Function to convert wind direction degrees to cardinal direction
@@ -21,52 +20,69 @@ const getCardinalDirection = degrees => {
 const CurrentConditions = () => {
   const [latestData, setLatestData] = useState(null);
   const [pastData, setPastData] = useState([]);
-  const { rowData, error } = useContext(DataContext);
+  const { weatherData, error } = useContext(DataContext);
 
-  // Effect to set the latest and past data when rowData changes
+  // Effect to set the latest and past data when weatherData changes
   useEffect(() => {
-    logger.info("Effect triggered: rowData changed", rowData);
+    log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "Effect triggered: weatherData changed", weatherData);
 
-    // Log the structure of rowData
-    if (rowData) {
-      logger.debug("rowData structure", JSON.stringify(rowData, null, 2));
+    // Log the structure and length of weatherData
+    if (weatherData) {
+      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData structure", JSON.stringify(weatherData, null, 2));
+      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData length", weatherData.length);
     }
 
-    if (rowData && rowData.length > 0) {
-      logger.debug("rowData is available, setting latest and past data");
-      setLatestData(rowData[0]);
-      // Sort pastData in ascending order based on TIMESTAMP
-      const sortedPastData = rowData.slice(1, 5).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
+    if (weatherData && weatherData.length > 0) {
+      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData is available, setting latest and past data");
+      setLatestData(weatherData[0]);
+
+      // Ensure there are at least 5 records for past data
+      const pastRecordsCount = Math.min(weatherData.length - 1, 4);
+      const sortedPastData = weatherData.slice(1, 1 + pastRecordsCount).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
       setPastData(sortedPastData);
-      logger.info("Latest data and past data set successfully", { latestData: rowData[0], pastData: sortedPastData });
+
+      log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "Latest data and past data set successfully", {
+        latestData: weatherData[0],
+        pastData: sortedPastData
+      });
+
+      // Log the content and length of pastData
+      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "pastData content", JSON.stringify(sortedPastData, null, 2));
+      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "pastData length", sortedPastData.length);
     } else {
-      logger.warn("No rowData available to set latest and past data");
+      log.warn({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "No weatherData available to set latest and past data");
     }
-  }, [rowData]);
+  }, [weatherData]);
 
   // Handle errors by displaying an error message
   if (error) {
-    logger.error("Error in CurrentConditions component:", error);
+    log.error({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Error in CurrentConditions component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
   // Display loading message if latestData is not yet available
   if (!latestData) {
-    logger.info("Loading latest data...");
+    log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Loading latest data...");
     return <div>Loading...</div>;
   }
 
   // Create an array of data for a specific key, ensuring the latest data is at the end
   const createDataArray = key => {
     if (!latestData[key]) {
-      logger.warn(`No data available for key: ${key}`);
+      log.warn({ page: "CurrentConditions", component: "CurrentConditions", func: "createDataArray" }, `No data available for key: ${key}`);
       return [null];
     }
-    return [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
+    const dataArray = [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
+    log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "createDataArray" }, `Data array for ${key}:`, dataArray);
+    return dataArray;
   };
 
   // Create an array of past timestamps
-  const createPastTimestampsArray = () => pastData.map(row => formatTimestamp(row.TIMESTAMP, true));
+  const createPastTimestampsArray = () => {
+    const timestampsArray = pastData.map(row => formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false, page: "CurrentConditions", component: "CurrentConditions", func: "createPastTimestampsArray" }));
+    log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "createPastTimestampsArray" }, "Past timestamps array:", timestampsArray);
+    return timestampsArray;
+  };
 
   // Prepare data and timestamps for ConditionCard components
   const data = {
@@ -85,22 +101,20 @@ const CurrentConditions = () => {
   };
 
   const pastTimestamps = createPastTimestampsArray();
-
   const windDirectionCardinal = getCardinalDirection(latestData.WindDir);
 
-  logger.debug("Past timestamps:", pastTimestamps);
-  logger.debug("Data for temperature:", data.temperature);
-  logger.debug("Data for wind speed:", data.windSpeed);
-  logger.debug("Data for wind direction:", data.windDirection);
-  logger.debug("Data for wind chill:", data.windChill);
-  logger.debug("Data for humidity:", data.humidity);
-  logger.debug("Data for dew point:", data.dewPoint);
-  logger.debug("Data for pressure:", data.pressure);
-  logger.debug("Data for battery voltage:", data.batteryVoltage);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Past timestamps:", pastTimestamps);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for temperature:", data.temperature);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind speed:", data.windSpeed);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind direction:", data.windDirection);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind chill:", data.windChill);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for humidity:", data.humidity);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for dew point:", data.dewPoint);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for pressure:", data.pressure);
+  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for battery voltage:", data.batteryVoltage);
 
   return (
     <section className="weather-conditions flex flex-col flex-grow">
-      <MemoizedBreadcrumb title="/ Current Conditions" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
         <ConditionCard title="Temperature" icon={WiThermometer} data={data.temperature} unit="°F" min={data.temperatureMin} max={data.temperatureMax} pastTimestamps={pastTimestamps} showMinMax />
         <ConditionCard title="Wind Speed" icon={WiStrongWind} data={data.windSpeed} unit="mph" min={data.windSpeedMin} max={data.windSpeedMax} pastTimestamps={pastTimestamps} showMinMax />

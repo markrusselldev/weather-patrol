@@ -1,69 +1,74 @@
 import { useState, useEffect, memo, useContext } from "react";
+import PropTypes from "prop-types";
 import TrendCard from "../components/TrendCard";
 import { WiThermometer, WiThermometerExterior, WiStrongWind, WiHumidity, WiBarometer } from "react-icons/wi";
 import { IoBatteryChargingOutline } from "react-icons/io5";
 import { PiCompassRose } from "react-icons/pi";
 import { GiDew } from "react-icons/gi";
-import MemoizedBreadcrumb from "../components/Breadcrumb";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
 import { formatTimestamp } from "../utils/utils";
-import logger from "../utils/logger";
+import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 
-const WeatherTrends = () => {
-  const { rowData, error } = useContext(DataContext); // Use DataContext to get weather data and error state
-  const [timeframe, setTimeframe] = useState("3hr"); // State to manage selected timeframe
-  const [filteredData, setFilteredData] = useState([]); // State to manage filtered data
+// Function to downsample data
+const downsampleData = (data, factor) => {
+  if (factor <= 1) return data;
+  const downsampledData = [];
+  for (let i = 0; i < data.length; i += factor) {
+    downsampledData.push(data[i]);
+  }
+  return downsampledData;
+};
 
-  // Handle timeframe change
-  const handleTimeframeChange = event => {
-    setTimeframe(event.target.value); // Update timeframe state when user selects a different timeframe
-  };
+const WeatherTrends = ({ timeframe }) => {
+  const { weatherData, error } = useContext(DataContext); // Use DataContext to get weather data and error state
+  const [filteredData, setFilteredData] = useState([]); // State to manage filtered data
 
   // Effect to filter data based on selected timeframe
   useEffect(() => {
-    if (rowData && rowData.length > 0) {
-      logger.info("Filtering data based on selected timeframe");
+    if (weatherData && weatherData.length > 0) {
+      log.info({ page: "WeatherTrends", component: "WeatherTrends", func: "useEffect" }, "Filtering data based on selected timeframe");
 
-      // Define timeframes in hours
+      // Define timeframes in hours and downsampling factors
       const timeframes = {
-        "3hr": 3,
-        "6hr": 6,
-        "12hr": 12,
-        "1D": 24,
-        "7D": 24 * 7,
-        "14D": 24 * 14
+        "3hr": { hours: 3, factor: 1 },
+        "6hr": { hours: 6, factor: 2 },
+        "12hr": { hours: 12, factor: 3 },
+        "1D": { hours: 24, factor: 6 },
+        "7D": { hours: 24 * 7, factor: 24 },
+        "14D": { hours: 24 * 14, factor: 48 }
       };
 
       // Find the latest record timestamp
-      const latestRecordTimestamp = new Date(rowData[0].TIMESTAMP);
-      logger.debug(`Latest Record Timestamp: ${latestRecordTimestamp}`);
+      const latestRecordTimestamp = new Date(weatherData[0].TIMESTAMP);
+      log.debug({ page: "WeatherTrends", component: "WeatherTrends", func: "useEffect" }, `Latest Record Timestamp: ${latestRecordTimestamp}`);
 
       // Filter data based on the latest record timestamp
-      const filtered = rowData.filter(row => {
+      const filtered = weatherData.filter(row => {
         const rowTimestamp = new Date(row.TIMESTAMP);
         const hoursDifference = (latestRecordTimestamp - rowTimestamp) / (1000 * 60 * 60); // Calculate hours difference
-        return hoursDifference <= timeframes[timeframe];
+        return hoursDifference <= timeframes[timeframe].hours;
       });
 
-      logger.debug(`Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
-      setFilteredData(filtered); // Update filteredData state
+      log.debug({ page: "WeatherTrends", component: "WeatherTrends", func: "useEffect" }, `Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
+      const downsampled = downsampleData(filtered, timeframes[timeframe].factor);
+      setFilteredData(downsampled); // Update filteredData state
     } else {
-      logger.warn("rowData is empty or undefined");
+      log.warn({ page: "WeatherTrends", component: "WeatherTrends", func: "useEffect" }, "weatherData is empty or undefined");
       setFilteredData([]);
     }
-  }, [rowData, timeframe]); // Re-run effect when rowData or timeframe changes
+  }, [weatherData, timeframe]); // Re-run effect when weatherData or timeframe changes
 
   // Return error message if there's an error
   if (error) {
-    logger.error("Error in WeatherTrends component:", error);
+    log.error({ page: "WeatherTrends", component: "WeatherTrends", func: "render" }, "Error in WeatherTrends component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
   // Display message if no data is available
   if (!filteredData || filteredData.length === 0) {
-    logger.info("No filtered data available.");
+    log.info({ page: "WeatherTrends", component: "WeatherTrends", func: "render" }, "No filtered data available.");
     return <div>No data available for the selected timeframe.</div>;
   }
 
@@ -80,7 +85,7 @@ const WeatherTrends = () => {
     batteryVoltage: filteredData.map(row => row.BattV)
   };
 
-  logger.debug("Data points for TrendCards count:", {
+  log.debug({ page: "WeatherTrends", component: "WeatherTrends", func: "render" }, "Data points for TrendCards count:", {
     labels: dataPoints.labels.length,
     temperature: dataPoints.temperature.length,
     windSpeed: dataPoints.windSpeed.length,
@@ -94,24 +99,6 @@ const WeatherTrends = () => {
 
   return (
     <section className="weather-trends">
-      <MemoizedBreadcrumb
-        title="/ Weather Trends"
-        timeframeSelector={
-          <div className="timeframe-container flex items-center">
-            <label htmlFor="timeframe" className="mr-2">
-              Timeframe:
-            </label>
-            <select id="timeframe" className="timeframe-dropdown bg-dropdownBg text-dropdownText p-1 rounded border border-dropdownBorder" onChange={handleTimeframeChange} value={timeframe}>
-              <option value="3hr">3h</option>
-              <option value="6hr">6h</option>
-              <option value="12hr">12h</option>
-              <option value="1D">1d</option>
-              <option value="7D">7d</option>
-              <option value="14D">14d</option>
-            </select>
-          </div>
-        }
-      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <TrendCard title="Temperature" icon={WiThermometer} labels={dataPoints.labels} data={dataPoints.temperature} unit="°F" />
         <TrendCard title="Wind Speed" icon={WiStrongWind} labels={dataPoints.labels} data={dataPoints.windSpeed} unit="mph" />
@@ -124,6 +111,10 @@ const WeatherTrends = () => {
       </div>
     </section>
   );
+};
+
+WeatherTrends.propTypes = {
+  timeframe: PropTypes.string.isRequired
 };
 
 const MemoizedWeatherTrends = memo(WeatherTrends);

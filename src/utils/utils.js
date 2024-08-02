@@ -1,16 +1,36 @@
 import moment from "moment";
+import log from "../utils/logger";
 
-export const formatTimestamp = (timestamp, timeOnly = false) => {
+/**
+ * Formats a timestamp based on the provided options.
+ * @param {string} timestamp - The timestamp to format.
+ * @param {Object} options - Formatting options.
+ * @param {boolean} options.showTime - Whether to show the time.
+ * @param {boolean} options.showDate - Whether to show the date.
+ * @returns {string} The formatted timestamp.
+ */
+export const formatTimestamp = (timestamp, { showTime = true, showDate = true } = {}) => {
   if (!timestamp) {
-    console.error("Error: Invalid timestamp provided.");
+    log.error("Error: Invalid timestamp provided.");
     return "";
   }
 
-  const format = timeOnly ? "HH:mm" : "HH:mm MM/DD/YY";
+  let format = "";
+  if (showTime && showDate) {
+    format = "HH:mm MM/DD/YY";
+  } else if (showTime) {
+    format = "HH:mm";
+  } else if (showDate) {
+    format = "MM/DD/YY";
+  } else {
+    format = "YYYY-MM-DD HH:mm:ss"; // Default format if both showTime and showDate are false
+    log.warn("Warning: Neither showTime nor showDate is true. Defaulting to full timestamp format.");
+  }
+
   const formattedTimestamp = moment(timestamp).format(format);
-  
+
   if (formattedTimestamp === "Invalid date") {
-    console.error("Error: Invalid date format provided.");
+    log.error("Error: Invalid date format provided.");
     return "";
   }
 

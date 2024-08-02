@@ -2,7 +2,7 @@ import { useEffect, useRef, memo } from "react";
 import PropTypes from "prop-types";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-import logger from "../utils/logger";
+import log from "../utils/logger";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -52,13 +52,13 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
 
   // Effect to clean up chart instance on unmount
   useEffect(() => {
-    logger.info(`Rendering TrendCard for ${title}`);
+    log.info({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, `Rendering TrendCard for ${title}`);
 
     const currentChartRef = chartRef.current; // Copy ref to a variable
 
     return () => {
       if (currentChartRef && currentChartRef.chartInstance) {
-        logger.info(`Destroying chart instance for ${title}`);
+        log.info({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, `Destroying chart instance for ${title}`);
         currentChartRef.chartInstance.destroy();
       }
     };

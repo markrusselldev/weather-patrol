@@ -2,7 +2,7 @@ import { useEffect, useRef, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { WiWindDeg } from "react-icons/wi";
-import logger from "../utils/logger";
+import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 
 // Registering ChartJS components
@@ -51,7 +51,7 @@ const chartOptions = {
       const element = elements[0];
       const dataset = element.datasetIndex;
       const index = element.index;
-      logger.info(`Clicked on dataset index: ${dataset}, data index: ${index}`);
+      log.info({ page: "ConditionCard", component: "ConditionCard", func: "onClick" }, `Clicked on dataset index: ${dataset}, data index: ${index}`);
       // Handle the click event here
     }
   }
@@ -74,12 +74,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
           chartInstance.destroy();
         };
       } catch (error) {
-        logger.error(errorHandler(error));
+        log.error({ page: "ConditionCard", component: "ConditionCard", func: "useEffect" }, errorHandler(error));
       }
     }
   }, [data, title, pastTimestamps]);
 
-  logger.debug(`Generating chart data for ${title}`, { data, pastTimestamps });
+  log.debug({ page: "ConditionCard", component: "ConditionCard", func: "render" }, `Generating chart data for ${title}`, { data, pastTimestamps });
 
   // Fetch CSS variables to use in styles
   const cardBackgroundColor = getCssVariable("--card-background-color", "#d4dce3");

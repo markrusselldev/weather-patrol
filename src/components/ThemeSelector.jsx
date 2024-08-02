@@ -1,11 +1,14 @@
 import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
+import log from "../utils/logger";
 
 const ThemeSelector = () => {
   const { theme, setTheme } = useContext(ThemeContext);
 
   const handleThemeChange = event => {
-    setTheme(event.target.value);
+    const newTheme = event.target.value;
+    log.info({ page: "ThemeSelector", component: "ThemeSelector", func: "handleThemeChange" }, "Theme changed to:", newTheme);
+    setTheme(newTheme);
   };
 
   return (

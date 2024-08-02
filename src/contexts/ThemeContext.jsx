@@ -11,21 +11,21 @@ const ThemeProvider = ({ children }) => {
   useEffect(() => {
     const applyTheme = newTheme => {
       try {
-        log.info(`Applying theme: ${newTheme}`);
+        log.info({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Applying theme: ${newTheme}`);
 
         // Remove previous theme class and CSS link
         const previousTheme = localStorage.getItem("theme");
         if (previousTheme && previousTheme !== newTheme) {
           document.documentElement.classList.remove(previousTheme);
-          log.info(`Removed previous theme class: ${previousTheme}`);
+          log.info({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Removed previous theme class: ${previousTheme}`);
 
           // Remove the previous theme's CSS link element
           const link = document.querySelector(`link[href*="${previousTheme}.css"]`);
           if (link) {
             link.remove();
-            log.info(`Removed previous theme CSS: ${previousTheme}.css`);
+            log.info({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Removed previous theme CSS: ${previousTheme}.css`);
           } else {
-            log.warn(`Previous theme CSS not found: ${previousTheme}.css`);
+            log.warn({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Previous theme CSS not found: ${previousTheme}.css`);
           }
         }
 
@@ -33,20 +33,20 @@ const ThemeProvider = ({ children }) => {
         if (!document.querySelector(`link[href*="${newTheme}.css"]`)) {
           // Add new theme class and CSS link
           document.documentElement.classList.add(newTheme);
-          log.info(`Added new theme class: ${newTheme}`);
+          log.info({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Added new theme class: ${newTheme}`);
 
           const link = document.createElement("link");
           link.rel = "stylesheet";
           link.href = `/themes/${newTheme}.css`;
           document.head.appendChild(link);
-          log.info(`Added new theme CSS: ${newTheme}.css`);
+          log.info({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, `Added new theme CSS: ${newTheme}.css`);
         }
 
         // Save new theme to local storage
         localStorage.setItem("theme", newTheme);
       } catch (error) {
         const errorMessage = errorHandler(error);
-        log.error(errorMessage);
+        log.error({ page: "ThemeContext", component: "ThemeProvider", func: "applyTheme" }, errorMessage);
       }
     };
 
