@@ -3,13 +3,9 @@ import PropTypes from "prop-types";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import log from "../utils/logger";
+import { getCssVariable } from "../utils/utils";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Helper function to get CSS variable with default fallback
-function getCssVariable(varName, fallback) {
-  return getComputedStyle(document.documentElement).getPropertyValue(varName) || fallback;
-}
 
 // Function to generate chart data
 const generateChartData = (labels, data, title) => ({

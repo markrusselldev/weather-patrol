@@ -1,62 +1,79 @@
 /* theme/light.css */
 :root {
   /* Main Colors */
-  --background-color: #ffffff;
-  --text-color: #2c2c2c;
-  --svg-color: #5a5a5a;
+  --background-color: hsl(0, 0%, 96%); /* Light grey */
+  --text-color: hsl(0, 0%, 20%); /* Dark grey for text */
+  --svg-color: hsl(0, 0%, 40%); /* Medium grey for SVGs */
 
   /* Button Colors */
-  --button-bg-color: #a0a0a0;
-  --button-hover-bg-color: #b0b0b0;
-  --button-active-bg-color: #cccccc;
-  --button-text-color: #2c2c2c;
-  --button-border: 1px solid #a0a0a0;
+  --button-bg-color: hsl(53, 98%, 65%); /* Primary color #fee432 */
+  --button-hover-bg-color: hsl(53, 88%, 50%); /* Deeper yellow than primary */
+  --button-active-bg-color: hsl(355, 85%, 45%); /* Red */
+  --button-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --button-active-text-color: hsl(53, 98%, 65%); /* Yellow for active button text */
+  --button-border: 1px solid hsl(53, 98%, 65%); /* Primary color */
 
   /* Header Colors */
-  --header-bg-color: #f7f7f7;
-  --header-text-color: #2c2c2c;
+  --header-bg-color: hsl(0, 0%, 100%); /* White */
+  --header-text-color: hsl(0, 0%, 20%); /* Dark grey */
 
   /* Breadcrumb and Label Colors */
-  --breadcrumb-text-color: #7a7a7a;
-  --label-text-color: #2c2c2c;
+  --breadcrumb-text-color: hsl(0, 0%, 60%); /* Light grey */
+  --label-text-color: hsl(355, 85%, 45%); /* Secondary color #ed1429 */
 
   /* Dropdown Colors */
-  --dropdown-bg-color: #ffffff;
-  --dropdown-text-color: #2c2c2c;
-  --dropdown-border-color: #cccccc;
-  --dropdown-hover-bg-color: #f2f2f2;
-  --dropdown-active-bg-color: #e0e0e0;
+  --dropdown-bg-color: hsl(0, 0%, 100%); /* White */
+  --dropdown-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --dropdown-border-color: hsl(0, 0%, 80%); /* Light grey */
+  --dropdown-hover-bg-color: hsl(0, 0%, 95%); /* Very light grey */
+  --dropdown-active-bg-color: hsl(0, 0%, 85%); /* Light grey */
 
-  /* Grid Item Colors */
-  --grid-item-header-color: #5a5a5a;
-  --grid-item-bg-color: #f2f2f2;
-  --grid-item-hover-transform: translateY(-0.3125rem);
+  /* Card Colors */
+  --card-header-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --card-body-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --card-background-color: hsl(0, 0%, 100%); /* White */
+  --card-border: 1px solid hsl(0, 0%, 85%); /* Light grey */
 
   /* Footer Colors */
-  --footer-bg-color: #e0e0e0;
-  --footer-text-color: #2c2c2c;
+  --footer-bg-color: hsl(0, 0%, 80%); /* Light grey */
+  --footer-text-color: hsl(0, 0%, 20%); /* Dark grey */
 
   /* Placeholder Colors */
-  --placeholder-bg-color: #f7f7f7;
-  --placeholder-border-color: #cccccc;
-  --placeholder-text-color: #7a7a7a;
+  --placeholder-bg-color: hsl(0, 0%, 95%); /* Very light grey */
+  --placeholder-border-color: hsl(0, 0%, 80%); /* Light grey */
+  --placeholder-text-color: hsl(0, 0%, 60%); /* Light grey */
 
   /* Table Colors */
-  --table-border-color: #dddddd;
-  --table-th-bg-color: #f2f2f2;
-  --table-th-text-color: #2c2c2c;
-  --table-th-padding: 0.5rem;
-  --table-th-td-text-color: #2c2c2c;
-  --table-row-alt-bg-color: #f7f7f7;
+  --table-border-color: hsl(0, 0%, 90%); /* Light grey */
+  --table-th-bg-color: hsl(53, 100%, 90%); /* Lightest yellow */
+  --table-th-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --table-td-text-color: hsl(0, 0%, 20%); /* Dark grey */
+  --table-row-alt-bg-color: hsl(0, 0%, 98%); /* Very light grey */
 
   /* Data Container Text Color */
-  --data-text-color: #5a5a5a;
+  --data-text-color: hsl(0, 0%, 40%); /* Medium grey */
 
   /* <hr/> color */
-  --hr-color: #cccccc;
+  --hr-color: hsl(0, 0%, 80%); /* Light grey */
 
   /* Scrollbar Colors */
-  --scrollbar-bg-color: #e0e0e0;
-  --scrollbar-thumb-color: #cccccc;
-  --scrollbar-thumb-hover-color: #b0b0b0;
+  --scrollbar-bg-color: hsl(0, 0%, 90%); /* Very light grey */
+  --scrollbar-thumb-color: hsl(0, 0%, 60%); /* Light grey */
+  --scrollbar-thumb-hover-color: hsl(0, 0%, 50%); /* Slightly darker grey */
+
+  /* AG Chart Colors */
+  --chart-line-color: hsla(53, 98%, 65%, 1); /* Yellow */
+  --chart-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */
+  --chart-point-bg-color: hsla(355, 85%, 45%, 1); /* Red */
+  --chart-point-border-color: hsla(355, 85%, 45%, 1); /* Red */
+  --chart-point-hover-bg-color: hsla(355, 85%, 45%, 1); /* Red */
+  --chart-point-hover-border-color: hsla(355, 85%, 45%, 1); /* Red */
+  --chart-hover-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */
+  --chart-hover-border-color: hsla(53, 98%, 65%, 1); /* Yellow */
+
+  /* Navigation Colors */
+  --nav-text-color: hsl(355, 85%, 45%); /* Red for navigation text */
+  --nav-hover-bg-color: hsl(53, 100%, 90%); /* Lighter yellow for hover */
+  --nav-active-bg-color: hsl(355, 85%, 45%); /* Red for active background */
+  --nav-active-text-color: hsl(53, 98%, 65%); /* Yellow for active text */
 }

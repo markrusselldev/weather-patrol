@@ -1,0 +1,71 @@
+/* theme/denim.css */
+:root {
+  /* Main Colors */
+  --background-color: hsl(210, 30%, 95%); /* Light wash denim */
+  --text-color: hsl(210, 30%, 20%); /* Dark wash denim */
+  --svg-color: hsla(210, 50%, 50%, 0.5); /* Medium blue denim */
+
+  /* Button Colors */
+  --button-bg-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --button-hover-bg-color: hsl(210, 30%, 30%); /* Slightly lighter dark wash */
+  --button-active-bg-color: hsl(210, 30%, 40%); /* Medium blue denim */
+  --button-text-color: hsl(0, 0%, 100%); /* White */
+  --button-border: 1px solid hsl(210, 30%, 30%); /* Slightly lighter dark wash */
+
+  /* Header Colors */
+  --header-bg-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --header-text-color: hsl(0, 0%, 100%); /* White */
+
+  /* Breadcrumb and Label Colors */
+  --breadcrumb-text-color: hsl(210, 20%, 50%); /* Mid-tone denim */
+  --label-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+
+  /* Dropdown Colors */
+  --dropdown-bg-color: hsl(0, 0%, 100%); /* White */
+  --dropdown-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --dropdown-border-color: hsl(210, 20%, 80%); /* Light grey denim */
+  --dropdown-hover-bg-color: hsl(210, 30%, 90%); /* Light wash denim */
+  --dropdown-active-bg-color: hsl(210, 20%, 70%); /* Light grey denim */
+
+  /* Card Colors */
+  --card-header-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --card-body-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --card-background-color: hsl(210, 30%, 80%); /* Light blue denim */
+
+  /* Footer Colors */
+  --footer-bg-color: hsl(210, 30%, 20%); /* Dark wash denim */
+  --footer-text-color: hsl(0, 0%, 100%); /* White */
+
+  /* Placeholder Colors */
+  --placeholder-bg-color: hsl(210, 30%, 95%); /* Light wash denim */
+  --placeholder-border-color: hsl(210, 20%, 80%); /* Light grey denim */
+  --placeholder-text-color: hsl(210, 20%, 50%); /* Mid-tone denim */
+
+  /* Table Colors */
+  --table-border-color: hsl(210, 20%, 85%); /* Light grey denim */
+  --table-th-bg-color: hsl(210, 30%, 80%); /* Light blue denim */
+  --table-th-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --table-td-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
+  --table-row-alt-bg-color: hsl(210, 30%, 90%); /* Light wash denim */
+
+  /* Data Container Text Color */
+  --data-text-color: hsl(210, 30%, 35%); /* Dark grey denim */
+
+  /* <hr/> color */
+  --hr-color: hsl(210, 40%, 70%); /* Medium blue denim */
+
+  /* Scrollbar Colors */
+  --scrollbar-bg-color: hsl(210, 20%, 90%); /* Light grey denim */
+  --scrollbar-thumb-color: hsl(210, 20%, 50%); /* Mid-tone denim */
+  --scrollbar-thumb-hover-color: hsl(210, 20%, 60%); /* Slightly lighter mid-tone denim */
+
+  /* AG Chart Colors */
+  --chart-line-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
+  --chart-bg-color: hsla(210, 50%, 50%, 0.2); /* Medium blue denim */
+  --chart-point-bg-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
+  --chart-point-border-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
+  --chart-point-hover-bg-color: hsla(210, 60%, 40%, 1); /* Darker blue denim */
+  --chart-point-hover-border-color: hsla(210, 60%, 40%, 1); /* Darker blue denim */
+  --chart-hover-bg-color: hsla(210, 50%, 50%, 0.2); /* Medium blue denim */
+  --chart-hover-border-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
+}

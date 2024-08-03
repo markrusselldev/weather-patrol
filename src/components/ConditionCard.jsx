@@ -4,14 +4,10 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { WiWindDeg } from "react-icons/wi";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
+import { getCssVariable } from "../utils/utils";
 
 // Registering ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Get CSS variable with default fallback
-function getCssVariable(varName, fallback) {
-  return getComputedStyle(document.documentElement).getPropertyValue(varName) || fallback;
-}
 
 // Function to generate chart data
 const generateChartData = (data, title, pastTimestamps) => ({
@@ -85,9 +81,10 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   const cardBackgroundColor = getCssVariable("--card-background-color", "#d4dce3");
   const cardHeaderTextColor = getCssVariable("--card-header-text-color", "#5a5a5a");
   const cardBodyTextColor = getCssVariable("--card-body-text-color", "#5a5a5a");
+  const cardBorder = getCssVariable("--card-border", "1px solid #ccc");
 
   return (
-    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg" style={{ backgroundColor: cardBackgroundColor, color: cardBodyTextColor }}>
+    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg" style={{ backgroundColor: cardBackgroundColor, color: cardBodyTextColor, border: cardBorder }}>
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />

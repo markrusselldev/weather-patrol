@@ -1,62 +1,71 @@
 /* theme/dark.css */
 :root {
   /* Main Colors */
-  --background-color: #1a1a1a;
-  --text-color: #e0e0e0;
-  --svg-color: #cccccc;
+  --background-color: hsl(0, 0%, 10%);
+  --text-color: hsl(0, 0%, 88%);
+  --svg-color: hsl(0, 0%, 80%);
 
   /* Button Colors */
-  --button-bg-color: #9f2323;
-  --button-hover-bg-color: #c92a2a;
-  --button-active-bg-color: #f23030;
-  --button-text-color: #ffffff;
-  --button-border: 1px solid #9f2323;
+  --button-bg-color: hsl(0, 78%, 38%);
+  --button-hover-bg-color: hsl(0, 74%, 44%);
+  --button-active-bg-color: hsl(0, 89%, 50%);
+  --button-text-color: hsl(0, 0%, 100%);
+  --button-border: 1px solid hsl(0, 78%, 38%);
 
   /* Header Colors */
-  --header-bg-color: #333333;
-  --header-text-color: #ffffff;
+  --header-bg-color: hsl(0, 0%, 20%);
+  --header-text-color: hsl(0, 0%, 100%);
 
   /* Breadcrumb and Label Colors */
-  --breadcrumb-text-color: #b0b0b0;
-  --label-text-color: #f23030;
+  --breadcrumb-text-color: hsl(0, 0%, 69%);
+  --label-text-color: hsl(0, 89%, 50%);
 
   /* Dropdown Colors */
-  --dropdown-bg-color: #2a2a2a;
-  --dropdown-text-color: #e0e0e0;
-  --dropdown-border-color: #444444;
-  --dropdown-hover-bg-color: #3a3a3a;
-  --dropdown-active-bg-color: #4a4a4a;
+  --dropdown-bg-color: hsl(0, 0%, 16%);
+  --dropdown-text-color: hsl(0, 0%, 88%);
+  --dropdown-border-color: hsl(0, 0%, 27%);
+  --dropdown-hover-bg-color: hsl(0, 0%, 22%);
+  --dropdown-active-bg-color: hsl(0, 0%, 29%);
 
-  /* Grid Item Colors */
-  --grid-item-header-color: #cccccc;
-  --grid-item-bg-color: #2a2a2a;
-  --grid-item-hover-transform: translateY(-0.3125rem);
+  /* Card Colors */
+  --card-header-text-color: hsl(0, 0%, 80%);
+  --card-body-text-color: hsl(0, 0%, 80%);
+  --card-background-color: hsl(0, 0%, 16%);
 
   /* Footer Colors */
-  --footer-bg-color: #1a1a1a;
-  --footer-text-color: #e0e0e0;
+  --footer-bg-color: hsl(0, 0%, 10%);
+  --footer-text-color: hsl(0, 0%, 88%);
 
   /* Placeholder Colors */
-  --placeholder-bg-color: #2a2a2a;
-  --placeholder-border-color: #444444;
-  --placeholder-text-color: #b0b0b0;
+  --placeholder-bg-color: hsl(0, 0%, 16%);
+  --placeholder-border-color: hsl(0, 0%, 27%);
+  --placeholder-text-color: hsl(0, 0%, 69%);
 
   /* Table Colors */
-  --table-border-color: #444444;
-  --table-th-bg-color: #333333;
-  --table-th-text-color: #e0e0e0;
-  --table-th-padding: 0.5rem;
-  --table-th-td-text-color: #e0e0e0;
-  --table-row-alt-bg-color: #2a2a2a;
+  --table-border-color: hsl(0, 0%, 27%);
+  --table-th-bg-color: hsl(0, 0%, 20%);
+  --table-th-text-color: hsl(0, 0%, 88%);
+  --table-td-text-color: hsl(0, 0%, 88%);
+  --table-row-alt-bg-color: hsl(0, 0%, 16%);
 
   /* Data Container Text Color */
-  --data-text-color: #cccccc;
+  --data-text-color: hsl(0, 0%, 80%);
 
   /* <hr/> color */
-  --hr-color: #444444;
+  --hr-color: hsl(0, 0%, 27%);
 
   /* Scrollbar Colors */
-  --scrollbar-bg-color: #333333;
-  --scrollbar-thumb-color: #555555;
-  --scrollbar-thumb-hover-color: #777777;
+  --scrollbar-bg-color: hsl(0, 0%, 20%);
+  --scrollbar-thumb-color: hsl(0, 0%, 33%);
+  --scrollbar-thumb-hover-color: hsl(0, 0%, 47%);
+
+  /* AG Chart Colors */
+  --chart-line-color: hsla(0, 0%, 80%, 1);
+  --chart-bg-color: hsla(0, 0%, 80%, 0.2);
+  --chart-point-bg-color: hsla(0, 0%, 80%, 1);
+  --chart-point-border-color: hsla(0, 0%, 80%, 1);
+  --chart-point-hover-bg-color: hsla(0, 100%, 63%, 1);
+  --chart-point-hover-border-color: hsla(0, 100%, 63%, 1);
+  --chart-hover-bg-color: hsla(0, 0%, 80%, 0.2);
+  --chart-hover-border-color: hsla(0, 0%, 80%, 1);
 }

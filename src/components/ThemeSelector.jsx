@@ -14,6 +14,7 @@ const ThemeSelector = () => {
   return (
     <select value={theme} onChange={handleThemeChange} className="p-2 bg-white border rounded text-black">
       <option value="casual">Casual</option>
+      <option value="denim">Denim</option>
       <option value="dark">Dark</option>
       <option value="darkblue">Dark Blue</option>
       <option value="greyscale">Greyscale</option>
