@@ -1,71 +1,81 @@
 /* theme/dark.css */
 :root {
   /* Main Colors */
-  --background-color: hsl(0, 0%, 10%);
-  --text-color: hsl(0, 0%, 88%);
-  --svg-color: hsl(0, 0%, 80%);
+  --background-color: hsl(0, 0%, 10%); /* Dark grey background */
+  --text-color: hsl(53, 98%, 75%); /* Light yellow text for readability */
+  --svg-color: hsla(53, 98%, 75%, 0.5); /* Light yellow for SVGs */
 
-  /* Button Colors */
-  --button-bg-color: hsl(0, 78%, 38%);
-  --button-hover-bg-color: hsl(0, 74%, 44%);
-  --button-active-bg-color: hsl(0, 89%, 50%);
-  --button-text-color: hsl(0, 0%, 100%);
-  --button-border: 1px solid hsl(0, 78%, 38%);
+  /* Navigation and Button Colors */
+  --button-bg-color: hsl(0, 0%, 10%); /* Dark grey background */
+  --button-hover-bg-color: hsl(0, 74%, 44%); /* Slightly lighter red */
+  --button-active-bg-color: hsl(0, 89%, 50%); /* Brighter red */
+  --button-text-color: hsl(53, 98%, 85%); /* Very light yellow */
+  --button-active-text-color: hsl(53, 98%, 65%); /* Yellow for active button text */
+  --button-border-color: hsl(0, 78%, 38%); /* Red border */
+
+  /* Nav Colors */
+  --nav-bg-color: hsl(0, 0%, 10%); /* Dark grey background */
+  --nav-hover-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey for hover */
+  --nav-border-color: hsl(0, 0%, 30%); /* Darker grey border */
 
   /* Header Colors */
-  --header-bg-color: hsl(0, 0%, 20%);
-  --header-text-color: hsl(0, 0%, 100%);
+  --header-bg-color: hsl(0, 0%, 15%); /* Dark grey background */
+  --header-text-color: hsl(53, 98%, 75%); /* Light yellow */
 
   /* Breadcrumb and Label Colors */
-  --breadcrumb-text-color: hsl(0, 0%, 69%);
-  --label-text-color: hsl(0, 89%, 50%);
+  --breadcrumb-text-color: hsl(0, 0%, 60%); /* Medium grey */
+  --label-text-color: hsl(53, 98%, 75%); /* Light yellow */
 
   /* Dropdown Colors */
-  --dropdown-bg-color: hsl(0, 0%, 16%);
-  --dropdown-text-color: hsl(0, 0%, 88%);
-  --dropdown-border-color: hsl(0, 0%, 27%);
-  --dropdown-hover-bg-color: hsl(0, 0%, 22%);
-  --dropdown-active-bg-color: hsl(0, 0%, 29%);
+  --dropdown-bg-color: hsl(0, 0%, 20%); /* Dark grey background */
+  --dropdown-text-color: hsl(53, 98%, 75%); /* Light yellow */
+  --dropdown-border-color: hsl(0, 0%, 30%); /* Darker grey */
+  --dropdown-hover-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey */
+  --dropdown-active-bg-color: hsl(0, 0%, 30%); /* Darker grey */
 
   /* Card Colors */
-  --card-header-text-color: hsl(0, 0%, 80%);
-  --card-body-text-color: hsl(0, 0%, 80%);
-  --card-background-color: hsl(0, 0%, 16%);
+  --card-header-text-color: hsl(53, 98%, 85%); /* Very light yellow */
+  --card-body-text-color: hsl(53, 98%, 75%); /* Light yellow */
+  --card-background-color: hsl(0, 0%, 15%); /* Dark grey background */
+  --card-border: 1px solid hsl(0, 0%, 30%); /* Darker grey border */
 
   /* Footer Colors */
-  --footer-bg-color: hsl(0, 0%, 10%);
-  --footer-text-color: hsl(0, 0%, 88%);
+  --footer-bg-color: hsl(0, 0%, 15%); /* Dark grey background */
+  --footer-text-color: hsl(53, 98%, 75%); /* Light yellow */
 
   /* Placeholder Colors */
-  --placeholder-bg-color: hsl(0, 0%, 16%);
-  --placeholder-border-color: hsl(0, 0%, 27%);
-  --placeholder-text-color: hsl(0, 0%, 69%);
+  --placeholder-bg-color: hsl(0, 0%, 20%); /* Dark grey background */
+  --placeholder-border-color: hsl(0, 0%, 30%); /* Darker grey */
+  --placeholder-text-color: hsl(53, 98%, 65%); /* Medium yellow */
 
   /* Table Colors */
-  --table-border-color: hsl(0, 0%, 27%);
-  --table-th-bg-color: hsl(0, 0%, 20%);
-  --table-th-text-color: hsl(0, 0%, 88%);
-  --table-td-text-color: hsl(0, 0%, 88%);
-  --table-row-alt-bg-color: hsl(0, 0%, 16%);
+  --table-border-color: hsl(0, 0%, 30%); /* Darker grey */
+  --table-th-bg-color: hsl(0, 0%, 20%); /* Dark grey background */
+  --table-th-text-color: hsl(53, 98%, 75%); /* Light yellow */
+  --table-td-text-color: hsl(53, 98%, 75%); /* Light yellow */
+  --table-row-alt-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey */
 
   /* Data Container Text Color */
-  --data-text-color: hsl(0, 0%, 80%);
+  --data-text-color: hsl(53, 98%, 75%); /* Light yellow */
 
   /* <hr/> color */
-  --hr-color: hsl(0, 0%, 27%);
+  --hr-color: hsl(0, 0%, 30%); /* Darker grey */
 
   /* Scrollbar Colors */
-  --scrollbar-bg-color: hsl(0, 0%, 20%);
-  --scrollbar-thumb-color: hsl(0, 0%, 33%);
-  --scrollbar-thumb-hover-color: hsl(0, 0%, 47%);
+  --scrollbar-bg-color: hsl(0, 0%, 25%); /* Dark grey */
+  --scrollbar-thumb-color: hsl(0, 0%, 40%); /* Medium grey */
+  --scrollbar-thumb-hover-color: hsl(0, 0%, 50%); /* Light grey */
+  --scrollbar-width: 12px; /* Scrollbar width */
+  --scrollbar-thumb-border-radius: 10px; /* Scrollbar thumb border radius */
+  --scrollbar-thumb-border: 3px solid hsl(0, 0%, 25%); /* Thumb border */
 
-  /* AG Chart Colors */
-  --chart-line-color: hsla(0, 0%, 80%, 1);
-  --chart-bg-color: hsla(0, 0%, 80%, 0.2);
-  --chart-point-bg-color: hsla(0, 0%, 80%, 1);
-  --chart-point-border-color: hsla(0, 0%, 80%, 1);
-  --chart-point-hover-bg-color: hsla(0, 100%, 63%, 1);
-  --chart-point-hover-border-color: hsla(0, 100%, 63%, 1);
-  --chart-hover-bg-color: hsla(0, 0%, 80%, 0.2);
-  --chart-hover-border-color: hsla(0, 0%, 80%, 1);
+  /* Chart Colors */
+  --chart-line-color: hsla(0, 100%, 50%, 1); /* Red (#ed1429) */
+  --chart-bg-color: hsla(0, 100%, 50%, 0.2); /* Transparent red */
+  --chart-point-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-point-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-point-hover-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-point-hover-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-hover-bg-color: hsla(0, 100%, 50%, 0.2); /* Transparent red */
+  --chart-hover-border-color: hsla(0, 100%, 50%, 1); /* Red (#ed1429) */
 }

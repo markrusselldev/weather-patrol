@@ -40,11 +40,12 @@ export const formatTimestamp = (timestamp, { showTime = true, showDate = true } 
 /**
  * Get CSS variable with default fallback.
  * @param {string} varName - The name of the CSS variable.
- * @param {string} fallback - The fallback value if the variable is not found.
+ * @param {string} [fallback] - The fallback value if the variable is not found.
  * @returns {string} The value of the CSS variable or the fallback.
  */
-export const getCssVariable = (varName, fallback) => {
-  const value = getComputedStyle(document.documentElement).getPropertyValue(varName) || fallback;
-  log.debug({ function: "getCssVariable" }, `Fetching CSS variable: ${varName}, value: ${value}`);
-  return value;
+export const getCssVariable = (varName, fallback = "") => {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  const finalValue = value || fallback;
+  log.debug({ function: "getCssVariable" }, `Fetching CSS variable: ${varName}, value: ${finalValue}`);
+  return finalValue;
 };

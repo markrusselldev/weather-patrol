@@ -5,13 +5,18 @@
   --text-color: hsl(0, 0%, 20%); /* Dark grey for text */
   --svg-color: hsl(0, 0%, 40%); /* Medium grey for SVGs */
 
-  /* Button Colors */
-  --button-bg-color: hsl(53, 98%, 65%); /* Primary color #fee432 */
+  /* Navigation and Button Colors */
+  --button-bg-color: hsl(53, 100%, 85%);
   --button-hover-bg-color: hsl(53, 88%, 50%); /* Deeper yellow than primary */
   --button-active-bg-color: hsl(355, 85%, 45%); /* Red */
   --button-text-color: hsl(0, 0%, 20%); /* Dark grey */
   --button-active-text-color: hsl(53, 98%, 65%); /* Yellow for active button text */
-  --button-border: 1px solid hsl(53, 98%, 65%); /* Primary color */
+  --button-border-color: hsl(53, 98%, 65%); /* Primary color */
+
+  /* Nav Colors */
+  --nav-bg-color: hsl(53, 100%, 85%);
+  --nav-hover-bg-color: hsl(53, 100%, 75%); /* Darker yellow for hover */
+  --nav-border-color: hsl(0, 0%, 85%); /* Light grey border */
 
   /* Header Colors */
   --header-bg-color: hsl(0, 0%, 100%); /* White */
@@ -32,10 +37,10 @@
   --card-header-text-color: hsl(0, 0%, 20%); /* Dark grey */
   --card-body-text-color: hsl(0, 0%, 20%); /* Dark grey */
   --card-background-color: hsl(0, 0%, 100%); /* White */
-  --card-border: 1px solid hsl(0, 0%, 85%); /* Light grey */
+  --card-border-color: hsl(0, 0%, 85%); /* Light grey */
 
   /* Footer Colors */
-  --footer-bg-color: hsl(0, 0%, 80%); /* Light grey */
+  --footer-bg-color: hsl(53, 100%, 90%); /* Lightest yellow */
   --footer-text-color: hsl(0, 0%, 20%); /* Dark grey */
 
   /* Placeholder Colors */
@@ -58,10 +63,13 @@
 
   /* Scrollbar Colors */
   --scrollbar-bg-color: hsl(0, 0%, 90%); /* Very light grey */
-  --scrollbar-thumb-color: hsl(0, 0%, 60%); /* Light grey */
-  --scrollbar-thumb-hover-color: hsl(0, 0%, 50%); /* Slightly darker grey */
+  --scrollbar-thumb-color: hsl(0, 0%, 70%); /* Light grey */
+  --scrollbar-thumb-hover-color: hsl(0, 0%, 60%); /* Medium grey */
+  --scrollbar-width: 12px; /* Scrollbar width */
+  --scrollbar-thumb-border-radius: 10px; /* Scrollbar thumb border radius */
+  --scrollbar-thumb-border: 3px solid hsl(0, 0%, 90%); /* Thumb border for better appearance */
 
-  /* AG Chart Colors */
+  /* Chart Colors */
   --chart-line-color: hsla(53, 98%, 65%, 1); /* Yellow */
   --chart-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */
   --chart-point-bg-color: hsla(355, 85%, 45%, 1); /* Red */
@@ -70,10 +78,4 @@
   --chart-point-hover-border-color: hsla(355, 85%, 45%, 1); /* Red */
   --chart-hover-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */
   --chart-hover-border-color: hsla(53, 98%, 65%, 1); /* Yellow */
-
-  /* Navigation Colors */
-  --nav-text-color: hsl(355, 85%, 45%); /* Red for navigation text */
-  --nav-hover-bg-color: hsl(53, 100%, 90%); /* Lighter yellow for hover */
-  --nav-active-bg-color: hsl(355, 85%, 45%); /* Red for active background */
-  --nav-active-text-color: hsl(53, 98%, 65%); /* Yellow for active text */
 }

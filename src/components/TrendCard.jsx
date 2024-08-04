@@ -60,18 +60,13 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
     };
   }, [title]);
 
-  // Fetch CSS variables to use in styles
-  const cardBackgroundColor = getCssVariable("--card-background-color", "#d4dce3");
-  const cardHeaderTextColor = getCssVariable("--card-header-text-color", "#5a5a5a");
-  const cardBodyTextColor = getCssVariable("--card-body-text-color", "#5a5a5a");
-
   return (
-    <div className="bg-card-bg-color p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg text-card-body-text-color" style={{ backgroundColor: cardBackgroundColor, color: cardBodyTextColor }}>
+    <div className="bg-cardBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg text-cardBodyText border-cardBorder">
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />
         </div>
-        <div className="flex-grow text-xl flex justify-center text-card-header-color" style={{ flex: "1 1 auto", color: cardHeaderTextColor }}>
+        <div className="flex-grow text-xl flex justify-center text-cardHeaderText" style={{ flex: "1 1 auto" }}>
           {title}
         </div>
         <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>

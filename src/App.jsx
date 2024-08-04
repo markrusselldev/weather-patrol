@@ -27,16 +27,7 @@ const useBreadcrumbConfig = () => {
 };
 
 const App = () => {
-  // State to manage the theme
-  const [theme, setTheme] = useState("casual");
   const [timeframe, setTimeframe] = useState("3hr");
-
-  // Handle theme change
-  const handleThemeChange = event => {
-    const newTheme = event.target.value;
-    log.info({ page: "App", component: "App", func: "handleThemeChange" }, "Theme changed to:", newTheme);
-    setTheme(newTheme);
-  };
 
   // Handle timeframe change
   const handleTimeframeChange = event => {
@@ -70,7 +61,7 @@ const App = () => {
               </Routes>
             </main>
             {/* Footer component with theme selector */}
-            <Footer theme={theme} onThemeChange={handleThemeChange} />
+            <Footer />
           </div>
         </Router>
       </ErrorBoundary>

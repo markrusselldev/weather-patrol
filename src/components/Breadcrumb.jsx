@@ -21,13 +21,13 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
     <div className="breadcrumb flex justify-between items-center pt-4 px-4 text-sm text-breadcrumbText w-full h-12">
       <div className="flex items-center">
         {/* Conditionally render the icon */}
-        {Icon && <Icon className="mr-2" />}
+        {Icon && <Icon className="mr-2 text-svg" />}
         {title}
       </div>
       <div className="flex grow justify-end items-center">
-        <FaClock className="mr-2" />
+        <FaClock className="mr-2 text-svg" />
         Last Update: {formattedTimestamp || "Loading..."}
-        {timeframeSelector && <FaCalendarAlt className="mx-2" />}
+        {timeframeSelector && <FaCalendarAlt className="mx-2 text-svg" />}
       </div>
       {timeframeSelector && <div className="flex shrink items-center">{timeframeSelector}</div>}
     </div>

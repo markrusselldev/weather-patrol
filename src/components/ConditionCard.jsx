@@ -77,19 +77,13 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
 
   log.debug({ page: "ConditionCard", component: "ConditionCard", func: "render" }, `Generating chart data for ${title}`, { data, pastTimestamps });
 
-  // Fetch CSS variables to use in styles
-  const cardBackgroundColor = getCssVariable("--card-background-color", "#d4dce3");
-  const cardHeaderTextColor = getCssVariable("--card-header-text-color", "#5a5a5a");
-  const cardBodyTextColor = getCssVariable("--card-body-text-color", "#5a5a5a");
-  const cardBorder = getCssVariable("--card-border", "1px solid #ccc");
-
   return (
-    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg" style={{ backgroundColor: cardBackgroundColor, color: cardBodyTextColor, border: cardBorder }}>
+    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-md bg-cardBg text-cardBodyText border-cardBorder">
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />
         </div>
-        <div className="flex-grow text-xl flex justify-center cardHeaderTextColor" style={{ flex: "1 1 auto", color: cardHeaderTextColor }}>
+        <div className="flex-grow text-xl flex justify-center text-cardHeaderText" style={{ flex: "1 1 auto" }}>
           {title}
         </div>
         <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>
@@ -97,24 +91,22 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       <hr className="border-hrColor" />
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
-        <div className="flex-grow text-6xl flex justify-center" style={{ flex: "1 1 auto", color: "var(--data-text-color)" }}>
+        <div className="flex-grow text-6xl flex justify-center text-dataText" style={{ flex: "1 1 auto" }}>
           {data[data.length - 1]}
-          <span className="text-2xl align-top" style={{ color: "var(--data-text-color)" }}>
-            {unit}
-          </span>
+          <span className="text-2xl align-top text-dataText">{unit}</span>
         </div>
         {showMinMax ? (
           <div className="flex-shrink-0 w-16 flex flex-col items-start" style={{ flex: "0 0 4rem" }}>
             <div className="flex items-center">
               <span className="text-xs text-breadcrumbText mr-1">Hi</span>{" "}
-              <span className="text-sm" style={{ color: "var(--data-text-color)" }}>
+              <span className="text-sm text-dataText">
                 {max}
                 {unit}
               </span>
             </div>
             <div className="flex items-center">
               <span className="text-xs text-breadcrumbText mr-1">Lo</span>{" "}
-              <span className="text-sm" style={{ color: "var(--data-text-color)" }}>
+              <span className="text-sm text-dataText">
                 {min}
                 {unit}
               </span>
@@ -126,9 +118,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
               <span className="text-xs text-breadcrumbText mr-1">
                 <WiWindDeg className="text-2xl" style={{ transform: `rotate(${data[data.length - 1]}deg)` }} />
               </span>{" "}
-              <span className="text-sm" style={{ color: "var(--data-text-color)" }}>
-                {cardinalDirection}
-              </span>
+              <span className="text-sm text-dataText">{cardinalDirection}</span>
             </div>
           </div>
         ) : (
@@ -139,7 +129,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       <div className="grid grid-cols-4 gap-2 mb-2">
         {data.slice(0, -1).map((value, index) => (
           <div key={index} className="flex flex-col items-center">
-            <span className="text-sm" style={{ color: "var(--data-text-color)" }}>
+            <span className="text-sm text-dataText">
               {value}
               {unit}
             </span>
