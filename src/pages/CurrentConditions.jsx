@@ -24,16 +24,16 @@ const CurrentConditions = () => {
 
   // Effect to set the latest and past data when weatherData changes
   useEffect(() => {
-    log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "Effect triggered: weatherData changed", weatherData);
+    log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "Effect triggered: weatherData changed", weatherData);
 
     // Log the structure and length of weatherData
     if (weatherData) {
-      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData structure", JSON.stringify(weatherData, null, 2));
-      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData length", weatherData.length);
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "weatherData structure", JSON.stringify(weatherData, null, 2));
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "weatherData length", weatherData.length);
     }
 
     if (weatherData && weatherData.length > 0) {
-      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "weatherData is available, setting latest and past data");
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "weatherData is available, setting latest and past data");
       setLatestData(weatherData[0]);
 
       // Ensure there are at least 5 records for past data
@@ -41,46 +41,59 @@ const CurrentConditions = () => {
       const sortedPastData = weatherData.slice(1, 1 + pastRecordsCount).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
       setPastData(sortedPastData);
 
-      log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "Latest data and past data set successfully", {
+      log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "Latest data and past data set successfully", {
         latestData: weatherData[0],
         pastData: sortedPastData
       });
 
       // Log the content and length of pastData
-      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "pastData content", JSON.stringify(sortedPastData, null, 2));
-      log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "pastData length", sortedPastData.length);
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "pastData content", JSON.stringify(sortedPastData, null, 2));
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "pastData length", sortedPastData.length);
     } else {
-      log.warn({ page: "CurrentConditions", component: "CurrentConditions", func: "useEffect" }, "No weatherData available to set latest and past data");
+      log.warn({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "useEffect" }, "No weatherData available to set latest and past data");
+      setLatestData(null); // Set latestData to null to avoid using stale data
+      setPastData([]); // Clear pastData
     }
   }, [weatherData]);
 
   // Handle errors by displaying an error message
   if (error) {
-    log.error({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Error in CurrentConditions component:", error);
+    log.error({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Error in CurrentConditions component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
   // Display loading message if latestData is not yet available
   if (!latestData) {
-    log.info({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Loading latest data...");
+    log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Loading latest data...");
     return <div>Loading...</div>;
   }
 
   // Create an array of data for a specific key, ensuring the latest data is at the end
   const createDataArray = key => {
     if (!latestData[key]) {
-      log.warn({ page: "CurrentConditions", component: "CurrentConditions", func: "createDataArray" }, `No data available for key: ${key}`);
+      log.warn({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createDataArray" }, `No data available for key: ${key}`);
       return [null];
     }
     const dataArray = [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
-    log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "createDataArray" }, `Data array for ${key}:`, dataArray);
+    log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createDataArray" }, `Data array for ${key}:`, dataArray);
     return dataArray;
   };
 
   // Create an array of past timestamps
   const createPastTimestampsArray = () => {
-    const timestampsArray = pastData.map(row => formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false, page: "CurrentConditions", component: "CurrentConditions", func: "createPastTimestampsArray" }));
-    log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "createPastTimestampsArray" }, "Past timestamps array:", timestampsArray);
+    const timestampsArray = pastData.map(row => {
+      if (!row.TIMESTAMP) {
+        log.error({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createPastTimestampsArray" }, `Missing TIMESTAMP in data row: ${JSON.stringify(row)}`);
+        return "Invalid timestamp";
+      }
+      log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createPastTimestampsArray" }, "Processing TIMESTAMP:", row.TIMESTAMP);
+      const formattedTimestamp = formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false });
+      if (formattedTimestamp === "Invalid timestamp") {
+        log.error({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createPastTimestampsArray" }, `Invalid timestamp detected: ${row.TIMESTAMP}`);
+      }
+      return formattedTimestamp;
+    });
+    log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "createPastTimestampsArray" }, "Past timestamps array:", timestampsArray);
     return timestampsArray;
   };
 
@@ -103,15 +116,15 @@ const CurrentConditions = () => {
   const pastTimestamps = createPastTimestampsArray();
   const windDirectionCardinal = getCardinalDirection(latestData.WindDir);
 
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Past timestamps:", pastTimestamps);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for temperature:", data.temperature);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind speed:", data.windSpeed);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind direction:", data.windDirection);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for wind chill:", data.windChill);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for humidity:", data.humidity);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for dew point:", data.dewPoint);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for pressure:", data.pressure);
-  log.debug({ page: "CurrentConditions", component: "CurrentConditions", func: "render" }, "Data for battery voltage:", data.batteryVoltage);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Past timestamps:", pastTimestamps);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for temperature:", data.temperature);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for wind speed:", data.windSpeed);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for wind direction:", data.windDirection);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for wind chill:", data.windChill);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for humidity:", data.humidity);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for dew point:", data.dewPoint);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for pressure:", data.pressure);
+  log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Data for battery voltage:", data.batteryVoltage);
 
   return (
     <section className="weather-conditions flex flex-col flex-grow">

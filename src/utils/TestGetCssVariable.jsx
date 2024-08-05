@@ -1,9 +1,9 @@
-// src/utils/CssVariableTestComponent.jsx
-import React, { useEffect } from "react";
+// src/utils/TestGetCssVariable.jsx
+import { useEffect } from "react";
 import { getCssVariable } from "./utils";
 import log from "./logger";
 
-const CssVariableTestComponent = () => {
+const TestGetCssVariable = () => {
   useEffect(() => {
     const activeBgColor = getCssVariable("--button-active-bg-color", "hsl(355, 85%, 45%)");
     const activeTextColor = getCssVariable("--button-active-text-color", "hsl(53, 98%, 65%)");
@@ -21,4 +21,4 @@ const CssVariableTestComponent = () => {
   return <div>Check console for CSS variable values</div>;
 };
 
-export default CssVariableTestComponent;
+export default TestGetCssVariable;

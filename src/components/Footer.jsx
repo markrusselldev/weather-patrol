@@ -19,6 +19,7 @@ const Footer = () => {
     <footer className="w-full bg-footerBg text-footerText flex justify-between p-4 text-xs h-footer">
       <div className="flex items-center p-2">Environment: {formattedEnvironmentInfo}</div>
       <div className="flex items-center justify-end text-right">
+        Theme:&nbsp;&nbsp;
         <ThemeSelector />
       </div>
     </footer>

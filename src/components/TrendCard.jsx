@@ -1,32 +1,37 @@
-import { useEffect, useRef, memo } from "react";
+import { useEffect, useRef, memo, useState } from "react";
 import PropTypes from "prop-types";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from "chart.js";
 import log from "../utils/logger";
-import { getCssVariable } from "../utils/utils";
+import errorHandler from "../utils/errorHandler";
+import useUpdateChartColors, { getChartColors } from "../hooks/useUpdateChartColors";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+// Register the necessary Chart.js components
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController);
 
-// Function to generate chart data
-const generateChartData = (labels, data, title) => ({
-  labels: labels,
-  datasets: [
-    {
-      label: title,
-      data: data,
-      fill: false,
-      backgroundColor: getCssVariable("--chart-bg-color", "rgba(75, 192, 192, 0.2)"),
-      borderColor: getCssVariable("--chart-line-color", "rgba(75, 192, 192, 1)"),
-      pointBackgroundColor: getCssVariable("--chart-point-bg-color", "rgba(75, 192, 192, 1)"),
-      pointBorderColor: getCssVariable("--chart-point-border-color", "rgba(75, 192, 192, 1)"),
-      pointHoverBackgroundColor: getCssVariable("--chart-point-hover-bg-color", "rgba(255, 99, 132, 1)"),
-      pointHoverBorderColor: getCssVariable("--chart-point-hover-border-color", "rgba(255, 99, 132, 1)"),
-      tension: 0.1,
-      hoverBackgroundColor: getCssVariable("--chart-hover-bg-color", "rgba(75, 192, 192, 0.2)"),
-      hoverBorderColor: getCssVariable("--chart-hover-border-color", "rgba(75, 192, 192, 1)")
-    }
-  ]
-});
+// Function to generate chart data with appropriate colors
+const generateChartData = (labels, data, title) => {
+  const colors = getChartColors();
+  log.debug({ page: "TrendCard", component: "TrendCard", func: "generateChartData" }, `colors: ${JSON.stringify(colors)}`);
+  return {
+    labels: labels,
+    datasets: [
+      {
+        label: title,
+        data: data,
+        fill: false,
+        backgroundColor: colors.backgroundColor,
+        borderColor: colors.borderColor,
+        pointBackgroundColor: colors.pointBackgroundColor,
+        pointBorderColor: colors.pointBorderColor,
+        pointHoverBackgroundColor: colors.pointHoverBackgroundColor,
+        pointHoverBorderColor: colors.pointHoverBorderColor,
+        tension: 0.1,
+        hoverBackgroundColor: colors.hoverBackgroundColor,
+        hoverBorderColor: colors.hoverBorderColor
+      }
+    ]
+  };
+};
 
 // Chart options
 const chartOptions = {
@@ -42,23 +47,58 @@ const chartOptions = {
   }
 };
 
-// TrendCard component
 const TrendCard = ({ title, icon: Icon, labels, data }) => {
-  const chartRef = useRef(null);
+  const chartRef = useRef(null); // Reference to the canvas element
+  const chartInstanceRef = useRef(null); // Reference to the Chart.js instance
+  const { updateChartColors } = useUpdateChartColors(chartInstanceRef); // Custom hook to update chart colors
+  const [isMounted, setIsMounted] = useState(false); // State to track if the component is mounted
 
-  // Effect to clean up chart instance on unmount
+  // Set isMounted to true when the component is mounted and false when it is unmounted
   useEffect(() => {
-    log.info({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, `Rendering TrendCard for ${title}`);
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
-    const currentChartRef = chartRef.current; // Copy ref to a variable
+  // Effect to create the chart when the component is mounted
+  useEffect(() => {
+    if (isMounted && chartRef.current) {
+      const ctx = chartRef.current.getContext("2d"); // Get 2D context from the canvas
+      if (ctx) {
+        if (chartInstanceRef.current) {
+          chartInstanceRef.current.destroy(); // Destroy the existing chart instance if it exists
+        }
+        try {
+          // Create a new chart instance
+          const newChartInstance = new ChartJS(ctx, {
+            type: "line",
+            data: generateChartData(labels, data, title),
+            options: chartOptions
+          });
+          chartInstanceRef.current = newChartInstance; // Save the new chart instance
+          updateChartColors(newChartInstance); // Update the chart colors
+          log.debug({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "Chart instance created and colors updated");
+        } catch (error) {
+          log.error(
+            { page: "TrendCard", component: "TrendCard", func: "useEffect" },
+            errorHandler(error) // Handle any errors during chart creation
+          );
+        }
+      } else {
+        log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "Failed to get 2D context from canvas element");
+      }
+    } else {
+      log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "chartRef is null or component is not mounted");
+    }
+  }, [isMounted, labels, data, title, updateChartColors]);
 
+  // Cleanup effect to destroy the chart instance when the component unmounts
+  useEffect(() => {
     return () => {
-      if (currentChartRef && currentChartRef.chartInstance) {
-        log.info({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, `Destroying chart instance for ${title}`);
-        currentChartRef.chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
-  }, [title]);
+  }, []);
 
   return (
     <div className="bg-cardBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg text-cardBodyText border-cardBorder">
@@ -71,21 +111,22 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
         </div>
         <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>
       </div>
-      <hr className="border-hrColor" />
-      <div className="h-48">
-        <Line ref={chartRef} data={generateChartData(labels, data, title)} options={chartOptions} />
+      <hr className="borde
+      r-hrColor" />
+      <div className="h-64">
+        <canvas ref={chartRef} /> {/* Canvas element for Chart.js */}
       </div>
     </div>
   );
 };
 
-// Prop validation for TrendCard component
 TrendCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  icon: PropTypes.elementType.isRequired,
-  labels: PropTypes.arrayOf(PropTypes.string).isRequired,
-  data: PropTypes.arrayOf(PropTypes.number).isRequired
+  title: PropTypes.string.isRequired, // Title for the trend card
+  icon: PropTypes.elementType.isRequired, // Icon component for the trend card
+  labels: PropTypes.arrayOf(PropTypes.string).isRequired, // Labels for the chart
+  data: PropTypes.arrayOf(PropTypes.number).isRequired // Data for the chart
 };
 
+// Memoize the component to avoid unnecessary re-renders
 const MemoizedTrendCard = memo(TrendCard);
 export default MemoizedTrendCard;

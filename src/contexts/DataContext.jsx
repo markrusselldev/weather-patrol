@@ -1,4 +1,3 @@
-// src/contexts/DataContext.jsx
 import { createContext, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { fetchWeatherData, subscribeToSSE } from "../services/dataService";
@@ -25,9 +24,11 @@ export const DataProvider = ({ children }) => {
           const columnDefs = headers.map(header => ({ headerName: header, field: header }));
           setWeatherData(data.data.rows);
           setColumnDefs(columnDefs);
-          setLatestTimestamp(data.data.rows[0]?.TIMESTAMP || null);
+          const initialTimestamp = data.data.rows[0]?.TIMESTAMP || null;
+          setLatestTimestamp(initialTimestamp);
           setEnvironmentInfo(data.environmentInfo || "Unknown"); // Set environment info from response
           log.info({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "Initial weather data fetched:", data.data.rows);
+          log.info({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "Initial latest timestamp set:", initialTimestamp);
         } else {
           log.warn({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "No data found in the initial fetch");
         }
@@ -63,6 +64,7 @@ export const DataProvider = ({ children }) => {
         const updatedData = [newData, ...prevData];
         setLatestTimestamp(newData.TIMESTAMP);
         log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated weather data with SSE:", newData);
+        log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated latest timestamp with SSE:", newData.TIMESTAMP);
         log.debug({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "New weatherData array:", updatedData);
         return updatedData;
       });
@@ -79,6 +81,13 @@ export const DataProvider = ({ children }) => {
       eventSource.close();
     };
   }, []);
+
+  // Log updates to latestTimestamp
+  useEffect(() => {
+    if (latestTimestamp) {
+      log.info({ page: "DataContext", component: "DataProvider", func: "useEffect" }, "latestTimestamp updated:", latestTimestamp);
+    }
+  }, [latestTimestamp]);
 
   return <DataContext.Provider value={{ weatherData, columnDefs, error, latestTimestamp, environmentInfo }}>{children}</DataContext.Provider>;
 };

@@ -60,8 +60,8 @@ module.exports = {
       },
       height: {
         header: "4rem",
-        nav: "3.5rem",
-        button: "2.95rem",
+        nav: "3.3rem",
+        button: "2.7rem",
         footer: "4rem"
       }
     }

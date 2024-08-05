@@ -6,7 +6,7 @@ import errorHandler from "../utils/errorHandler";
 const ThemeContext = createContext();
 
 const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "denim");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "");
 
   useEffect(() => {
     const applyTheme = newTheme => {

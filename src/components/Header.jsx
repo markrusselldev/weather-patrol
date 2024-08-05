@@ -13,10 +13,9 @@ const Header = ({ navigationItems }) => {
   };
 
   const navLinkStyle = ({ isActive }) =>
-    `block md:inline-flex items-center justify-center no-underline m-1.5 rounded-xl text-center transition-all 
+    `block md:inline-flex items-center justify-center no-underline m-1.5 rounded-full text-center transition-all h-button px-4 box-border 
     ${isActive ? "bg-buttonActiveBg text-buttonActiveText border-buttonBorder" : "bg-buttonBg text-buttonText border-buttonBorder"}
-    ${!isActive && "hover:bg-buttonHoverBg hover:border-buttonBorderHover"} 
-    h-button px-4 box-border`;
+    ${!isActive && "hover:bg-buttonHoverBg hover:border-buttonBorderHover"}`;
 
   const getIcon = label => {
     switch (label) {
@@ -34,7 +33,7 @@ const Header = ({ navigationItems }) => {
   return (
     <header className="w-full bg-headerBg text-headerText p-4 flex justify-between items-center sticky top-0 z-20 h-header shadow-md">
       <div className="flex items-center min-w-[11rem] flex-grow">
-        <img src="/images/weather-patrol-80s-bear.png" alt="Logo" className="w-10 h-10.5 mr-1" />
+        <img src="/images/weather-patrol-80s-bear.svg" alt="Logo" className="w-10 h-10.5 mr-1" />
         <div className="text-lg whitespace-nowrap">
           <img src="/images/weather-patrol-80s-text.gif" alt="Weather Patrol" className="w-15 h-10" />
         </div>
@@ -42,7 +41,7 @@ const Header = ({ navigationItems }) => {
       <button className="block md:hidden text-2xl cursor-pointer" onClick={toggleNav}>
         ☰
       </button>
-      <nav className={`flex-col md:flex-row md:flex ${isNavOpen ? "flex" : "hidden"} rounded-xl bg-navBg border-navBorder hover:bg-navHoverBg hover:border-navHoverBorder h-nav md:h-nav items-center w-full md:w-auto`}>
+      <nav className={`flex-col md:flex-row md:flex ${isNavOpen ? "flex" : "hidden"} rounded-full bg-navBg border-navBorder hover:bg-navHoverBg hover:border-navHoverBorder h-nav md:h-nav items-center w-full md:w-auto`}>
         <ul className="flex flex-col md:flex-row items-center w-full md:w-auto box-border">
           {navigationItems.map(item => (
             <li key={item.path} className="list-none">

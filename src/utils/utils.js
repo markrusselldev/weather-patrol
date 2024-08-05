@@ -11,8 +11,14 @@ import log from "../utils/logger";
  */
 export const formatTimestamp = (timestamp, { showTime = true, showDate = true } = {}) => {
   if (!timestamp) {
-    log.error("Error: Invalid timestamp provided.");
-    return "";
+    log.error({ page: "src/utils/utils.js", func: "formatTimestamp" }, "Error: No timestamp provided. Timestamp value:", timestamp);
+    return "Invalid timestamp";
+  }
+
+  const momentTimestamp = moment(timestamp);
+  if (!momentTimestamp.isValid()) {
+    log.error({ page: "src/utils/utils.js", func: "formatTimestamp" }, "Error: Invalid timestamp provided. Timestamp value:", timestamp);
+    return "Invalid timestamp";
   }
 
   let format = "";
@@ -24,17 +30,10 @@ export const formatTimestamp = (timestamp, { showTime = true, showDate = true } 
     format = "MM/DD/YY";
   } else {
     format = "YYYY-MM-DD HH:mm:ss"; // Default format if both showTime and showDate are false
-    log.warn("Warning: Neither showTime nor showDate is true. Defaulting to full timestamp format.");
+    log.warn({ page: "src/utils/utils.js", func: "formatTimestamp" }, "Warning: Neither showTime nor showDate is true. Defaulting to full timestamp format.");
   }
 
-  const formattedTimestamp = moment(timestamp).format(format);
-
-  if (formattedTimestamp === "Invalid date") {
-    log.error("Error: Invalid date format provided.");
-    return "";
-  }
-
-  return formattedTimestamp;
+  return momentTimestamp.format(format);
 };
 
 /**
@@ -46,6 +45,6 @@ export const formatTimestamp = (timestamp, { showTime = true, showDate = true } 
 export const getCssVariable = (varName, fallback = "") => {
   const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   const finalValue = value || fallback;
-  log.debug({ function: "getCssVariable" }, `Fetching CSS variable: ${varName}, value: ${finalValue}`);
+  log.debug({ page: "src/utils/utils.js", func: "getCssVariable" }, `Fetching CSS variable: ${varName}, value: ${finalValue}`);
   return finalValue;
 };

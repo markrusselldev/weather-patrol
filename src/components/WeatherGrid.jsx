@@ -8,6 +8,7 @@ import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 import { formatTimestamp } from "../utils/utils";
 
+// WeatherGrid Component
 const WeatherGrid = () => {
   const { columnDefs, weatherData, error } = useContext(DataContext);
   const gridRef = useRef(null);
