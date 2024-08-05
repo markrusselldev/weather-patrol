@@ -1,28 +1,28 @@
-import { useContext, memo } from "react";
+// src/pages/TOA5Data.jsx
+
+import { memo } from "react";
 import ErrorMessages from "../components/ErrorMessages";
 import WeatherGrid from "../components/WeatherGrid";
-import { DataContext } from "../contexts/DataContext";
+import useTOA5Data from "../hooks/useTOA5Data";
 import log from "../utils/logger";
-import errorHandler from "../utils/errorHandler";
 
 const TOA5Data = () => {
-  // Use DataContext to get weather data and error state
-  const { weatherData, error, columnDefs } = useContext(DataContext);
+  const { weatherData, columnDefs, processedError } = useTOA5Data();
 
-  // Log the current state for debugging
-  log.info({ page: "TOA5Data", component: "TOA5Data", func: "useContext" }, "TOA5Data weatherData:", weatherData);
-  log.info({ page: "TOA5Data", component: "TOA5Data", func: "useContext" }, "TOA5Data columnDefs:", columnDefs);
-  log.info({ page: "TOA5Data", component: "TOA5Data", func: "useContext" }, "TOA5Data error:", error);
-
-  // Process the error using errorHandler
-  const processedError = error ? errorHandler(error) : null;
+  if (processedError) {
+    log.error({ page: "src/pages/TOA5Data.jsx", component: "TOA5Data", func: "render" }, "Error in TOA5Data component:", processedError);
+    return <ErrorMessages message={processedError} />;
+  }
 
   return (
     <section className="toa5-data">
-      {/* Display error messages if any */}
-      {processedError ? <ErrorMessages message={processedError} /> : null}
-      {/* Display weather data in a grid */}
-      <div className="overflow-x-auto">{weatherData && columnDefs ? <WeatherGrid columnDefs={columnDefs} rowData={weatherData} /> : <div>No data available</div>}</div>
+      {weatherData && columnDefs.length > 0 ? (
+        <div className="overflow-x-auto">
+          <WeatherGrid columnDefs={columnDefs} rowData={weatherData} />
+        </div>
+      ) : (
+        <div>No data available</div>
+      )}
     </section>
   );
 };

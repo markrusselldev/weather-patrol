@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useState, useEffect, useRef, useMemo } from "react";
 import PropTypes from "prop-types";
 import { fetchWeatherData, subscribeToSSE } from "../services/dataService";
 import log from "../utils/logger";
@@ -11,22 +11,32 @@ export const DataProvider = ({ children }) => {
   const [columnDefs, setColumnDefs] = useState([]);
   const [error, setError] = useState(null);
   const [latestTimestamp, setLatestTimestamp] = useState(null);
-  const [environmentInfo, setEnvironmentInfo] = useState("Unknown"); // Add environmentInfo state
+  const [environmentInfo, setEnvironmentInfo] = useState("Unknown");
   const eventSourceRef = useRef(null);
+  const timestampsRef = useRef(new Set()); // Set to track existing timestamps
+  const initialFetchRef = useRef(true); // Flag to indicate initial fetch
 
   // Fetch initial weather data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchWeatherData();
-        if (data && data.data && data.data.rows) {
+        if (data?.data?.rows) {
           const headers = data.data.rows.length > 1 ? Object.keys(data.data.rows[1]) : [];
           const columnDefs = headers.map(header => ({ headerName: header, field: header }));
           setWeatherData(data.data.rows);
           setColumnDefs(columnDefs);
+
           const initialTimestamp = data.data.rows[0]?.TIMESTAMP || null;
           setLatestTimestamp(initialTimestamp);
-          setEnvironmentInfo(data.environmentInfo || "Unknown"); // Set environment info from response
+
+          // Reset and populate the timestamps Set with initial data
+          timestampsRef.current.clear();
+          data.data.rows.forEach(row => {
+            timestampsRef.current.add(row.TIMESTAMP);
+          });
+
+          setEnvironmentInfo(data.environmentInfo || "Unknown");
           log.info({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "Initial weather data fetched:", data.data.rows);
           log.info({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "Initial latest timestamp set:", initialTimestamp);
         } else {
@@ -35,6 +45,8 @@ export const DataProvider = ({ children }) => {
       } catch (err) {
         setError(err);
         log.error({ page: "DataContext", component: "DataProvider", func: "fetchData" }, "Error fetching initial weather data:", err);
+      } finally {
+        initialFetchRef.current = false; // Indicate that initial fetch is complete
       }
     };
     fetchData();
@@ -48,24 +60,29 @@ export const DataProvider = ({ children }) => {
 
     const eventSource = subscribeToSSE(newData => {
       setWeatherData(prevData => {
-        // Ensure the data has a TIMESTAMP to avoid malformed data
         if (!newData.TIMESTAMP) {
           log.warn({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Malformed data received via SSE:", newData);
           return prevData;
         }
 
-        // Check if the new data is already in the list to avoid duplicates
-        const isDuplicate = prevData.some(data => data.TIMESTAMP === newData.TIMESTAMP);
-        if (isDuplicate) {
+        // Skip processing if initial fetch is still ongoing
+        if (initialFetchRef.current) {
+          return prevData;
+        }
+
+        if (timestampsRef.current.has(newData.TIMESTAMP)) {
           log.warn({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Duplicate data received via SSE:", newData);
           return prevData;
         }
 
-        const updatedData = [newData, ...prevData];
+        timestampsRef.current.add(newData.TIMESTAMP);
         setLatestTimestamp(newData.TIMESTAMP);
+        const updatedData = [newData, ...prevData];
+
         log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated weather data with SSE:", newData);
         log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated latest timestamp with SSE:", newData.TIMESTAMP);
         log.debug({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "New weatherData array:", updatedData);
+
         return updatedData;
       });
     });
@@ -80,7 +97,19 @@ export const DataProvider = ({ children }) => {
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, []); // Remove latestTimestamp dependency
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      weatherData,
+      columnDefs,
+      error,
+      latestTimestamp,
+      environmentInfo
+    }),
+    [weatherData, columnDefs, error, latestTimestamp, environmentInfo]
+  );
 
   // Log updates to latestTimestamp
   useEffect(() => {
@@ -89,7 +118,7 @@ export const DataProvider = ({ children }) => {
     }
   }, [latestTimestamp]);
 
-  return <DataContext.Provider value={{ weatherData, columnDefs, error, latestTimestamp, environmentInfo }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
 };
 
 // Define prop types for the component

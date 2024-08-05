@@ -27,7 +27,7 @@ const WeatherGrid = () => {
   // Called when the grid is ready
   const onGridReady = useCallback(
     params => {
-      log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "onGridReady" }, "Grid is ready with params:", params);
+      log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "onGridReady" }, "Grid is ready");
       gridRef.current.api = params.api; // Set grid API
       gridRef.current.columnApi = params.columnApi; // Set column API
       autoSizeAllColumns();
@@ -45,7 +45,7 @@ const WeatherGrid = () => {
         const existingRow = existingRows.find(row => row.TIMESTAMP === newRow.TIMESTAMP);
 
         if (!existingRow) {
-          log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Adding new row data via applyTransaction:", newRow);
+          log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Adding new row data:", JSON.stringify(newRow, null, 2));
           gridRef.current.api.applyTransaction({ add: [newRow], addIndex: 0 });
           autoSizeAllColumns();
         } else {
@@ -60,7 +60,7 @@ const WeatherGrid = () => {
   useEffect(() => {
     if (weatherData.length > 0) {
       const latestRow = weatherData[0];
-      log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for weatherData" }, "Latest weather data row:", latestRow);
+      log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for weatherData" }, "Latest weather data row:", JSON.stringify(latestRow, null, 2));
       addNewRowData(latestRow);
     }
   }, [weatherData, addNewRowData]);
@@ -71,7 +71,7 @@ const WeatherGrid = () => {
       if (colDef.field === "TIMESTAMP") {
         return {
           ...colDef,
-          valueFormatter: params => formatTimestamp(params.value, { showTime: true, showDate: true, page: "WeatherGrid", component: "WeatherGrid", func: "valueFormatter" })
+          valueFormatter: params => formatTimestamp(params.value, { showTime: true, showDate: true })
         };
       }
       return colDef;
@@ -82,14 +82,13 @@ const WeatherGrid = () => {
 
   // Log the current state for debugging
   useEffect(() => {
-    log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid columnDefs:", memoizedColumnDefs);
-    log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid rowData:", memoizedRowData);
+    log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid columnDefs:", JSON.stringify(memoizedColumnDefs, null, 2));
+    log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid rowData:", JSON.stringify(memoizedRowData, null, 2));
   }, [memoizedColumnDefs, memoizedRowData]);
 
   // Additional logging before rendering
   useEffect(() => {
-    log.debug({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for rendering" }, "Rendering WeatherGrid with columnDefs:", columnDefs);
-    log.debug({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for rendering" }, "Rendering WeatherGrid with weatherData:", weatherData);
+    log.debug({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for rendering" }, "Rendering WeatherGrid");
   }, [columnDefs, weatherData]);
 
   // Process the error using errorHandler
@@ -108,6 +107,7 @@ const WeatherGrid = () => {
           onFirstDataRendered={autoSizeAllColumns}
           defaultColDef={{
             resizable: true,
+            filter: true, // Enable filtering for all columns
             maxWidth: 150, // Set maximum column width
             cellStyle: {
               overflow: "hidden",
@@ -115,9 +115,7 @@ const WeatherGrid = () => {
               whiteSpace: "nowrap",
               color: "var(--table-td-text-color)",
               borderColor: "var(--table-border-color)"
-            },
-            headerClass: "custom-header",
-            tooltipField: "value" // Adding tooltip to display the full content on hover
+            }
           }}
           paginationPanelClassName="custom-pagination"
           rowBuffer={10} // Number of rows rendered outside the viewable area
