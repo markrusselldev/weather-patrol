@@ -12,11 +12,13 @@ const ThemeSelector = () => {
   };
 
   return (
-    <select value={theme} onChange={handleThemeChange} className="p-2 bg-dropdownBg text-dropdownText border border-dropdownBorder rounded hover:bg-dropdownHoverBg active:bg-dropdownActiveBg">
-      <option value="denim">Denim</option>
-      <option value="dark">Dark</option>
-      <option value="light">Light</option>
-    </select>
+    <div className="custom-select up-arrow">
+      <select value={theme} onChange={handleThemeChange} className="block appearance-none w-full bg-buttonBg text-buttonText border border-buttonBorderColor hover:bg-buttonHoverBg hover:border-buttonBorderHover rounded-xl rounded-t-none leading-tight focus:outline-none focus:shadow-outline">
+        <option value="denim">Denim</option>
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+      </select>
+    </div>
   );
 };
 

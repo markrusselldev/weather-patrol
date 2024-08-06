@@ -6,15 +6,15 @@
   --svg-color: hsl(0, 0%, 40%); /* Medium grey for SVGs */
 
   /* Navigation and Button Colors */
-  --button-bg-color: hsl(53, 100%, 85%);
+  --button-bg-color: hsl(53, 100%, 85%); /* Light Yellow */
   --button-hover-bg-color: hsl(53, 88%, 50%); /* Deeper yellow than primary */
   --button-active-bg-color: hsl(355, 85%, 45%); /* Red */
   --button-text-color: hsl(0, 0%, 20%); /* Dark grey */
-  --button-active-text-color: hsl(53, 98%, 65%); /* Yellow for active button text */
+  --button-active-text-color: hsl(53, 100%, 85%); /* Light Yellow */
   --button-border-color: hsl(53, 98%, 65%); /* Primary color */
 
   /* Nav Colors */
-  --nav-bg-color: hsl(53, 100%, 85%);
+  --nav-bg-color: hsl(53, 100%, 85%); /* Light Yellow */
   --nav-hover-bg-color: hsl(53, 100%, 75%); /* Darker yellow for hover */
   --nav-border-color: hsl(0, 0%, 85%); /* Light grey border */
 

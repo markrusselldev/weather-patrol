@@ -9,17 +9,19 @@ const BreadcrumbWrapper = ({ timeframe, handleTimeframeChange }) => {
   // Define the timeframe selector component if applicable
   const timeframeSelectorComponent = timeframeSelector ? (
     <div className="timeframe-container flex items-center">
-      <label htmlFor="timeframe" className="mr-2">
+      <label htmlFor="timeframe" className="mr-2 hidden sm:inline">
         Timeframe:
       </label>
-      <select id="timeframe" className="timeframe-dropdown bg-dropdownBg text-dropdownText p-1 rounded border border-dropdownBorder" onChange={handleTimeframeChange} value={timeframe}>
-        <option value="3hr">3h</option>
-        <option value="6hr">6h</option>
-        <option value="12hr">12h</option>
-        <option value="1D">1d</option>
-        <option value="7D">7d</option>
-        <option value="14D">14d</option>
-      </select>
+      <div className="custom-select w-full">
+        <select id="timeframe" className="block text-xs appearance-none w-full bg-buttonBg text-buttonText border border-buttonBorderColor hover:bg-buttonHoverBg hover:border-buttonBorderHover rounded-xl rounded-b-none leading-tight focus:outline-none focus:shadow-outline" onChange={handleTimeframeChange} value={timeframe}>
+          <option value="3hr">3h</option>
+          <option value="6hr">6h</option>
+          <option value="12hr">12h</option>
+          <option value="1D">1d</option>
+          <option value="7D">7d</option>
+          <option value="14D">14d</option>
+        </select>
+      </div>
     </div>
   ) : null;
 

@@ -6,7 +6,7 @@
   --svg-color: hsla(210, 50%, 50%, 0.5); /* Medium blue denim */
 
   /* Navigation Button Colors */
-  --button-bg-color: hsl(210, 30%, 15%); /* Dark wash denim */
+  --button-bg-color: hsl(210, 30%, 20%); /* Slightly lighter dark wash */
   --button-hover-bg-color: hsl(210, 30%, 30%); /* Slightly lighter dark wash */
   --button-active-bg-color: hsl(210, 30%, 40%); /* Medium blue denim */
   --button-text-color: hsl(0, 0%, 100%); /* White */
@@ -14,8 +14,8 @@
   --button-border-color: hsl(210, 30%, 30%); /* Slightly lighter dark wash */
 
   /* Nav Colors */
-  --nav-bg-color: hsl(210, 30%, 15%); /* Dark wash denim */
-  --nav-hover-bg-color: hsl(210, 30%, 20%); /* Slightly lighter dark wash */
+  --nav-bg-color: hsl(210, 30%, 20%); /* Slightly lighter dark wash */
+  --nav-hover-bg-color: hsl(210, 30%, 15%); /* Dark wash denim */
   --nav-border-color: hsl(210, 30%, 25%); /* Dark wash denim */
 
   /* Header Colors */
@@ -66,11 +66,11 @@
 
   /* Chart Colors */
   --chart-line-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
-  --chart-bg-color: hsla(210, 50%, 50%, 0.2); /* Medium blue denim */
-  --chart-point-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-point-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-point-hover-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-point-hover-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-line-color-secondary: hsla(210, 40%, 40%, 1); /* Darker blue denim for secondary line */
+  --chart-point-bg-color: hsla(195, 37%, 75%, 1); /* Specific denim color for points */
+  --chart-point-border-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
+  --chart-point-hover-bg-color: hsla(210, 50%, 70%, 1); /* Lighter blue denim for hover points */
+  --chart-point-hover-border-color: hsla(210, 30%, 40%, 1); /* Darker blue denim for hover point border */
   --chart-hover-bg-color: hsla(210, 50%, 50%, 0.2); /* Medium blue denim */
   --chart-hover-border-color: hsla(210, 50%, 50%, 1); /* Medium blue denim */
 }

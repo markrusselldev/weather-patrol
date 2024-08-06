@@ -13,7 +13,7 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
   // Log the latest timestamp and set isTimestampSet state
   useEffect(() => {
     if (latestTimestamp) {
-      log.info({ page: "src/components/Breadcrumb.jsx", component: "Breadcrumb", func: "useEffect" }, "Latest Timestamp in Breadcrumb:", latestTimestamp);
+      log.info({ page: "Breadcrumb.jsx", component: "Breadcrumb", func: "useEffect" }, "Latest Timestamp in Breadcrumb:", latestTimestamp);
       setIsTimestampSet(true);
     } else {
       setIsTimestampSet(false);
@@ -32,13 +32,14 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
     <div className="breadcrumb flex justify-between items-center pt-4 px-4 text-sm text-breadcrumbText w-full h-12">
       <div className="flex items-center">
         {/* Conditionally render the icon */}
-        {Icon && <Icon className="mr-2 text-svg" />}
+        {Icon && <Icon className="mr-2 text-svg text-xl md:text-base" />}
         {title}
       </div>
       <div className="flex grow justify-end items-center">
-        <FaClock className="mr-2 text-svg" />
-        Last Update: {formattedTimestamp}
-        {timeframeSelector && <FaCalendarAlt className="mx-2 text-svg" />}
+        <FaClock className="mr-2 text-svg text-xl md:text-base" />
+        <span className="hidden sm:inline">Last Update:</span> {/* Hide on small screens */}
+        {formattedTimestamp}
+        {timeframeSelector && <FaCalendarAlt className="mx-2 text-svg text-xl md:text-base" />}
       </div>
       {timeframeSelector && <div className="flex shrink items-center">{timeframeSelector}</div>}
     </div>

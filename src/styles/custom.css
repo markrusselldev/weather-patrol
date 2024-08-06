@@ -32,64 +32,7 @@ hr {
   margin: 0.7rem 0;
 }
 
-/* Header adjustments for mobile */
-@media (max-width: 768px) {
-  .hamburger-menu {
-    display: block;
-  }
 
-  nav {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    background-color: var(--header-bg-color);
-    position: fixed;
-    top: 4.28rem;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    transition: all 0.3s ease;
-  }
-
-  nav.active {
-    display: flex;
-  }
-
-  nav a {
-    margin: 0;
-    padding: 1rem;
-    width: 100%;
-    text-align: center;
-  }
-
-  .grid-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 769px) {
-  .header-left {
-    flex-direction: row;
-  }
-
-  header h1 {
-    font-size: 1rem;
-    display: inline;
-    white-space: nowrap;
-  }
-
-  nav {
-    flex-direction: row;
-    justify-content: flex-end;
-    position: static;
-  }
-}
 
 /* Breadcrumb styles */
 .breadcrumb {
@@ -148,4 +91,37 @@ hr {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+/* Custom Dropdown */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 0.3rem 1.3rem 0 0.75rem; /* Space for the arrow */
+}
+
+.custom-select::after {
+  content: "\25BC"; /* Unicode for downward arrow */
+  position: absolute;
+  top: 50%;
+  right: 0.7rem; /* Adjust this value to place the arrow */
+  transform: translateY(-50%);
+  pointer-events: none; /* Ensures the dropdown remains clickable */
+}
+
+.custom-select.up-arrow select {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+.custom-select.up-arrow::after {
+  content: "\25B2"; /* Unicode for upward arrow */
+  padding-bottom: 0.3rem;
 }

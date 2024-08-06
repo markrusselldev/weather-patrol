@@ -164,14 +164,14 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
               <span className="text-xs text-breadcrumbText mr-1">Hi</span>
               <span className="text-sm text-dataText">
                 {max}
-                <span className="text-xs align-top text-breadcrumbText">{unit}</span>
+                <span className="text-xs text-breadcrumbText">{unit}</span>
               </span>
             </div>
             <div className="flex items-center">
               <span className="text-xs text-breadcrumbText mr-1">Lo</span>
               <span className="text-sm text-dataText">
                 {min}
-                <span className="text-xs align-top text-breadcrumbText">{unit}</span>
+                <span className="text-xs text-breadcrumbText">{unit}</span>
               </span>
             </div>
           </div>
@@ -195,7 +195,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
             <div key={index} className="flex flex-col items-center">
               <span className="text-sm text-dataText">
                 {value}
-                <span className="text-xs align-top text-breadcrumbText">{unit}</span>
+                <span className="text-xs text-breadcrumbText">{unit}</span>
               </span>
               <span className="text-xs text-breadcrumbText">{pastTimestamps[index] || "N/A"}</span>
             </div>

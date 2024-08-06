@@ -7,9 +7,10 @@ import log from "../utils/logger";
  * @param {Object} options - Formatting options.
  * @param {boolean} options.showTime - Whether to show the time.
  * @param {boolean} options.showDate - Whether to show the date.
+ * @param {boolean} options.showMonthDay - Whether to show the date in MMM.DD format.
  * @returns {string} The formatted timestamp.
  */
-export const formatTimestamp = (timestamp, { showTime = true, showDate = true } = {}) => {
+export const formatTimestamp = (timestamp, { showTime = true, showDate = true, showMonthDay = false } = {}) => {
   if (!timestamp) {
     log.error({ page: "src/utils/utils.js", func: "formatTimestamp" }, "Error: No timestamp provided. Timestamp value:", timestamp);
     return "Invalid timestamp";
@@ -22,8 +23,12 @@ export const formatTimestamp = (timestamp, { showTime = true, showDate = true } 
   }
 
   let format = "";
-  if (showTime && showDate) {
+  if (showTime && showDate && !showMonthDay) {
     format = "HH:mm MM/DD/YY";
+  } else if (showTime && showMonthDay) {
+    format = "HH:mm MMM.DD";
+  } else if (showMonthDay) {
+    format = "MMM.DD";
   } else if (showTime) {
     format = "HH:mm";
   } else if (showDate) {

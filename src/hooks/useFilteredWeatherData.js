@@ -50,7 +50,7 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
       });
 
       log.debug(logContext, `Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
-      const downsampled = downsampleData(filtered, timeframes[timeframe].factor);
+      const downsampled = downsampleData(filtered, timeframes[timeframe].factor).reverse(); // Reverse the order
       setFilteredData(downsampled);
     } catch (error) {
       log.error(logContext, `Error filtering data: ${error.message}`);
@@ -76,7 +76,7 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
     }
 
     return {
-      labels: filteredData.map(row => formatTimestamp(row.TIMESTAMP)),
+      labels: filteredData.map(row => formatTimestamp(row.TIMESTAMP, { showTime: true, showMonthDay: true })),
       temperature: filteredData.map(row => row.AirTF_Avg),
       windSpeed: filteredData.map(row => row.WS_mph_Avg),
       windDirection: filteredData.map(row => row.WindDir),

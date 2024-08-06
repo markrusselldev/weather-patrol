@@ -96,7 +96,7 @@ const WeatherGrid = () => {
   const processedError = error ? errorHandler(error) : null;
 
   return (
-    <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 200px)" }}>
+    <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 215px)" }}>
       {processedError && <div className="error">{processedError}</div>}
       {loading ? (
         <div className="flex justify-center items-center h-full">

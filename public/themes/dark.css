@@ -6,16 +6,16 @@
   --svg-color: hsla(53, 98%, 75%, 0.5); /* Light yellow for SVGs */
 
   /* Navigation and Button Colors */
-  --button-bg-color: hsl(0, 0%, 10%); /* Dark grey background */
+  --button-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey */
   --button-hover-bg-color: hsl(0, 74%, 44%); /* Slightly lighter red */
   --button-active-bg-color: hsl(0, 89%, 50%); /* Brighter red */
   --button-text-color: hsl(53, 98%, 85%); /* Very light yellow */
-  --button-active-text-color: hsl(53, 98%, 65%); /* Yellow for active button text */
+  --button-active-text-color: hsl(53, 98%, 85%); /* Very light yellow */
   --button-border-color: hsl(0, 78%, 38%); /* Red border */
 
   /* Nav Colors */
-  --nav-bg-color: hsl(0, 0%, 10%); /* Dark grey background */
-  --nav-hover-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey for hover */
+  --nav-bg-color: hsl(0, 0%, 25%); /* Slightly lighter dark grey */
+  --nav-hover-bg-color: hsl(0, 0%, 10%); /* Dark grey background */
   --nav-border-color: hsl(0, 0%, 30%); /* Darker grey border */
 
   /* Header Colors */
@@ -34,7 +34,7 @@
   --dropdown-active-bg-color: hsl(0, 0%, 30%); /* Darker grey */
 
   /* Card Colors */
-  --card-header-text-color: hsl(53, 98%, 85%); /* Very light yellow */
+  --card-header-text-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
   --card-body-text-color: hsl(53, 98%, 75%); /* Light yellow */
   --card-background-color: hsl(0, 0%, 15%); /* Dark grey background */
   --card-border: 1px solid hsl(0, 0%, 30%); /* Darker grey border */
@@ -70,12 +70,12 @@
   --scrollbar-thumb-border: 3px solid hsl(0, 0%, 25%); /* Thumb border */
 
   /* Chart Colors */
-  --chart-line-color: hsla(0, 100%, 50%, 1); /* Red (#ed1429) */
-  --chart-bg-color: hsla(0, 100%, 50%, 0.2); /* Transparent red */
-  --chart-point-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-line-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
+  --chart-line-color-secondary: hsla(53, 98%, 65%, 1); /* Medium yellow */
+  --chart-point-bg-color: hsl(0, 0%, 15%); /* Dark grey background */
   --chart-point-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-point-hover-bg-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-point-hover-border-color: hsla(53, 98%, 65%, 1); /* Yellow (#fee432) */
-  --chart-hover-bg-color: hsla(0, 100%, 50%, 0.2); /* Transparent red */
-  --chart-hover-border-color: hsla(0, 100%, 50%, 1); /* Red (#ed1429) */
+  --chart-point-hover-bg-color: hsla(53, 98%, 65%, 1); /* Medium yellow */
+  --chart-point-hover-border-color: hsla(53, 98%, 75%, 1); /* Light yellow */
+  --chart-hover-bg-color: hsla(53, 98%, 75%, 0.2); /* Transparent light yellow */
+  --chart-hover-border-color: hsla(53, 98%, 75%, 1); /* Light yellow */
 }

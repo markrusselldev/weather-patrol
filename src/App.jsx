@@ -20,9 +20,9 @@ const App = () => {
 
   // Define navigation items for the header
   const navigationItems = [
-    { path: "/", label: "Current Conditions" },
-    { path: "/trends", label: "Weather Trends" },
-    { path: "/data", label: "TOA5 Data" }
+    { path: "/", label: "Home" },
+    { path: "/trends", label: "Trends" },
+    { path: "/data", label: "Data" }
   ];
 
   log.info({ page: "App", component: "App", func: "render" }, "App component rendered");

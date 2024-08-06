@@ -25,9 +25,10 @@ const generateChartData = (labels, data, title) => {
         pointBorderColor: colors.pointBorderColor,
         pointHoverBackgroundColor: colors.pointHoverBackgroundColor,
         pointHoverBorderColor: colors.pointHoverBorderColor,
-        tension: 0.1,
+        tension: 0.4,
         hoverBackgroundColor: colors.hoverBackgroundColor,
-        hoverBorderColor: colors.hoverBorderColor
+        hoverBorderColor: colors.hoverBorderColor,
+        //pointStyle: "rectRounded"
       }
     ]
   };
@@ -43,6 +44,14 @@ const chartOptions = {
     },
     y: {
       beginAtZero: true
+    }
+  },
+  plugins: {
+    legend: {
+      labels: {
+        //usePointStyle: true, // Use a point style instead of a rectangle
+        boxWidth: 20 // Width of the colored box
+      }
     }
   }
 };

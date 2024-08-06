@@ -3,8 +3,8 @@ import { FaThermometerHalf, FaChartLine, FaTable } from "react-icons/fa";
 
 // Mapping of routes to titles and icons
 const routeConfig = {
-  "/": { title: "Current Conditions", icon: FaThermometerHalf },
-  "/trends": { title: "Weather Trends", icon: FaChartLine, timeframeSelector: true },
+  "/": { title: "Conditions", icon: FaThermometerHalf },
+  "/trends": { title: "Trends", icon: FaChartLine, timeframeSelector: true },
   "/data": { title: "TOA5 Data", icon: FaTable }
 };
 
