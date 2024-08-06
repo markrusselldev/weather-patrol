@@ -1,6 +1,4 @@
-// src/hooks/useFilteredWeatherData.js
-
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import log from "../utils/logger";
 import { formatTimestamp } from "../utils/utils";
 
@@ -20,9 +18,16 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
 
   // Effect to filter data based on selected timeframe
   useEffect(() => {
-    log.info({ page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" }, "Filtering data based on selected timeframe");
+    const logContext = { page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" };
+    log.info(logContext, "Filtering data based on selected timeframe");
 
-    if (weatherData && weatherData.length > 0) {
+    if (!weatherData || weatherData.length === 0) {
+      setFilteredData([]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
       // Define timeframes in hours and downsampling factors
       const timeframes = {
         "3hr": { hours: 3, factor: 1 },
@@ -35,7 +40,7 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
 
       // Find the latest record timestamp
       const latestRecordTimestamp = new Date(weatherData[0].TIMESTAMP);
-      log.debug({ page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" }, `Latest Record Timestamp: ${latestRecordTimestamp}`);
+      log.debug(logContext, `Latest Record Timestamp: ${latestRecordTimestamp}`);
 
       // Filter data based on the latest record timestamp
       const filtered = weatherData.filter(row => {
@@ -44,11 +49,11 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
         return hoursDifference <= timeframes[timeframe].hours;
       });
 
-      log.debug({ page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" }, `Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
+      log.debug(logContext, `Filtered data count for timeframe ${timeframe}: ${filtered.length}`);
       const downsampled = downsampleData(filtered, timeframes[timeframe].factor);
       setFilteredData(downsampled);
-    } else {
-      log.warn({ page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" }, "weatherData is empty or undefined");
+    } catch (error) {
+      log.error(logContext, `Error filtering data: ${error.message}`);
       setFilteredData([]);
     }
 

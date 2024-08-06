@@ -1,4 +1,3 @@
-// src/pages/WeatherTrends.jsx
 import { useContext, memo } from "react";
 import PropTypes from "prop-types";
 import TrendCard from "../components/TrendCard";
@@ -11,6 +10,7 @@ import { DataContext } from "../contexts/DataContext";
 import useFilteredWeatherData from "../hooks/useFilteredWeatherData";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
+import { FaSpinner } from "react-icons/fa";
 
 const WeatherTrends = ({ timeframe }) => {
   const { weatherData, error } = useContext(DataContext);
@@ -23,12 +23,17 @@ const WeatherTrends = ({ timeframe }) => {
 
   if (isLoading) {
     log.info({ page: "src/pages/WeatherTrends.jsx", component: "WeatherTrends", func: "render" }, "Loading filtered data...");
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="absolute top-1/2 transform -translate-y-1/2">
+          <FaSpinner className="animate-spin text-8xl text-gray-300" /> 
+        </div>
+      </div>
+    );
   }
 
   if (!dataPoints.labels.length) {
     log.info({ page: "src/pages/WeatherTrends.jsx", component: "WeatherTrends", func: "render" }, "No filtered data available.");
-    return <div>No data available for the selected timeframe.</div>;
   }
 
   log.debug({ page: "src/pages/WeatherTrends.jsx", component: "WeatherTrends", func: "render" }, "Data points for TrendCards count:", {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, memo, useState } from "react";
+import { useEffect, useRef, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from "chart.js";
 import log from "../utils/logger";
@@ -51,17 +51,10 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
   const chartRef = useRef(null); // Reference to the canvas element
   const chartInstanceRef = useRef(null); // Reference to the Chart.js instance
   const { updateChartColors } = useUpdateChartColors(chartInstanceRef); // Custom hook to update chart colors
-  const [isMounted, setIsMounted] = useState(false); // State to track if the component is mounted
-
-  // Set isMounted to true when the component is mounted and false when it is unmounted
-  useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
 
   // Effect to create the chart when the component is mounted
   useEffect(() => {
-    if (isMounted && chartRef.current) {
+    if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d"); // Get 2D context from the canvas
       if (ctx) {
         if (chartInstanceRef.current) {
@@ -87,9 +80,9 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
         log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "Failed to get 2D context from canvas element");
       }
     } else {
-      log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "chartRef is null or component is not mounted");
+      log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "chartRef.current is null");
     }
-  }, [isMounted, labels, data, title, updateChartColors]);
+  }, [labels, data, title, updateChartColors]);
 
   // Cleanup effect to destroy the chart instance when the component unmounts
   useEffect(() => {
@@ -111,8 +104,7 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
         </div>
         <div className="flex-shrink-0 w-16 flex items-end justify-end" style={{ flex: "0 0 4rem" }}></div>
       </div>
-      <hr className="borde
-      r-hrColor" />
+      <hr className="border-hrColor" />
       <div className="h-64">
         <canvas ref={chartRef} /> {/* Canvas element for Chart.js */}
       </div>

@@ -7,10 +7,11 @@ import { DataContext } from "../contexts/DataContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 import { formatTimestamp } from "../utils/utils";
+import { FaSpinner } from "react-icons/fa"; // Import the loading spinner icon
 
 // WeatherGrid Component
 const WeatherGrid = () => {
-  const { columnDefs, weatherData, error } = useContext(DataContext);
+  const { columnDefs, weatherData, error, loading } = useContext(DataContext);
   const gridRef = useRef(null);
 
   // Function to auto-size columns to fit their contents
@@ -97,7 +98,11 @@ const WeatherGrid = () => {
   return (
     <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 200px)" }}>
       {processedError && <div className="error">{processedError}</div>}
-      {memoizedColumnDefs && memoizedRowData ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-full">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+        </div>
+      ) : memoizedColumnDefs && memoizedRowData.length > 0 ? (
         <AgGridReact
           columnDefs={memoizedColumnDefs}
           rowData={memoizedRowData}
@@ -125,7 +130,9 @@ const WeatherGrid = () => {
           animateRows={false} // Prevent row animations to improve performance
         />
       ) : (
-        <div>No data available</div>
+        <div className="flex justify-center items-center h-full">
+          <FaSpinner className="animate-spin text-sm text-gray-300" />
+        </div>
       )}
     </div>
   );

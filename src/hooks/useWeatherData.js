@@ -1,9 +1,8 @@
-// src/hooks/useWeatherData.js
-
 import { useEffect, useState, useCallback, useMemo } from "react";
 import log from "../utils/logger";
 import { formatTimestamp } from "../utils/utils";
 
+// Helper function to convert wind direction degrees into cardinal direction
 const getCardinalDirection = degrees => {
   const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   const index = Math.round((degrees % 360) / 45) % 8;
@@ -11,69 +10,56 @@ const getCardinalDirection = degrees => {
 };
 
 const useWeatherData = weatherData => {
-  const [latestData, setLatestData] = useState(null);
-  const [pastData, setPastData] = useState([]);
+  const [latestData, setLatestData] = useState(null); // State to store the latest weather data
+  const [pastData, setPastData] = useState([]); // State to store past weather data
 
   useEffect(() => {
-    log.info({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "Effect triggered: weatherData changed", weatherData);
-
-    if (weatherData) {
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "weatherData structure", JSON.stringify(weatherData, null, 2));
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "weatherData length", weatherData.length);
-    }
+    const logContext = { page: "src/hooks/useWeatherData.js", func: "useEffect" };
+    log.info(logContext, "Effect triggered: weatherData changed", weatherData);
 
     if (weatherData && weatherData.length > 0) {
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "weatherData is available, setting latest and past data");
+      log.debug(logContext, "weatherData structure", JSON.stringify(weatherData, null, 2));
+      log.debug(logContext, "weatherData length", weatherData.length);
+
+      // Set the latest data to the most recent entry
       setLatestData(weatherData[0]);
 
+      // Determine the number of past records to store (up to 4)
       const pastRecordsCount = Math.min(weatherData.length - 1, 4);
       const sortedPastData = weatherData.slice(1, 1 + pastRecordsCount).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
       setPastData(sortedPastData);
 
-      log.info({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "Latest data and past data set successfully", {
+      log.info(logContext, "Latest data and past data set successfully", {
         latestData: weatherData[0],
         pastData: sortedPastData
       });
-
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "pastData content", JSON.stringify(sortedPastData, null, 2));
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "pastData length", sortedPastData.length);
+      log.debug(logContext, "pastData content", JSON.stringify(sortedPastData, null, 2));
+      log.debug(logContext, "pastData length", sortedPastData.length);
     } else {
-      log.warn({ page: "src/hooks/useWeatherData.js", func: "useEffect" }, "No weatherData available to set latest and past data");
+      log.info(logContext, "No weatherData available to set latest and past data");
       setLatestData(null);
       setPastData([]);
     }
   }, [weatherData]);
 
+  // Function to create an array of data points for a given key
   const createDataArray = useCallback(
     key => {
-      if (!latestData || !latestData[key]) {
-        log.warn({ page: "src/hooks/useWeatherData.js", func: "createDataArray" }, `No data available for key: ${key}`);
-        return [null];
-      }
-      const dataArray = [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "createDataArray" }, `Data array for ${key}:`, dataArray);
-      return dataArray;
+      if (!latestData) return [null];
+      return [...pastData.map(row => (row[key] !== undefined ? Math.round(row[key]) : null)), Math.round(latestData[key])];
     },
     [latestData, pastData]
   );
 
+  // Function to create an array of formatted past timestamps
   const createPastTimestampsArray = useCallback(() => {
-    const timestampsArray = pastData.map(row => {
-      if (!row.TIMESTAMP) {
-        log.error({ page: "src/hooks/useWeatherData.js", func: "createPastTimestampsArray" }, `Missing TIMESTAMP in data row: ${JSON.stringify(row)}`);
-        return "Invalid timestamp";
-      }
-      log.debug({ page: "src/hooks/useWeatherData.js", func: "createPastTimestampsArray" }, "Processing TIMESTAMP:", row.TIMESTAMP);
+    return pastData.map(row => {
       const formattedTimestamp = formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false });
-      if (formattedTimestamp === "Invalid timestamp") {
-        log.error({ page: "src/hooks/useWeatherData.js", func: "createPastTimestampsArray" }, `Invalid timestamp detected: ${row.TIMESTAMP}`);
-      }
-      return formattedTimestamp;
+      return formattedTimestamp === "Invalid timestamp" ? "Invalid timestamp" : formattedTimestamp;
     });
-    log.debug({ page: "src/hooks/useWeatherData.js", func: "createPastTimestampsArray" }, "Past timestamps array:", timestampsArray);
-    return timestampsArray;
   }, [pastData]);
 
+  // Memoized object containing various weather data arrays
   const data = useMemo(
     () => ({
       temperature: createDataArray("AirTF_Avg"),
@@ -92,10 +78,13 @@ const useWeatherData = weatherData => {
     [createDataArray, latestData]
   );
 
+  // Memoized array of past timestamps
   const pastTimestamps = useMemo(createPastTimestampsArray, [createPastTimestampsArray]);
+
+  // Memoized value for the cardinal direction of the wind
   const windDirectionCardinal = useMemo(() => getCardinalDirection(latestData?.WindDir), [latestData?.WindDir]);
 
-  return { data, pastTimestamps, windDirectionCardinal };
+  return { data, pastTimestamps, windDirectionCardinal }; // Return the processed data
 };
 
 export default useWeatherData;
