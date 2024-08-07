@@ -1,0 +1,19 @@
+{
+  "columns": [
+    { "name": "TIMESTAMP", "type": "datetime" },
+    { "name": "RECORD", "type": "int" },
+    { "name": "AirTF_Max", "type": "float" },
+    { "name": "AirTF_Min", "type": "float" },
+    { "name": "AirTF_Avg", "type": "float" },
+    { "name": "WC_F_Avg", "type": "float" },
+    { "name": "WS_mph_Max", "type": "float" },
+    { "name": "WS_mph_Min", "type": "float" },
+    { "name": "WS_mph_Avg", "type": "float" },
+    { "name": "WindDir", "type": "float" },
+    { "name": "RH", "type": "float" },
+    { "name": "DP_F_Avg", "type": "float" },
+    { "name": "BP_inHg_Avg", "type": "float" },
+    { "name": "BattV", "type": "float" },
+    { "name": "PanelTemp_F", "type": "float" }
+  ]
+}

@@ -1,0 +1,10 @@
+*.log
+*.txt
+npm-debug.log*
+node_modules/
+ssl/
+/build
+/logs
+/testServer.js
+/server.bak
+/test
