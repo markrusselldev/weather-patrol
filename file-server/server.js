@@ -13,6 +13,7 @@ const cookieParser = require("cookie-parser"); // Middleware for parsing cookies
 const apiRoutes = require("./routes/api"); // Import API routes
 const { addSSEClient } = require("./services/dataService"); // Import addSSEClient function
 const dataService = require("./services/dataService"); // Import dataService
+const serveFrontend = require("./serve-frontend"); // Import the frontend serving file
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Define the port to run the server
@@ -85,6 +86,9 @@ app.get("/api/sse", (req, res) => {
   log.debug("Response object received.", { page: "server.js", func: "sseEndpoint", res });
   addSSEClient(req, res);
 });
+
+// Serve static frontend files
+app.use(serveFrontend);
 
 // Error handler middleware
 app.use((err, req, res, next) => {

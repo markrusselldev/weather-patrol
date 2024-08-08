@@ -34,6 +34,17 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       "import.meta.env.VITE_LOG_LEVEL": JSON.stringify(env.VITE_LOG_LEVEL)
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              return id.toString().split("node_modules/")[1].split("/")[0].toString();
+            }
+          }
+        }
+      }
     }
   };
 });
