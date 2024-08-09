@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import ErrorMessages from "../components/ErrorMessages";
-import WeatherGrid from "../components/WeatherGrid";
+import LazyWeatherGrid from "../components/LazyWeatherGrid";
 import useTOA5Data from "../hooks/useTOA5Data";
 import log from "../utils/logger";
 import { FaSpinner } from "react-icons/fa"; // Import the loading spinner icon
@@ -31,7 +31,7 @@ const TOA5Data = () => {
         </div>
       ) : weatherData && columnDefs.length > 0 ? (
         <div className="overflow-x-auto">
-          <WeatherGrid columnDefs={columnDefs} rowData={weatherData} />
+          <LazyWeatherGrid columnDefs={columnDefs} rowData={weatherData} />
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">

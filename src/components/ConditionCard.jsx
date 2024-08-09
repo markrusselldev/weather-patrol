@@ -141,7 +141,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   );
 
   return (
-    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-md bg-cardBg text-cardBodyText border-cardBorder">
+    <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-md bg-cardBg text-cardBodyText border-cardBorderColor border">
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />

@@ -54,6 +54,8 @@
   --table-th-text-color: hsl(0, 0%, 20%); /* Dark grey */
   --table-td-text-color: hsl(0, 0%, 20%); /* Dark grey */
   --table-row-alt-bg-color: hsl(0, 0%, 98%); /* Very light grey */
+  --table-row-divider-color: hsl(0, 0%, 90%); /* Light grey */
+  --table-column-divider-color: hsl(0, 0%, 90%); /* Light grey */
 
   /* Data Container Text Color */
   --data-text-color: hsl(0, 0%, 40%); /* Medium grey */
@@ -73,7 +75,7 @@
   --chart-line-color: hsla(53, 98%, 65%, 1); /* Yellow */
   --chart-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */
   --chart-point-bg-color: hsla(355, 85%, 45%, 1); /* Red */
-  --chart-point-border-color: hsla(355, 85%, 45%, 1); /* Red */
+  --chart-point-border-color: hsl(53, 88%, 50%); /* Deeper yellow than primary */
   --chart-point-hover-bg-color: hsla(355, 85%, 45%, 1); /* Red */
   --chart-point-hover-border-color: hsla(355, 85%, 45%, 1); /* Red */
   --chart-hover-bg-color: hsla(53, 98%, 65%, 0.2); /* Transparent yellow */

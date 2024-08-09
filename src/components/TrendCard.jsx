@@ -103,7 +103,7 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
   }, []);
 
   return (
-    <div className="bg-cardBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg text-cardBodyText border-cardBorder">
+    <div className="bg-cardBg p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-lg text-cardBodyText border-cardBorderColor border">
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}>
           <Icon className="text-4xl text-svg" />

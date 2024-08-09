@@ -13,7 +13,12 @@ const BreadcrumbWrapper = ({ timeframe, handleTimeframeChange }) => {
         Timeframe:
       </label>
       <div className="custom-select w-full">
-        <select id="timeframe" className="block text-xs appearance-none w-full bg-buttonBg text-buttonText border border-buttonBorderColor hover:bg-buttonHoverBg hover:border-buttonBorderHover rounded-xl rounded-b-none leading-tight focus:outline-none focus:shadow-outline" onChange={handleTimeframeChange} value={timeframe}>
+        <select 
+          id="timeframe" 
+          className="block text-xs appearance-none w-full bg-dropdownBg text-dropdownText border-x border-t border-dropdownBorderColor hover:bg-dropdownHoverBg hover:border-dropdownBorderColor rounded-xl rounded-b-none focus:outline-none focus:shadow-outline active:bg-dropdownActiveBg" 
+          onChange={handleTimeframeChange} 
+          value={timeframe}
+        >
           <option value="3hr">3h</option>
           <option value="6hr">6h</option>
           <option value="12hr">12h</option>

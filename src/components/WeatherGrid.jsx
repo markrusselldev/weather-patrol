@@ -1,20 +1,21 @@
 import { useRef, useEffect, useMemo, useCallback, useContext } from "react";
 import PropTypes from "prop-types";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+import { AgGridReact } from "@ag-grid-community/react";
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { CsvExportModule } from "@ag-grid-community/csv-export";
+import { InfiniteRowModelModule } from "@ag-grid-community/infinite-row-model";
 import { DataContext } from "../contexts/DataContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 import { formatTimestamp } from "../utils/utils";
-import { FaSpinner } from "react-icons/fa"; // Import the loading spinner icon
+import { FaSpinner } from "react-icons/fa"; // Import loading spinner icon
 
 // WeatherGrid Component
 const WeatherGrid = () => {
   const { columnDefs, weatherData, error, loading } = useContext(DataContext);
   const gridRef = useRef(null);
 
-  // Function to auto-size columns to fit their contents
+  // Function to auto-size all columns to fit their contents
   const autoSizeAllColumns = useCallback(() => {
     if (gridRef.current && gridRef.current.columnApi) {
       const allColumns = gridRef.current.columnApi.getAllColumns();
@@ -25,18 +26,37 @@ const WeatherGrid = () => {
     }
   }, []);
 
-  // Called when the grid is ready
+  // Callback for when the grid is ready
   const onGridReady = useCallback(
     params => {
       log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "onGridReady" }, "Grid is ready");
-      gridRef.current.api = params.api; // Set grid API
-      gridRef.current.columnApi = params.columnApi; // Set column API
-      autoSizeAllColumns();
+      gridRef.current.api = params.api; // Set grid API reference
+      gridRef.current.columnApi = params.columnApi; // Set column API reference
+      autoSizeAllColumns(); // Auto-size columns after grid is ready
+
+      // Force reapply of styles after grid is ready
+      setTimeout(() => {
+        if (gridRef.current) {
+          gridRef.current.api.refreshCells({ force: true });
+        }
+        // Reapply custom CSS variables after grid is ready
+        const gridElement = gridRef.current && gridRef.current.api.gridOptionsWrapper.getGridBody().parentNode;
+        if (gridElement) {
+          gridElement.style.setProperty("--background-color", "var(--background-color)");
+          gridElement.style.setProperty("--table-th-bg-color", "var(--table-th-bg-color)");
+          gridElement.style.setProperty("--table-th-text-color", "var(--table-th-text-color)");
+          gridElement.style.setProperty("--table-row-alt-bg-color", "var(--table-row-alt-bg-color)");
+          gridElement.style.setProperty("--table-td-text-color", "var(--table-td-text-color)");
+          gridElement.style.setProperty("--table-border-color", "var(--table-border-color)");
+          gridElement.style.setProperty("--row-divider-color", "var(--row-divider-color)"); // Row divider color
+          gridElement.style.setProperty("--column-divider-color", "var(--column-divider-color)"); // Column divider color
+        }
+      }, 0); // Delayed to ensure grid is fully loaded
     },
     [autoSizeAllColumns]
   );
 
-  // Function to add new row data if TIMESTAMP does not exist
+  // Function to add new row data if the TIMESTAMP does not exist
   const addNewRowData = useCallback(
     newRow => {
       if (gridRef.current && gridRef.current.api) {
@@ -45,10 +65,11 @@ const WeatherGrid = () => {
 
         const existingRow = existingRows.find(row => row.TIMESTAMP === newRow.TIMESTAMP);
 
+        // Only add new row if TIMESTAMP does not already exist
         if (!existingRow) {
           log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Adding new row data:", JSON.stringify(newRow, null, 2));
           gridRef.current.api.applyTransaction({ add: [newRow], addIndex: 0 });
-          autoSizeAllColumns();
+          autoSizeAllColumns(); // Re-size columns after adding new row
         } else {
           log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Row with this TIMESTAMP already exists. No new row added.");
         }
@@ -66,7 +87,7 @@ const WeatherGrid = () => {
     }
   }, [weatherData, addNewRowData]);
 
-  // Memoize the column definitions to include the value formatter for the TIMESTAMP column
+  // Memoize column definitions to include a value formatter for the TIMESTAMP column
   const memoizedColumnDefs = useMemo(() => {
     return columnDefs.map(colDef => {
       if (colDef.field === "TIMESTAMP") {
@@ -79,20 +100,21 @@ const WeatherGrid = () => {
     });
   }, [columnDefs]);
 
+  // Memoize row data to prevent unnecessary re-renders
   const memoizedRowData = useMemo(() => weatherData, [weatherData]);
 
-  // Log the current state for debugging
+  // Logging current state for debugging
   useEffect(() => {
     log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid columnDefs:", JSON.stringify(memoizedColumnDefs, null, 2));
     log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for logging" }, "WeatherGrid rowData:", JSON.stringify(memoizedRowData, null, 2));
   }, [memoizedColumnDefs, memoizedRowData]);
 
-  // Additional logging before rendering
+  // Additional logging before rendering the component
   useEffect(() => {
     log.debug({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for rendering" }, "Rendering WeatherGrid");
   }, [columnDefs, weatherData]);
 
-  // Process the error using errorHandler
+  // Process error using errorHandler
   const processedError = error ? errorHandler(error) : null;
 
   return (
@@ -100,28 +122,31 @@ const WeatherGrid = () => {
       {processedError && <div className="error">{processedError}</div>}
       {loading ? (
         <div className="flex justify-center items-center h-full">
-          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+          <FaSpinner className="animate-spin text-3xl text-gray-300" />
         </div>
       ) : memoizedColumnDefs && memoizedRowData.length > 0 ? (
         <AgGridReact
           columnDefs={memoizedColumnDefs}
           rowData={memoizedRowData}
+          modules={[ClientSideRowModelModule, CsvExportModule, InfiniteRowModelModule]}
           pagination={true}
-          paginationPageSize={50} // Default page size
-          onGridReady={onGridReady}
-          onFirstDataRendered={autoSizeAllColumns}
+          paginationPageSize={50} // Set default page size
+          onGridReady={onGridReady} // Grid ready callback
+          onFirstDataRendered={autoSizeAllColumns} // Auto-size columns when first data is rendered
           defaultColDef={{
-            resizable: true,
+            resizable: true, // Allow columns to be resized
             filter: true, // Enable filtering for all columns
-            maxWidth: 150, // Set maximum column width
+            width: 160, // Set initial column width
             cellStyle: {
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              color: "var(--table-td-text-color)",
-              borderColor: "var(--table-border-color)"
-            }
+            },
+            headerClass: "custom-header" // Apply custom header class
           }}
+          getRowStyle={params => ({
+            backgroundColor: params.node.rowIndex % 2 === 0 ? "var(--table-row-alt-bg-color, #00ff00)" : "inherit" // Apply custom CSS variable with green fallback for alternate row background color
+          })}
           paginationPanelClassName="custom-pagination"
           rowBuffer={10} // Number of rows rendered outside the viewable area
           suppressRowVirtualization={false} // Ensure row virtualization is not suppressed
@@ -139,9 +164,8 @@ const WeatherGrid = () => {
 };
 
 WeatherGrid.propTypes = {
-  columnDefs: PropTypes.array.isRequired,
-  rowData: PropTypes.array.isRequired
+  columnDefs: PropTypes.array.isRequired, // Prop types validation for columnDefs
+  rowData: PropTypes.array.isRequired // Prop types validation for rowData
 };
 
 export default WeatherGrid;
-

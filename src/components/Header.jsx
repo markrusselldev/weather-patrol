@@ -6,8 +6,8 @@ import log from "../utils/logger";
 const Header = ({ navigationItems }) => {
   // Define styles for navigation links
   const navLinkStyle = ({ isActive }) =>
-    `flex items-center justify-center no-underline m-1 rounded-full text-center transition-all h-button px-3 box-border 
-    ${isActive ? "bg-buttonActiveBg text-buttonActiveText border-buttonBorder" : "bg-buttonBg text-buttonText border-buttonBorder"}
+    `flex items-center justify-center no-underline m-1 rounded-full text-center transition-all h-button px-3 md:px-4 border-buttonBorderColor box-border 
+    ${isActive ? "bg-buttonActiveBg text-buttonActiveText border-buttonBorder" : "bg-buttonBg text-buttonText border border-buttonBorder"}
     ${!isActive && "hover:bg-buttonHoverBg hover:border-buttonBorderHover"}`;
 
   // Get the appropriate icon based on the label

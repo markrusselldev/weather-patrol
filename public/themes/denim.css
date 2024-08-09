@@ -31,13 +31,13 @@
   --dropdown-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
   --dropdown-border-color: hsl(210, 20%, 80%); /* Light grey denim */
   --dropdown-hover-bg-color: hsl(210, 30%, 90%); /* Light wash denim */
-  --dropdown-active-bg-color: hsl(210, 20%, 70%); /* Light grey denim */
+  --dropdown-active-bg-color: hsl(210, 30%, 90%); /* Light wash denim */
 
   /* Card Colors */
   --card-header-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
   --card-body-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
   --card-background-color: hsl(210, 30%, 80%); /* Light blue denim */
-  --card-border-color: hsl(210, 30%, 30%); /* Slightly lighter dark wash */
+  --card-border-color: hsl(210, 30%, 75%); /* Lighter medium blue denim */
 
   /* Footer Colors */
   --footer-bg-color: hsl(210, 30%, 20%); /* Dark wash denim */
@@ -49,6 +49,8 @@
   --table-th-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
   --table-td-text-color: hsl(210, 30%, 25%); /* Dark wash denim */
   --table-row-alt-bg-color: hsl(210, 30%, 90%); /* Light wash denim */
+  --table-row-divider-color: hsl(210, 20%, 85%); /* Light grey denim */
+  --table-column-divider-color: hsl(210, 20%, 85%); /* Light grey denim */
 
   /* Data Container Text Color */
   --data-text-color: hsl(210, 30%, 35%); /* Dark grey denim */

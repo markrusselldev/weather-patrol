@@ -1,6 +1,8 @@
 /* styles/custom.css */
 
-/* Custom Scrollbar Styles */
+/* 
+ * Custom Scrollbar Styles 
+ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -26,40 +28,42 @@
   scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-bg-color);
 }
 
-/* Custom hr Styles */
+/* 
+ * Custom hr Styles
+ */
 hr {
   border-top: 1px solid var(--hr-color);
   margin: 0.7rem 0;
 }
 
-
-
-/* Breadcrumb styles */
-.breadcrumb {
-  background-color: var(--background-color);
-  color: var(--breadcrumb-text-color);
-}
-
-/* Custom styles for ag grid */
+/* 
+ * Custom styles for ag grid 
+ */
 .ag-theme-alpine {
-  --ag-background-color: var(--background-color);
-  --ag-header-background-color: var(--table-th-bg-color);
-  --ag-header-foreground-color: var(--table-th-text-color);
-  --ag-odd-row-background-color: var(--table-row-alt-bg-color);
-  --ag-foreground-color: var(--table-td-text-color);
-  --ag-border-color: var(--table-border-color);
+  --ag-background-color: var(--background-color, #ff0000); /* Red fallback background */
+  --ag-header-background-color: var(--table-th-bg-color, #0000ff); /* Blue fallback header background */
+  --ag-header-foreground-color: var(--table-th-text-color, #ffff00); /* Yellow fallback header text */
+  --ag-odd-row-background-color: var(--table-row-alt-bg-color, #00ff00); /* Green fallback for alternate rows */
+  --ag-foreground-color: var(--table-td-text-color, #ff00ff); /* Magenta fallback text color */
+  --ag-border-color: var(--table-border-color, #ffa500); /* Orange fallback border color */
+  --ag-row-border-color: var(--table-row-divider-color, #ff00ff); /* Magenta fallback text color */
+  --ag-column-border-color: var(--table-column-divider-color, #00ff00); /* Green fallback */
 }
 
 .ag-theme-alpine .ag-cell {
-  color: var(--text-color);
+  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
+  border-bottom: 1px solid var(--ag-row-border-color); /* Row bottom border */
+  border-right: 1px solid var(--ag-column-border-color); /* Column right border */
 }
 
 .ag-row-hover .ag-cell {
+  font-weight: bold;
 }
 
 .ag-theme-alpine .ag-header-cell {
   font-weight: bold;
-  color: var(--table-th-text-color);
+  color: var(--ag-foreground-color, #00ff00); /* Green fallback */
+  /* border-right: 1px solid var(--ag-column-border-color);  Column right border for header cells */
 }
 
 .ag-cell {
@@ -75,16 +79,16 @@ hr {
 }
 
 .ag-theme-alpine .ag-status-bar {
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--ag-background-color, #ff0000); /* Red fallback background */
+  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
 }
 
 .ag-theme-alpine .ag-status-name-value {
-  color: var(--text-color);
+  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
 }
 
 .ag-theme-alpine .ag-paging-panel {
-  color: var(--text-color);
+  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
 }
 
 .ag-sticky-header .ag-header {
@@ -93,7 +97,9 @@ hr {
   z-index: 1;
 }
 
-/* Custom Dropdown */
+/* 
+ * Custom Dropdown Arrows 
+ */
 .custom-select {
   position: relative;
   display: inline-block;
@@ -104,7 +110,7 @@ hr {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  padding: 0.3rem 1.3rem 0 0.75rem; /* Space for the arrow */
+  padding: 0.3rem 1.6rem 0 0.75rem; /* Space for the arrow */
 }
 
 .custom-select::after {

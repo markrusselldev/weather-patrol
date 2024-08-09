@@ -29,7 +29,7 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
   }
 
   return (
-    <div className="breadcrumb flex justify-between items-center pt-4 px-4 text-sm text-breadcrumbText w-full h-12">
+    <div className="breadcrumb flex justify-between items-center pt-4 px-4 text-sm bg-background text-breadcrumbText w-full h-12">
       <div className="flex items-center">
         {/* Conditionally render the icon */}
         {Icon && <Icon className="mr-2 text-svg text-xl md:text-base" />}
