@@ -1,6 +1,8 @@
+// src/components/Header.jsx
+
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
-import { FaThermometerHalf, FaChartLine, FaTable } from "react-icons/fa";
+import routeConfig from "../config/routeConfig"; // Import the centralized route config
 import log from "../utils/logger";
 
 const Header = ({ navigationItems }) => {
@@ -12,16 +14,8 @@ const Header = ({ navigationItems }) => {
 
   // Get the appropriate icon based on the label
   const getIcon = label => {
-    switch (label) {
-      case "Home":
-        return <FaThermometerHalf className="text-2xl md:text-base" />;
-      case "Trends":
-        return <FaChartLine className="text-2xl md:text-base" />;
-      case "Data":
-        return <FaTable className="text-2xl md:text-base" />;
-      default:
-        return null;
-    }
+    const route = Object.values(routeConfig).find(r => r.title === label);
+    return route ? <route.icon className="text-2xl md:text-base" /> : null;
   };
 
   // Log navigation items on render
