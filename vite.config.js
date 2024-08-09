@@ -68,6 +68,9 @@ export default defineConfig(({ command, mode }) => {
               if (id.includes("chart.js")) {
                 return "chartjs";
               }
+              if (id.includes("react-icons")) {
+                return "react-icons";
+              }
               return "vendor"; // Default vendor chunk
             }
           },

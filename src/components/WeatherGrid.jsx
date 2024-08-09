@@ -33,25 +33,6 @@ const WeatherGrid = () => {
       gridRef.current.api = params.api; // Set grid API reference
       gridRef.current.columnApi = params.columnApi; // Set column API reference
       autoSizeAllColumns(); // Auto-size columns after grid is ready
-
-      // Force reapply of styles after grid is ready
-      setTimeout(() => {
-        if (gridRef.current) {
-          gridRef.current.api.refreshCells({ force: true });
-        }
-        // Reapply custom CSS variables after grid is ready
-        const gridElement = gridRef.current && gridRef.current.api.gridOptionsWrapper.getGridBody().parentNode;
-        if (gridElement) {
-          gridElement.style.setProperty("--background-color", "var(--background-color)");
-          gridElement.style.setProperty("--table-th-bg-color", "var(--table-th-bg-color)");
-          gridElement.style.setProperty("--table-th-text-color", "var(--table-th-text-color)");
-          gridElement.style.setProperty("--table-row-alt-bg-color", "var(--table-row-alt-bg-color)");
-          gridElement.style.setProperty("--table-td-text-color", "var(--table-td-text-color)");
-          gridElement.style.setProperty("--table-border-color", "var(--table-border-color)");
-          gridElement.style.setProperty("--row-divider-color", "var(--row-divider-color)"); // Row divider color
-          gridElement.style.setProperty("--column-divider-color", "var(--column-divider-color)"); // Column divider color
-        }
-      }, 0); // Delayed to ensure grid is fully loaded
     },
     [autoSizeAllColumns]
   );
