@@ -76,6 +76,17 @@ hr {
 
 .ag-theme-alpine .ag-paging-panel {
   color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
+  background-color: var(--ag-header-background-color, purple);
+}
+
+.ag-theme-alpine .ag-paging-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 

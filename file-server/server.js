@@ -35,17 +35,33 @@ app.use(
   })
 );
 
-const limiter = rateLimit({
+// General rate limiter for most API routes
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.", // Message to display when limit is reached
+  max: 100, // General limit for most API routes
+  message: "Too many requests from this IP, please try again later.",
   handler: (req, res) => {
     log.warn(`Rate limit exceeded for IP: ${req.ip}`, { page: "server.js", func: "rateLimit" });
     res.status(429).json({ error: "Too many requests from this IP, please try again later." });
   }
 });
 
-app.use(limiter); // Apply rate limiting middleware
+// Increased rate limiter for the data update route
+const updateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Increased limit for the update route
+  message: "Too many requests from this IP, please try again later.",
+  handler: (req, res) => {
+    log.warn(`Rate limit exceeded for IP: ${req.ip}`, { page: "server.js", func: "rateLimit" });
+    res.status(429).json({ error: "Too many requests from this IP, please try again later." });
+  }
+});
+
+// Apply the general rate limiter to all API routes
+app.use("/api", apiLimiter);
+
+// Apply the specific rate limiter to the data update route
+app.use("/data/update_toa5_data", updateLimiter);
 
 const csrfProtection = csrf({ cookie: true }); // Enable CSRF protection with cookies
 app.use(csrfProtection); // Apply CSRF protection middleware
@@ -85,7 +101,8 @@ app.use((err, req, res, next) => {
 });
 
 // Background worker to update TOA5 data every 15 minutes
-const interval = 15 * 60 * 1000; // 15 minutes
+// const interval = 15 * 60 * 1000; // 15 minutes
+const interval = 1 * 60 * 1000; // 1 minute
 
 setInterval(() => {
   log.info("Running scheduled TOA5 data update");
