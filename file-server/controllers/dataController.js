@@ -20,7 +20,7 @@ const getLatestWeatherData = (req, res) => {
     } else {
       log.warn("No data available for the latest weather data request", { ...logContext, func: "getLatestWeatherData" });
       // If no data is available, respond with a 500 status and error message
-      res.status(500).json({ error: "No data available" });
+      res.status(500).json({ error: "No data available. Reload the page / check your configuration." });
     }
   } catch (error) {
     log.error(`Error retrieving latest weather data: ${error.message}`, { ...logContext, func: "getLatestWeatherData" });
