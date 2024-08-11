@@ -75,8 +75,8 @@ hr {
 }
 
 .ag-theme-alpine .ag-paging-panel {
-  color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
-  background-color: var(--ag-header-background-color);
+  color: var(--ag-header-foreground-color, hsl(210, 30%, 25%)); /* Dark wash denim */
+  background-color: var(--ag-header-background-color, hsl(210, 30%, 80%)); /* Light blue denim */
   font-size: 0.875rem; /* Equivalent to Tailwind's text-sm */
 }
 
