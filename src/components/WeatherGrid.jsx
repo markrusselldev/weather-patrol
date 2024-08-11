@@ -15,46 +15,38 @@ const WeatherGrid = () => {
   const gridRef = useRef(null);
   const [stylesLoaded, setStylesLoaded] = useState(false);
 
-  // Check if the necessary CSS variables are applied
+  // Check if a key CSS variable is applied
   useEffect(() => {
     const checkStylesLoaded = () => {
-      // Create a temporary element to check for the application of CSS variables
-      const testElement = document.createElement('div');
-      document.body.appendChild(testElement);
+      const keyVariable = "--table-border-color"; // Key CSS variable to check
 
-      const computedStyle = window.getComputedStyle(testElement);
-      const tableBorderColor = computedStyle.getPropertyValue('--table-border-color');
-      const tableThBg = computedStyle.getPropertyValue('--table-th-bg-color');
-      const tableThText = computedStyle.getPropertyValue('--table-th-text-color');
-      const tableTdText = computedStyle.getPropertyValue('--table-td-text-color');
-      const tableRowAltBg = computedStyle.getPropertyValue('--table-row-alt-bg-color');
-      const dataText = computedStyle.getPropertyValue('--data-text-color');
-
-      // Check if all the required CSS variables are applied
-      if (tableBorderColor && tableThBg && tableThText && tableTdText && tableRowAltBg && dataText) {
-        log.info("All required CSS variables are loaded, indicating styles are applied.");
+      // Check if the key variable has a valid value
+      const value = getComputedStyle(document.documentElement).getPropertyValue(keyVariable);
+      if (value && value.trim() !== "") {
+        log.info("Key CSS variable is loaded, indicating styles are applied.");
         setStylesLoaded(true);
       } else {
-        log.warn("Not all required CSS variables are loaded yet.");
+        log.warn("Key CSS variable is not loaded yet.");
+        requestAnimationFrame(checkStylesLoaded); // Retry the check on the next animation frame
       }
-
-      document.body.removeChild(testElement);
     };
 
-    // Use setTimeout to delay the check, allowing styles to load
-    const timeoutId = setTimeout(checkStylesLoaded, 100); // Adjust the delay as needed
+    // Start the check after a small initial delay to avoid checking too early
+    const initialCheckTimeout = setTimeout(checkStylesLoaded, 100); // 100ms initial delay
 
-    // Fallback: if styles are not loaded within 1 second, proceed to load the grid
+    // Fallback: if styles are not loaded within 3 seconds, proceed with loading
     const fallbackTimeout = setTimeout(() => {
-      log.error("Styles did not load within expected time. Proceeding with grid load.");
-      setStylesLoaded(true);
-    }, 1000);
+      if (!stylesLoaded) {
+        log.error("Styles did not load within expected time. Proceeding with grid load.");
+        setStylesLoaded(true);
+      }
+    }, 3000); // 3 seconds
 
     return () => {
-      clearTimeout(timeoutId);
+      clearTimeout(initialCheckTimeout);
       clearTimeout(fallbackTimeout);
     };
-  }, []);
+  }, [stylesLoaded]);
 
   // Function to auto-size all columns to fit their contents
   const autoSizeAllColumns = useCallback(() => {
@@ -102,12 +94,12 @@ const WeatherGrid = () => {
 
   // Effect to handle row data updates only for new rows
   useEffect(() => {
-    if (weatherData.length > 0) {
+    if (weatherData.length > 0 && stylesLoaded) {
       const latestRow = weatherData[0];
       log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for weatherData" }, "Latest weather data row:", JSON.stringify(latestRow, null, 2));
       addNewRowData(latestRow);
     }
-  }, [weatherData, addNewRowData]);
+  }, [weatherData, addNewRowData, stylesLoaded]);
 
   // Memoize column definitions to include a value formatter for the TIMESTAMP column
   const memoizedColumnDefs = useMemo(() => {

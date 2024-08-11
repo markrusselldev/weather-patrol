@@ -1,35 +1,18 @@
-const log = require("./logger"); // Ensure you have the correct path to your logger module
-
-const errorHandler = (err, req, res, next) => {
-  // Enhanced logging with more detailed error context
-  log.error(`Error occurred in ${req.method} ${req.url} from IP: ${req.ip}`, {
-    page: "errorHandler.js",
-    func: "errorHandler",
-    errorName: err.name || "UnknownError",
-    errorMessage: err.message || "No specific error message provided",
-    stack: err.stack,
-    statusCode: err.statusCode || 500,
-  });
-
-  // Set the status code to the error status code if it exists, otherwise default to 500
-  const statusCode = err.statusCode || 500;
-
-  // Determine the error message to display based on the environment
-  const errorMessage =
-    process.env.NODE_ENV === "production"
-      ? "Something went wrong!"
-      : err.message || "An unexpected error occurred";
-
-  // Avoid sending multiple responses
-  if (res.headersSent) {
-    return next(err);
+// src/utils/errorHandler.js
+const errorHandler = error => {
+  let message = "An unknown error occurred";
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    message = `${error.response.status} - ${error.response.data.error || error.response.statusText}`;
+  } else if (error.request) {
+    // The request was made but no response was received
+    message = "No response received from server";
+  } else {
+    // Something happened in setting up the request that triggered an Error
+    message = `FOR DEMO ON RENDER.COM: "free instance will spin down with inactivity, which can delay requests by 50 seconds or more." Try reloading the page. Request Failed: ${error.message}`;
   }
-
-  // Send the error response with additional details in non-production environments
-  res.status(statusCode).json({
-    error: errorMessage,
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }), // Include stack trace in non-production environments
-  });
+  return message;
 };
 
-module.exports = errorHandler;
+export default errorHandler;

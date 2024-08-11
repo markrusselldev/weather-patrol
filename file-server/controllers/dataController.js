@@ -45,7 +45,7 @@ const getAllWeatherData = (req, res) => {
     } else {
       log.warn("No data available for the all weather data request", { ...logContext, func: "getAllWeatherData" });
       // If no data is available, respond with a 500 status and error message
-      res.status(500).json({ error: 'FOR DEMO ON RENDER.COM: "free instance will spin down with inactivity, which can delay requests by 50 seconds or more." Try reloading the page. No data available' });
+      res.status(500).json({ error: 'No data available' });
     }
   } catch (error) {
     log.error(`Error retrieving all weather data: ${error.message}`, { ...logContext, func: "getAllWeatherData" });
