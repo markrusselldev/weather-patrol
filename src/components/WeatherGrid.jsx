@@ -133,7 +133,6 @@ const WeatherGrid = () => {
           suppressColumnVirtualisation={false}
           suppressScrollLag={true} // Reduce forced reflows during scrolling
           animateRows={false} // Prevent row animations to improve performance
-          className="text-sm sm:text-base lg:text-sm truncate" // Add responsive text size and truncate overflow
         />
       ) : (
         <div className="flex justify-center items-center h-full">

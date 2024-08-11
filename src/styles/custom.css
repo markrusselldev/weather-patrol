@@ -39,7 +39,7 @@ hr {
 /* 
  * Custom styles for ag grid 
  */
- .ag-theme-alpine {
+.ag-theme-alpine {
   --ag-background-color: var(--background-color, hsl(210, 30%, 95%)); /* Light wash denim */
   --ag-header-background-color: var(--table-th-bg-color, hsl(210, 30%, 80%)); /* Light blue denim */
   --ag-header-foreground-color: var(--table-th-text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
@@ -76,19 +76,15 @@ hr {
 
 .ag-theme-alpine .ag-paging-panel {
   color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
-  background-color: var(--ag-header-background-color, purple);
+  background-color: var(--ag-header-background-color);
+  font-size: 0.875rem; /* Equivalent to Tailwind's text-sm */
 }
 
-.ag-theme-alpine .ag-paging-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+@media (max-width: 640px) {
+  .ag-theme-alpine .ag-paging-panel {
+    font-size: 0.75rem; /* Tailwind's text-xs equivalent */
+  }
 }
-
 
 /* 
  * Custom Dropdown Arrows 
@@ -103,7 +99,7 @@ hr {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  padding: 0.3rem 1.6rem 0 0.75rem; /* Space for the arrow */
+  padding: 0.3rem 1.6rem 0.3rem 0.75rem; /* Space for the arrow */
 }
 
 .custom-select::after {

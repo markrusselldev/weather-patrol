@@ -16,9 +16,11 @@ const Footer = () => {
   const formattedEnvironmentInfo = environmentInfo.split(",").join(", ");
 
   return (
-    <footer className="w-full bg-footerBg text-footerText flex justify-between p-4 text-xs h-footer">
-      <div className="flex items-center p-2">Environment: {formattedEnvironmentInfo}</div>
-      <div className="flex items-center p-2 justify-end text-right">
+    <footer className="w-full bg-footerBg text-footerText p-4 text-xs h-auto flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+      <div className="flex-1 sm:pr-4 break-words">
+        Environment: {formattedEnvironmentInfo}
+      </div>
+      <div className="flex items-center justify-end sm:flex-shrink-0">
         <ThemeSelector />
       </div>
     </footer>
