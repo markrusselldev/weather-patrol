@@ -23,7 +23,7 @@ app.use(cookieParser()); // Parse cookies
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "https://localhost:5173", // Allow CORS from specified origin
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Allow CORS from specified origin
     credentials: true, // Allow credentials (cookies, authorization headers)
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
     allowedHeaders: ["Content-Type", "x-api-key", "X-CSRF-TOKEN"], // Allowed headers

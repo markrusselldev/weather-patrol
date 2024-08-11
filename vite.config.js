@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -20,44 +19,30 @@ export default defineConfig(({ command, mode }) => {
     plugins.push(
       visualizer({
         filename: "bundle-visualizer.html",
-        open: true,
+        open: true
       })
     );
-  }
-
-  // Correct the path to SSL files for development
-  const serverConfig = {};
-  if (mode === 'development') {
-    serverConfig.https = {
-      key: fs.readFileSync(
-        path.resolve(__dirname, "../file-server/ssl/localhost-key.pem")
-      ),
-      cert: fs.readFileSync(
-        path.resolve(__dirname, "../file-server/ssl/localhost.pem")
-      ),
-    };
   }
 
   return {
     plugins,
     server: {
-      ...serverConfig,
       proxy: {
         "/api": {
-          target: "https://localhost:3000",
+          target: "http://localhost:3000",
           changeOrigin: true,
-          secure: false,
+          secure: false
         },
         "/sse": {
-          target: "https://localhost:3000",
+          target: "http://localhost:3000",
           changeOrigin: true,
           secure: false,
-          ws: true,
-        },
-      },
+          ws: true
+        }
+      }
     },
     define: {
-      "import.meta.env.VITE_LOG_LEVEL": JSON.stringify(env.VITE_LOG_LEVEL),
+      "import.meta.env.VITE_LOG_LEVEL": JSON.stringify(env.VITE_LOG_LEVEL)
     },
     build: {
       chunkSizeWarningLimit: 1000,
@@ -76,9 +61,9 @@ export default defineConfig(({ command, mode }) => {
               }
               return "vendor";
             }
-          },
-        },
-      },
-    },
+          }
+        }
+      }
+    }
   };
 });
