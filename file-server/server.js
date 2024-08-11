@@ -1,7 +1,5 @@
 require("dotenv").config(); // Load environment variables from .env file
-const https = require("https"); // HTTPS module for creating secure server
-const fs = require("fs"); // File system module for reading SSL files
-const path = require("path"); // Path module for handling file paths
+const http = require("http"); // HTTP module for creating a server
 const express = require("express"); // Express framework for building web applications
 const helmet = require("helmet"); // Helmet for securing Express apps by setting various HTTP headers
 const cors = require("cors"); // CORS middleware for enabling Cross-Origin Resource Sharing
@@ -17,18 +15,6 @@ const serveFrontend = require("./serve-frontend"); // Import the frontend servin
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Define the port to run the server
-
-// SSL Options
-let sslOptions;
-try {
-  sslOptions = {
-    key: fs.readFileSync(path.join(__dirname, "ssl", "localhost-key.pem")), // Read SSL key
-    cert: fs.readFileSync(path.join(__dirname, "ssl", "localhost.pem")) // Read SSL certificate
-  };
-} catch (error) {
-  log.error("Error reading SSL files:", { page: "server.js", func: "sslOptions", error });
-  process.exit(1); // Exit the process if SSL files cannot be read
-}
 
 // Middleware setup
 app.use(express.json()); // Parse incoming JSON requests
@@ -51,7 +37,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.", // Message to display when limit is reached
-  handler: (req, res, next) => {
+  handler: (req, res) => {
     log.warn(`Rate limit exceeded for IP: ${req.ip}`, { page: "server.js", func: "rateLimit" });
     res.status(429).json({ error: "Too many requests from this IP, please try again later." });
   }
@@ -96,7 +82,7 @@ app.use((err, req, res, next) => {
   errorHandler(err, req, res, next);
 });
 
-// Start the HTTPS server
-https.createServer(sslOptions, app).listen(PORT, () => {
-  log.info(`Server is running on port ${PORT} with HTTPS`, { page: "server.js", func: "startServer" });
+// Start the server
+http.createServer(app).listen(PORT, () => {
+  log.info(`Server is running on http://localhost:${PORT}`, { page: "server.js", func: "startServer" });
 });
