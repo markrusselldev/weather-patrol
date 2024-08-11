@@ -62,9 +62,6 @@ export default defineConfig(({ command, mode }) => {
               if (id.includes("@ag-grid-community")) {
                 return "ag-grid";
               }
-              if (id.includes("react")) {
-                return "react-vendor";
-              }
               if (id.includes("chart.js")) {
                 return "chartjs";
               }
