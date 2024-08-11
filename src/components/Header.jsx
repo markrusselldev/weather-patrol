@@ -25,7 +25,7 @@ const Header = ({ navigationItems }) => {
     <header className="w-full bg-headerBg text-headerText p-4 flex justify-between items-center sticky top-0 z-20 h-header shadow-md">
       <div className="flex items-center min-w-[11rem]">
         <img src="/images/weather-patrol-80s-bear.png" alt="Logo" className="w-10 h-10.5 mr-1" />
-        <div className="text-lg whitespace-nowrap hidden md:block">
+        <div className="text-lg whitespace-nowrap">
           <img src="/images/weather-patrol-80s-text.gif" alt="Weather Patrol" className="w-15 h-10" />
         </div>
       </div>
