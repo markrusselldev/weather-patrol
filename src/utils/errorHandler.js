@@ -10,7 +10,8 @@ const errorHandler = error => {
     message = "No response received from server";
   } else {
     // Something happened in setting up the request that triggered an Error
-    message = `FOR DEMO ON RENDER.COM: "free instance will spin down with inactivity, which can delay requests by 50 seconds or more." Try reloading the page. Request Failed: ${error.message}`;
+    message = `For Demo on Render.com: CLICK REFRESH IF YOU SEE THIS - "free instance will spin down with inactivity..." -Render.com.`;
+    // Orignial error message: Request Failed: ${error.message}
   }
   return message;
 };
