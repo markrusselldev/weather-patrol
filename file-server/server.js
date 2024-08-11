@@ -12,6 +12,8 @@ const apiRoutes = require("./routes/api"); // Import API routes
 const { addSSEClient } = require("./services/dataService"); // Import addSSEClient function
 const dataService = require("./services/dataService"); // Import dataService
 const serveFrontend = require("./serve-frontend"); // Import the frontend serving file
+const path = require("path"); // For resolving file paths
+const { exec } = require("child_process"); // For running the update script
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Define the port to run the server
@@ -81,6 +83,23 @@ app.use((err, req, res, next) => {
   log.error(`Error occurred in ${req.method} ${req.url} from IP: ${req.ip}`, { page: "server.js", func: "errorHandler", err });
   errorHandler(err, req, res, next);
 });
+
+// Background worker to update TOA5 data every 15 minutes
+const interval = 15 * 60 * 1000; // 15 minutes
+
+setInterval(() => {
+  log.info("Running scheduled TOA5 data update");
+  exec(`node ${path.resolve(__dirname, "update_toa5_data.js")}`, (error, stdout, stderr) => {
+    if (error) {
+      log.error(`Error executing update_toa5_data.js: ${error}`);
+      return;
+    }
+    log.info(`update_toa5_data.js output: ${stdout}`);
+    if (stderr) {
+      log.warn(`update_toa5_data.js stderr: ${stderr}`);
+    }
+  });
+}, interval);
 
 // Start the server
 http.createServer(app).listen(PORT, () => {
