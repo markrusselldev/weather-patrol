@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useCallback, useContext } from "react";
+import { useRef, useEffect, useMemo, useCallback, useContext, useState } from "react";
 import PropTypes from "prop-types";
 import { AgGridReact } from "@ag-grid-community/react";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
@@ -14,6 +14,22 @@ import { FaSpinner } from "react-icons/fa"; // Import loading spinner icon
 const WeatherGrid = () => {
   const { columnDefs, weatherData, error, loading } = useContext(DataContext);
   const gridRef = useRef(null);
+  const [stylesLoaded, setStylesLoaded] = useState(false);
+
+  // Check if the styles are loaded by inspecting the applied theme class
+  useEffect(() => {
+    const checkStylesLoaded = () => {
+      const styleElement = document.querySelector('link[href*="custom.css"]');
+      if (styleElement) {
+        setStylesLoaded(true);
+      }
+    };
+
+    // Use setTimeout to delay the check, allowing styles to load
+    const timeoutId = setTimeout(checkStylesLoaded, 100); // Adjust the delay as needed
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   // Function to auto-size all columns to fit their contents
   const autoSizeAllColumns = useCallback(() => {
@@ -101,7 +117,7 @@ const WeatherGrid = () => {
   return (
     <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 215px)" }}>
       {processedError && <div className="error">{processedError}</div>}
-      {loading ? (
+      {loading || !stylesLoaded ? (
         <div className="flex justify-center items-center h-full">
           <FaSpinner className="animate-spin text-3xl text-gray-300" />
         </div>
@@ -121,7 +137,7 @@ const WeatherGrid = () => {
             cellStyle: {
               overflow: "hidden",
               textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+              whiteSpace: "nowrap"
             },
             headerClass: "custom-header" // Apply custom header class
           }}
