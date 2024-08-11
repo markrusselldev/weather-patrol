@@ -25,17 +25,23 @@ export default defineConfig(({ command, mode }) => {
     );
   }
 
+  // Correct the path to SSL files for development
+  const serverConfig = {};
+  if (mode === 'development') {
+    serverConfig.https = {
+      key: fs.readFileSync(
+        path.resolve(__dirname, "../file-server/ssl/localhost-key.pem")
+      ),
+      cert: fs.readFileSync(
+        path.resolve(__dirname, "../file-server/ssl/localhost.pem")
+      ),
+    };
+  }
+
   return {
     plugins,
     server: {
-      https: {
-        key: fs.readFileSync(
-          path.resolve(__dirname, "../toa5-file-server/ssl/localhost-key.pem")
-        ),
-        cert: fs.readFileSync(
-          path.resolve(__dirname, "../toa5-file-server/ssl/localhost.pem")
-        ),
-      },
+      ...serverConfig,
       proxy: {
         "/api": {
           target: "https://localhost:3000",
@@ -54,7 +60,7 @@ export default defineConfig(({ command, mode }) => {
       "import.meta.env.VITE_LOG_LEVEL": JSON.stringify(env.VITE_LOG_LEVEL),
     },
     build: {
-      chunkSizeWarningLimit: 1000, // Set chunk size warning limit to 1000 KB
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -68,7 +74,7 @@ export default defineConfig(({ command, mode }) => {
               if (id.includes("react-icons")) {
                 return "react-icons";
               }
-              return "vendor"; // Default vendor chunk
+              return "vendor";
             }
           },
         },
