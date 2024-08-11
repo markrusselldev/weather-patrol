@@ -6,9 +6,12 @@ const moment = require("moment");
 const filePath = path.join(__dirname, "toa5.dat");
 
 // Function to generate random float with smoothing based on previous value
-const getSmoothedRandomFloat = (prevValue, minChange, maxChange) => {
+const getSmoothedRandomFloat = (prevValue, minChange, maxChange, allowNegative = false) => {
   const change = Math.random() * (maxChange - minChange) + minChange;
-  const newValue = parseFloat(prevValue) + (Math.random() < 0.5 ? -change : change);
+  let newValue = parseFloat(prevValue) + (Math.random() < 0.5 ? -change : change);
+  if (!allowNegative) {
+    newValue = Math.max(newValue, 0); // Ensure the value is non-negative
+  }
   return newValue.toFixed(2);
 };
 
@@ -49,9 +52,9 @@ const appendNewRow = () => {
     getSmoothedRandomFloat(prevAirTFMin, 2, 5), // AirTF_Min with larger change
     getSmoothedRandomFloat(prevAirTFAvg, 2, 5), // AirTF_Avg with larger change
     getRandomFloat(-20, 0), // WC_F_Avg with larger range
-    getSmoothedRandomFloat(prevWSmphMax, 3, 10), // WS_mph_Max with larger change
-    getSmoothedRandomFloat(prevWSmphMin, 3, 10), // WS_mph_Min with larger change
-    getSmoothedRandomFloat(prevWSmphAvg, 3, 10), // WS_mph_Avg with larger change
+    getSmoothedRandomFloat(prevWSmphMax, 3, 10, false), // WS_mph_Max with larger change, no negatives
+    getSmoothedRandomFloat(prevWSmphMin, 3, 10, false), // WS_mph_Min with larger change, no negatives
+    getSmoothedRandomFloat(prevWSmphAvg, 3, 10, false), // WS_mph_Avg with larger change, no negatives
     getRandomFloat(200, 360), // WindDir (keep random for simplicity)
     getSmoothedRandomFloat(prevRH, 1, 5), // RH with larger change
     getRandomFloat(5, 8), // DP_F_Avg (leave as is for now)
