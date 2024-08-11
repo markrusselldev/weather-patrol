@@ -10,25 +10,50 @@ import errorHandler from "../utils/errorHandler";
 import { formatTimestamp } from "../utils/utils";
 import { FaSpinner } from "react-icons/fa"; // Import loading spinner icon
 
-// WeatherGrid Component
 const WeatherGrid = () => {
   const { columnDefs, weatherData, error, loading } = useContext(DataContext);
   const gridRef = useRef(null);
   const [stylesLoaded, setStylesLoaded] = useState(false);
 
-  // Check if the styles are loaded by inspecting the applied theme class
+  // Check if the necessary CSS variables are applied
   useEffect(() => {
     const checkStylesLoaded = () => {
-      const styleElement = document.querySelector('link[href*="custom.css"]');
-      if (styleElement) {
+      // Create a temporary element to check for the application of CSS variables
+      const testElement = document.createElement('div');
+      document.body.appendChild(testElement);
+
+      const computedStyle = window.getComputedStyle(testElement);
+      const tableBorderColor = computedStyle.getPropertyValue('--table-border-color');
+      const tableThBg = computedStyle.getPropertyValue('--table-th-bg-color');
+      const tableThText = computedStyle.getPropertyValue('--table-th-text-color');
+      const tableTdText = computedStyle.getPropertyValue('--table-td-text-color');
+      const tableRowAltBg = computedStyle.getPropertyValue('--table-row-alt-bg-color');
+      const dataText = computedStyle.getPropertyValue('--data-text-color');
+
+      // Check if all the required CSS variables are applied
+      if (tableBorderColor && tableThBg && tableThText && tableTdText && tableRowAltBg && dataText) {
+        log.info("All required CSS variables are loaded, indicating styles are applied.");
         setStylesLoaded(true);
+      } else {
+        log.warn("Not all required CSS variables are loaded yet.");
       }
+
+      document.body.removeChild(testElement);
     };
 
     // Use setTimeout to delay the check, allowing styles to load
     const timeoutId = setTimeout(checkStylesLoaded, 100); // Adjust the delay as needed
 
-    return () => clearTimeout(timeoutId);
+    // Fallback: if styles are not loaded within 1 second, proceed to load the grid
+    const fallbackTimeout = setTimeout(() => {
+      log.error("Styles did not load within expected time. Proceeding with grid load.");
+      setStylesLoaded(true);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(fallbackTimeout);
+    };
   }, []);
 
   // Function to auto-size all columns to fit their contents
@@ -46,9 +71,9 @@ const WeatherGrid = () => {
   const onGridReady = useCallback(
     params => {
       log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "onGridReady" }, "Grid is ready");
-      gridRef.current.api = params.api; // Set grid API reference
-      gridRef.current.columnApi = params.columnApi; // Set column API reference
-      autoSizeAllColumns(); // Auto-size columns after grid is ready
+      gridRef.current.api = params.api;
+      gridRef.current.columnApi = params.columnApi;
+      autoSizeAllColumns();
     },
     [autoSizeAllColumns]
   );
@@ -66,7 +91,7 @@ const WeatherGrid = () => {
         if (!existingRow) {
           log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Adding new row data:", JSON.stringify(newRow, null, 2));
           gridRef.current.api.applyTransaction({ add: [newRow], addIndex: 0 });
-          autoSizeAllColumns(); // Re-size columns after adding new row
+          autoSizeAllColumns();
         } else {
           log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "addNewRowData" }, "Row with this TIMESTAMP already exists. No new row added.");
         }
@@ -137,7 +162,7 @@ const WeatherGrid = () => {
             cellStyle: {
               overflow: "hidden",
               textOverflow: "ellipsis",
-              whiteSpace: "nowrap"
+              whiteSpace: "nowrap",
             },
             headerClass: "custom-header" // Apply custom header class
           }}

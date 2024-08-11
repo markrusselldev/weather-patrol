@@ -89,9 +89,9 @@ const interval = 15 * 60 * 1000; // 15 minutes
 
 setInterval(() => {
   log.info("Running scheduled TOA5 data update");
-  exec(`node ${path.resolve(__dirname, "update_toa5_data.js")}`, (error, stdout, stderr) => {
+  exec(`node ${path.resolve(__dirname, "/data/update_toa5_data.js")}`, (error, stdout, stderr) => {
     if (error) {
-      log.error(`Error executing update_toa5_data.js: ${error}`);
+      log.error(`Error executing update_toa5_data.js: ${error.message || error}`, { error });
       return;
     }
     log.info(`update_toa5_data.js output: ${stdout}`);
