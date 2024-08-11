@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useCallback, useContext, useState } from "react";
+import { useRef, useEffect, useMemo, useCallback, useContext } from "react";
 import PropTypes from "prop-types";
 import { AgGridReact } from "@ag-grid-community/react";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
@@ -8,45 +8,11 @@ import { DataContext } from "../contexts/DataContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
 import { formatTimestamp } from "../utils/utils";
-import { FaSpinner } from "react-icons/fa"; // Import loading spinner icon
+import { FaSpinner } from "react-icons/fa";
 
 const WeatherGrid = () => {
   const { columnDefs, weatherData, error, loading } = useContext(DataContext);
   const gridRef = useRef(null);
-  const [stylesLoaded, setStylesLoaded] = useState(false);
-
-  // Check if a key CSS variable is applied
-  useEffect(() => {
-    const checkStylesLoaded = () => {
-      const keyVariable = "--table-border-color"; // Key CSS variable to check
-
-      // Check if the key variable has a valid value
-      const value = getComputedStyle(document.documentElement).getPropertyValue(keyVariable);
-      if (value && value.trim() !== "") {
-        log.info("Key CSS variable is loaded, indicating styles are applied.");
-        setStylesLoaded(true);
-      } else {
-        log.warn("Key CSS variable is not loaded yet.");
-        requestAnimationFrame(checkStylesLoaded); // Retry the check on the next animation frame
-      }
-    };
-
-    // Start the check after a small initial delay to avoid checking too early
-    const initialCheckTimeout = setTimeout(checkStylesLoaded, 100); // 100ms initial delay
-
-    // Fallback: if styles are not loaded within 3 seconds, proceed with loading
-    const fallbackTimeout = setTimeout(() => {
-      if (!stylesLoaded) {
-        log.error("Styles did not load within expected time. Proceeding with grid load.");
-        setStylesLoaded(true);
-      }
-    }, 3000); // 3 seconds
-
-    return () => {
-      clearTimeout(initialCheckTimeout);
-      clearTimeout(fallbackTimeout);
-    };
-  }, [stylesLoaded]);
 
   // Function to auto-size all columns to fit their contents
   const autoSizeAllColumns = useCallback(() => {
@@ -94,12 +60,12 @@ const WeatherGrid = () => {
 
   // Effect to handle row data updates only for new rows
   useEffect(() => {
-    if (weatherData.length > 0 && stylesLoaded) {
+    if (weatherData.length > 0) {
       const latestRow = weatherData[0];
       log.info({ page: "WeatherGrid", component: "WeatherGrid", func: "useEffect for weatherData" }, "Latest weather data row:", JSON.stringify(latestRow, null, 2));
       addNewRowData(latestRow);
     }
-  }, [weatherData, addNewRowData, stylesLoaded]);
+  }, [weatherData, addNewRowData]);
 
   // Memoize column definitions to include a value formatter for the TIMESTAMP column
   const memoizedColumnDefs = useMemo(() => {
@@ -134,7 +100,7 @@ const WeatherGrid = () => {
   return (
     <div ref={gridRef} className="ag-theme-alpine" style={{ width: "100%", height: "calc(100vh - 215px)" }}>
       {processedError && <div className="error">{processedError}</div>}
-      {loading || !stylesLoaded ? (
+      {loading ? (
         <div className="flex justify-center items-center h-full">
           <FaSpinner className="animate-spin text-3xl text-gray-300" />
         </div>
@@ -154,12 +120,12 @@ const WeatherGrid = () => {
             cellStyle: {
               overflow: "hidden",
               textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+              whiteSpace: "nowrap"
             },
             headerClass: "custom-header" // Apply custom header class
           }}
           getRowStyle={params => ({
-            backgroundColor: params.node.rowIndex % 2 === 0 ? "var(--table-row-alt-bg-color, #00ff00)" : "inherit" // Apply custom CSS variable with green fallback for alternate row background color
+            backgroundColor: params.node.rowIndex % 2 === 0 ? "var(--table-row-alt-bg-color)" : "inherit" // Apply custom CSS variable
           })}
           paginationPanelClassName="custom-pagination"
           rowBuffer={10} // Number of rows rendered outside the viewable area

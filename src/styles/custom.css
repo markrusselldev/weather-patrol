@@ -39,19 +39,19 @@ hr {
 /* 
  * Custom styles for ag grid 
  */
-.ag-theme-alpine {
-  --ag-background-color: var(--background-color, #ff0000); /* Red fallback background */
-  --ag-header-background-color: var(--table-th-bg-color, #0000ff); /* Blue fallback header background */
-  --ag-header-foreground-color: var(--table-th-text-color, #ffff00); /* Yellow fallback header text */
-  --ag-odd-row-background-color: var(--table-row-alt-bg-color, #00ff00); /* Green fallback for alternate rows */
-  --ag-foreground-color: var(--table-td-text-color, #ff00ff); /* Magenta fallback text color */
-  --ag-border-color: var(--table-border-color, #ffa500); /* Orange fallback border color */
-  --ag-row-border-color: var(--table-row-divider-color, #ff00ff); /* Magenta fallback text color */
-  --ag-column-border-color: var(--table-column-divider-color, #00ff00); /* Green fallback */
+ .ag-theme-alpine {
+  --ag-background-color: var(--background-color, hsl(210, 30%, 95%)); /* Light wash denim */
+  --ag-header-background-color: var(--table-th-bg-color, hsl(210, 30%, 80%)); /* Light blue denim */
+  --ag-header-foreground-color: var(--table-th-text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
+  --ag-odd-row-background-color: var(--table-row-alt-bg-color, hsl(210, 30%, 90%)); /* Light wash denim */
+  --ag-foreground-color: var(--table-td-text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
+  --ag-border-color: var(--table-border-color, hsl(210, 20%, 85%)); /* Light grey denim */
+  --ag-row-border-color: var(--table-row-divider-color, hsl(210, 20%, 85%)); /* Light grey denim */
+  --ag-column-border-color: var(--table-column-divider-color, hsl(210, 20%, 85%)); /* Light grey denim */
 }
 
 .ag-theme-alpine .ag-cell {
-  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
+  color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
   border-bottom: 1px solid var(--ag-row-border-color); /* Row bottom border */
   border-right: 1px solid var(--ag-column-border-color); /* Column right border */
 }
@@ -62,40 +62,22 @@ hr {
 
 .ag-theme-alpine .ag-header-cell {
   font-weight: bold;
-  color: var(--ag-foreground-color, #00ff00); /* Green fallback */
-  /* border-right: 1px solid var(--ag-column-border-color);  Column right border for header cells */
-}
-
-.ag-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ag-cell:hover {
-  overflow: visible;
-  white-space: normal;
-  z-index: 1;
+  color: var(--ag-foreground-color, hsl(210, 30%, 25%)); /* Dark wash denim */
 }
 
 .ag-theme-alpine .ag-status-bar {
-  background-color: var(--ag-background-color, #ff0000); /* Red fallback background */
-  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
+  background-color: var(--ag-background-color, hsl(210, 30%, 95%)); /* Light wash denim */
+  color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
 }
 
 .ag-theme-alpine .ag-status-name-value {
-  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
+  color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
 }
 
 .ag-theme-alpine .ag-paging-panel {
-  color: var(--text-color, #ff00ff); /* Magenta fallback text color */
+  color: var(--text-color, hsl(210, 30%, 25%)); /* Dark wash denim */
 }
 
-.ag-sticky-header .ag-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
 
 /* 
  * Custom Dropdown Arrows 

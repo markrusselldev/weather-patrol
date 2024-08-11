@@ -10,7 +10,7 @@ const errorHandler = error => {
     message = "No response received from server";
   } else {
     // Something happened in setting up the request that triggered an Error
-    message = `For Demo on Render.com: CLICK REFRESH IF YOU SEE THIS - "free instance will spin down with inactivity..." -Render.com.`;
+    message = `Demo on Render.com: (IF YOU SEE THIS MESSAGE, CLICK REFRESH ) - "free instance will spin down with inactivity..." -Render.com.`;
     // Orignial error message: Request Failed: ${error.message}
   }
   return message;
