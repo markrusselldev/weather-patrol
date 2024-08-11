@@ -1,7 +1,7 @@
 import axios from "axios";
 import log from "../utils/logger";
 
-const API_BASE_URL = "https://localhost:3000/api"; // Ensure this matches your backend URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 const SSE_URL = `${API_BASE_URL}/sse`;
 
 // Fetch all weather data from the backend

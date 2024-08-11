@@ -7,12 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Directories
 node_modules
 dist
 dist-ssr
 *.local
 wireframe3
 test
+ssl
+.vscode
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +28,12 @@ test
 *.sln
 *.sw?
 *.txt
+*.zip
+
+# Ignore environment files
+.env
+.env.production
+.env.development
+
+# Ignore bundle visualizer output
+bundle-visualizer.html
