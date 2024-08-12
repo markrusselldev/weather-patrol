@@ -82,7 +82,7 @@ hr {
 
 @media (max-width: 640px) {
   .ag-theme-alpine .ag-paging-panel {
-    font-size: 0.75rem; /* Tailwind's text-xs equivalent */
+    font-size: 0.7rem; /* smaller than Tailwind's text-xs equivalent, 0.75rem */
   }
 }
 

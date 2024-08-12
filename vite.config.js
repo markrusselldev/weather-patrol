@@ -14,8 +14,8 @@ export default defineConfig(({ command, mode }) => {
   // Create an array of plugins
   const plugins = [react()];
 
-  // Conditionally add the visualizer plugin only for the build command
-  if (command === "build") {
+  // Conditionally add the visualizer plugin only for the build command and if VITE_ANALYZE is true
+  if (command === "build" && env.VISUALIZE === "true") {
     plugins.push(
       visualizer({
         filename: "bundle-visualizer.html",
