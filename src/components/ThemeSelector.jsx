@@ -2,18 +2,13 @@ import { useContext } from "react";
 import PropTypes from "prop-types";
 import { ThemeContext } from "../contexts/ThemeContext";
 import log from "../utils/logger";
-import useUpdateChartColors from "../hooks/useUpdateChartColors";
 
-const ThemeSelector = ({ chartInstanceRef }) => {
+const ThemeSelector = () => {
   const { theme, setTheme } = useContext(ThemeContext);
-  const { updateChartColors } = useUpdateChartColors(chartInstanceRef);
 
   const handleThemeChange = (newTheme) => {
     log.info({ page: "ThemeSelector", component: "ThemeSelector", func: "handleThemeChange" }, "Theme changed to:", newTheme);
     setTheme(newTheme);
-    setTimeout(() => {
-      updateChartColors(chartInstanceRef.current);
-    }, 50);
   };
 
   return (
