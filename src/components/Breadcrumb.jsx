@@ -37,7 +37,7 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
       </div>
       <div className="flex grow justify-end items-center">
         <FaClock className="mr-2 text-svg text-xl md:text-base" />
-        <span className="hidden sm:inline">Last Update:</span> {/* Hide on small screens */}
+        <span className="hidden sm:inline">Last Update:&nbsp;</span> {/* Hide on small screens */}
         {formattedTimestamp}
         {timeframeSelector && <FaCalendarAlt className="mx-2 text-svg text-xl md:text-base" />}
       </div>
