@@ -9,7 +9,7 @@
     "postinstall": "if [ \"$ENVIRONMENT\" = \"eb\" ]; then cd .. && npm install && npm run build; fi"
   },
   "dependencies": {
-    "axios": "^1.7.2",
+    "axios": "^1.7.4",
     "chokidar": "^3.5.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
