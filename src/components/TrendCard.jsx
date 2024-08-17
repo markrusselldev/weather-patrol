@@ -1,17 +1,16 @@
-import { useEffect, useRef, memo } from "react";
+import { useEffect, useRef, memo, useContext } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from "chart.js";
+import { ThemeContext } from "../contexts/ThemeContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
-import useUpdateChartColors, { getChartColors } from "../hooks/useUpdateChartColors";
 
 // Register the necessary Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController);
 
-// Function to generate chart data with appropriate colors
 const generateChartData = (labels, data, title) => {
-  const colors = getChartColors();
-  log.debug({ page: "TrendCard", component: "TrendCard", func: "generateChartData" }, `colors: ${JSON.stringify(colors)}`);
+  const rootStyle = getComputedStyle(document.documentElement);
+
   return {
     labels: labels,
     datasets: [
@@ -19,49 +18,44 @@ const generateChartData = (labels, data, title) => {
         label: title,
         data: data,
         fill: false,
-        backgroundColor: colors.backgroundColor,
-        borderColor: colors.borderColor,
-        pointBackgroundColor: colors.pointBackgroundColor,
-        pointBorderColor: colors.pointBorderColor,
-        pointHoverBackgroundColor: colors.pointHoverBackgroundColor,
-        pointHoverBorderColor: colors.pointHoverBorderColor,
+        backgroundColor: rootStyle.getPropertyValue('--chart-bg-color').trim(),
+        borderColor: rootStyle.getPropertyValue('--chart-line-color').trim(),
+        pointBackgroundColor: rootStyle.getPropertyValue('--chart-point-bg-color').trim(),
+        pointBorderColor: rootStyle.getPropertyValue('--chart-point-border-color').trim(),
+        pointHoverBackgroundColor: rootStyle.getPropertyValue('--chart-point-hover-bg-color').trim(),
+        pointHoverBorderColor: rootStyle.getPropertyValue('--chart-point-hover-border-color').trim(),
         tension: 0.4,
-        hoverBackgroundColor: colors.hoverBackgroundColor,
-        hoverBorderColor: colors.hoverBorderColor,
-        //pointStyle: "rectRounded"
+        hoverBackgroundColor: rootStyle.getPropertyValue('--chart-hover-bg-color').trim(), 
+        hoverBorderColor: rootStyle.getPropertyValue('--chart-hover-border-color').trim(),
       }
     ]
   };
 };
 
-// Chart options
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      type: "category"
-    },
-    y: {
-      beginAtZero: true
-    }
-  },
-  plugins: {
-    legend: {
-      labels: {
-        //usePointStyle: true, // Use a point style instead of a rectangle
-        boxWidth: 20 // Width of the colored box
-      }
-    }
+const updateChartColors = (chartInstance) => {
+  if (chartInstance && chartInstance.data && chartInstance.data.datasets) {
+    const rootStyle = getComputedStyle(document.documentElement);
+
+    chartInstance.data.datasets.forEach(dataset => {
+      dataset.backgroundColor = rootStyle.getPropertyValue('--chart-bg-color').trim();
+      dataset.borderColor = rootStyle.getPropertyValue('--chart-line-color').trim();
+      dataset.pointBackgroundColor = rootStyle.getPropertyValue('--chart-point-bg-color').trim();
+      dataset.pointBorderColor = rootStyle.getPropertyValue('--chart-point-border-color').trim();
+      dataset.pointHoverBackgroundColor = rootStyle.getPropertyValue('--chart-point-hover-bg-color').trim();
+      dataset.pointHoverBorderColor = rootStyle.getPropertyValue('--chart-point-hover-border-color').trim();
+      dataset.hoverBackgroundColor = rootStyle.getPropertyValue('--chart-hover-bg-color').trim();
+      dataset.hoverBorderColor = rootStyle.getPropertyValue('--chart-hover-border-color').trim();
+    });
+
+    chartInstance.update(); // Re-render the chart with updated colors
   }
 };
 
 const TrendCard = ({ title, icon: Icon, labels, data }) => {
   const chartRef = useRef(null); // Reference to the canvas element
   const chartInstanceRef = useRef(null); // Reference to the Chart.js instance
-  const { updateChartColors } = useUpdateChartColors(chartInstanceRef); // Custom hook to update chart colors
+  const { theme } = useContext(ThemeContext); // Access the current theme from the context
 
-  // Effect to create the chart when the component is mounted
   useEffect(() => {
     if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d"); // Get 2D context from the canvas
@@ -70,19 +64,35 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
           chartInstanceRef.current.destroy(); // Destroy the existing chart instance if it exists
         }
         try {
-          // Create a new chart instance
           const newChartInstance = new ChartJS(ctx, {
             type: "line",
             data: generateChartData(labels, data, title),
-            options: chartOptions
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  type: "category"
+                },
+                y: {
+                  beginAtZero: true
+                }
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    boxWidth: 20
+                  }
+                }
+              }
+            }
           });
           chartInstanceRef.current = newChartInstance; // Save the new chart instance
-          updateChartColors(newChartInstance); // Update the chart colors
-          log.debug({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "Chart instance created and colors updated");
+          log.debug({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "Chart instance created");
         } catch (error) {
           log.error(
             { page: "TrendCard", component: "TrendCard", func: "useEffect" },
-            errorHandler(error) // Handle any errors during chart creation
+            errorHandler(error)
           );
         }
       } else {
@@ -91,9 +101,16 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
     } else {
       log.error({ page: "TrendCard", component: "TrendCard", func: "useEffect" }, "chartRef.current is null");
     }
-  }, [labels, data, title, updateChartColors]);
+  }, [labels, data, title]);
 
-  // Cleanup effect to destroy the chart instance when the component unmounts
+  useEffect(() => {
+    setTimeout(() => {
+      if (chartInstanceRef.current) {
+        updateChartColors(chartInstanceRef.current); // Update colors after theme is applied
+      }
+    }, 0); // Minimal delay to ensure theme is applied
+  }, [theme]);
+
   useEffect(() => {
     return () => {
       if (chartInstanceRef.current) {
@@ -128,6 +145,5 @@ TrendCard.propTypes = {
   data: PropTypes.arrayOf(PropTypes.number).isRequired // Data for the chart
 };
 
-// Memoize the component to avoid unnecessary re-renders
 const MemoizedTrendCard = memo(TrendCard);
 export default MemoizedTrendCard;

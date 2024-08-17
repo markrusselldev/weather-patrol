@@ -1,28 +1,19 @@
-import { useRef, useEffect, memo } from "react";
+import { useRef, useEffect, useContext, memo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { WiWindDeg } from "react-icons/wi";
+import { ThemeContext } from "../contexts/ThemeContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
-import useUpdateChartColors, { getChartColors } from "../hooks/useUpdateChartColors";
 
-// Registering ChartJS components
+// Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// Function to generate chart data
 const generateChartData = (data, title, pastTimestamps) => {
-  const colors = getChartColors();
-  log.debug(
-    {
-      page: "src/components/ConditionCard.jsx",
-      component: "ConditionCard",
-      func: "generateChartData"
-    },
-    `colors: ${JSON.stringify(colors)}`
-  );
+  const parsedData = Array.isArray(data) ? data : JSON.parse(data);
+  const parsedTimestamps = Array.isArray(pastTimestamps) ? pastTimestamps : JSON.parse(pastTimestamps);
 
-  const parsedData = typeof data === "string" ? JSON.parse(data) : data;
-  const parsedTimestamps = typeof pastTimestamps === "string" ? JSON.parse(pastTimestamps) : pastTimestamps;
+  const rootStyle = getComputedStyle(document.documentElement);
 
   return {
     labels: parsedTimestamps.length ? [...parsedTimestamps, "Now"] : ["-60 min", "-45 min", "-30 min", "-15 min", "Now"],
@@ -31,114 +22,92 @@ const generateChartData = (data, title, pastTimestamps) => {
         label: title,
         data: parsedData,
         fill: false,
-        backgroundColor: colors.backgroundColor,
-        borderColor: colors.borderColor,
-        pointBackgroundColor: colors.pointBackgroundColor,
-        pointBorderColor: colors.pointBorderColor,
-        pointHoverBackgroundColor: colors.pointHoverBackgroundColor,
-        pointHoverBorderColor: colors.pointHoverBorderColor,
+        backgroundColor: rootStyle.getPropertyValue('--chart-bg-color').trim(),
+        borderColor: rootStyle.getPropertyValue('--chart-line-color').trim(),
+        pointBackgroundColor: rootStyle.getPropertyValue('--chart-point-bg-color').trim(),
+        pointBorderColor: rootStyle.getPropertyValue('--chart-point-border-color').trim(),
+        pointHoverBackgroundColor: rootStyle.getPropertyValue('--chart-point-hover-bg-color').trim(),
+        pointHoverBorderColor: rootStyle.getPropertyValue('--chart-point-hover-border-color').trim(),
         tension: 0.1,
-        hoverBackgroundColor: colors.hoverBackgroundColor,
-        hoverBorderColor: colors.hoverBorderColor
+        hoverBackgroundColor: rootStyle.getPropertyValue('--chart-hover-bg-color').trim(),
+        hoverBorderColor: rootStyle.getPropertyValue('--chart-hover-border-color').trim()
       }
     ]
   };
 };
 
-// Chart options
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      type: "category"
-    },
-    y: {
-      beginAtZero: true
-    }
-  },
-  onClick: (event, elements) => {
-    if (elements.length > 0) {
-      const element = elements[0];
-      const dataset = element.datasetIndex;
-      const index = element.index;
-      log.info(
-        {
-          page: "src/components/ConditionCard.jsx",
-          component: "ConditionCard",
-          func: "onClick"
-        },
-        `Clicked on dataset index: ${dataset}, data index: ${index}`
-      );
-    }
+const updateChartColors = (chartInstance) => {
+  if (chartInstance && chartInstance.data && chartInstance.data.datasets) {
+    const rootStyle = getComputedStyle(document.documentElement);
+
+    chartInstance.data.datasets.forEach(dataset => {
+      dataset.backgroundColor = rootStyle.getPropertyValue('--chart-bg-color').trim();
+      dataset.borderColor = rootStyle.getPropertyValue('--chart-line-color').trim();
+      dataset.pointBackgroundColor = rootStyle.getPropertyValue('--chart-point-bg-color').trim();
+      dataset.pointBorderColor = rootStyle.getPropertyValue('--chart-point-border-color').trim();
+      dataset.pointHoverBackgroundColor = rootStyle.getPropertyValue('--chart-point-hover-bg-color').trim();
+      dataset.pointHoverBorderColor = rootStyle.getPropertyValue('--chart-point-hover-border-color').trim();
+      dataset.hoverBackgroundColor = rootStyle.getPropertyValue('--chart-hover-bg-color').trim();
+      dataset.hoverBorderColor = rootStyle.getPropertyValue('--chart-hover-border-color').trim();
+    });
+
+    chartInstance.update();
   }
 };
 
-// Main component
 const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps = [], showMinMax, cardinalDirection }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-  const { updateChartColors } = useUpdateChartColors(chartInstanceRef);
+  const { theme } = useContext(ThemeContext);
 
-  // Effect to handle chart instance creation and updates
   useEffect(() => {
-    if (chartRef.current) {
-      try {
+    const createChartInstance = () => {
+      if (chartRef.current) {
         if (chartInstanceRef.current) {
           chartInstanceRef.current.destroy();
         }
-        chartInstanceRef.current = new ChartJS(chartRef.current, {
-          type: "line",
-          data: generateChartData(data, title, pastTimestamps),
-          options: chartOptions
-        });
-        updateChartColors(chartInstanceRef.current);
-        log.debug(
-          {
-            page: "src/components/ConditionCard.jsx",
-            component: "ConditionCard",
-            func: "useEffect"
-          },
-          "Chart instance created and colors updated"
-        );
-      } catch (error) {
-        log.error(
-          {
-            page: "src/components/ConditionCard.jsx",
-            component: "ConditionCard",
-            func: "useEffect"
-          },
-          errorHandler(error)
-        );
+        try {
+          chartInstanceRef.current = new ChartJS(chartRef.current, {
+            type: "line",
+            data: generateChartData(data, title, pastTimestamps),
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  type: "category"
+                },
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+          log.debug({ page: "src/components/ConditionCard.jsx", component: "ConditionCard", func: "createChartInstance" }, "New chart instance created");
+        } catch (error) {
+          log.error({ page: "src/components/ConditionCard.jsx", component: "ConditionCard", func: "createChartInstance" }, errorHandler(error));
+        }
       }
-    }
+    };
 
-    // Cleanup function to destroy chart instance
+    createChartInstance();
+
     return () => {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
         chartInstanceRef.current = null;
-        log.debug(
-          {
-            page: "src/components/ConditionCard.jsx",
-            component: "ConditionCard",
-            func: "useEffect"
-          },
-          "Chart instance destroyed"
-        );
+        log.debug({ page: "src/components/ConditionCard.jsx", component: "ConditionCard", func: "useEffect" }, "Chart instance destroyed on cleanup");
       }
     };
-  }, [data, title, pastTimestamps, updateChartColors]);
+  }, [data, title, pastTimestamps]);
 
-  log.debug(
-    {
-      page: "src/components/ConditionCard.jsx",
-      component: "ConditionCard",
-      func: "render"
-    },
-    `Generating chart data for ${title}`,
-    { data: JSON.stringify(data), pastTimestamps: JSON.stringify(pastTimestamps) }
-  );
+  useEffect(() => {
+    setTimeout(() => {
+      if (chartInstanceRef.current) {
+        updateChartColors(chartInstanceRef.current);
+      }
+    }, 0); // Setting timeout to ensure the DOM has fully applied the new theme
+  }, [theme]);
 
   return (
     <div className="p-5 text-center rounded-lg flex flex-col justify-between h-full shadow-md bg-cardBg text-cardBodyText border-cardBorderColor border">
@@ -209,7 +178,6 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   );
 };
 
-// PropTypes validation
 ConditionCard.propTypes = {
   title: PropTypes.string.isRequired,
   icon: PropTypes.elementType.isRequired,
@@ -222,6 +190,5 @@ ConditionCard.propTypes = {
   cardinalDirection: PropTypes.string
 };
 
-// Memoized component to prevent unnecessary re-renders
 const MemoizedConditionCard = memo(ConditionCard);
 export default MemoizedConditionCard;
