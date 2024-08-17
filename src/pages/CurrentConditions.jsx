@@ -11,6 +11,7 @@ import { DataContext } from "../contexts/DataContext";
 import useWeatherData from "../hooks/useWeatherData";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
+import { FaSpinner } from "react-icons/fa"; // Add this import if not already included
 
 const CurrentConditions = () => {
   const { weatherData, error } = useContext(DataContext);
@@ -23,7 +24,11 @@ const CurrentConditions = () => {
 
   if (isLoading) {
     log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Loading latest data...");
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-full">
+        <FaSpinner className="animate-spin text-3xl text-gray-300" />
+      </div>
+    );
   }
 
   log.debug({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Past timestamps:", pastTimestamps);
