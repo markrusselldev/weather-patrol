@@ -109,7 +109,7 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
       if (chartInstanceRef.current) {
         updateChartColors(chartInstanceRef.current); // Update colors after theme is applied
       }
-    }, 100); // Increased timeout to 100ms
+    }, 200); // Increased timeout to 200ms
   }, [theme, labels, data, title]);
 
   useEffect(() => {

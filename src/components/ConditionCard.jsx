@@ -107,7 +107,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       if (chartInstanceRef.current) {
         updateChartColors(chartInstanceRef.current);
       }
-    }, 100); // Increased timeout to 100ms
+    }, 200); // Increased timeout to 200ms
   }, [theme]);
 
   return (
