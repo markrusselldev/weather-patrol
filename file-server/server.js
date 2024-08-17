@@ -16,7 +16,7 @@ const path = require("path"); // For resolving file paths
 const { exec } = require("child_process"); // For running the update script
 
 const app = express();
-app.set('trust proxy', true); // Trust the proxy headers - necessary when behind a reverse proxy like Render
+app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 const PORT = process.env.PORT || 3000; // Define the port to run the server
 
 // Middleware setup
