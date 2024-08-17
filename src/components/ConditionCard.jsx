@@ -1,10 +1,11 @@
-import { useRef, useEffect, useContext, memo } from "react";
+import { useRef, useEffect, useContext, useState, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { WiWindDeg } from "react-icons/wi";
 import { ThemeContext } from "../contexts/ThemeContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
+import { FaSpinner } from "react-icons/fa";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -59,6 +60,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const { theme } = useContext(ThemeContext);
+  const [isLoading, setIsLoading] = useState(true);  // Loading state
 
   useEffect(() => {
     const createChartInstance = () => {
@@ -84,6 +86,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
             }
           });
           log.debug({ page: "src/components/ConditionCard.jsx", component: "ConditionCard", func: "createChartInstance" }, "New chart instance created");
+          setIsLoading(false);  // Data is loaded
         } catch (error) {
           log.error({ page: "src/components/ConditionCard.jsx", component: "ConditionCard", func: "createChartInstance" }, errorHandler(error));
         }
@@ -102,12 +105,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   }, [data, title, pastTimestamps]);
 
   useEffect(() => {
-    // Update chart colors when the theme changes
+    if (chartInstanceRef.current) {
     setTimeout(() => {
-      if (chartInstanceRef.current) {
+      
         updateChartColors(chartInstanceRef.current);
-      }
-    }, 200); // Increased timeout to 200ms
+      }, 200);  // Increased timeout to 200ms
+    }
   }, [theme]);
 
   return (
@@ -125,8 +128,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
         <div className="flex-grow text-6xl flex justify-center text-dataText" style={{ flex: "1 1 auto" }}>
-          {Array.isArray(data) ? data[data.length - 1] : data}
-          <span className="text-2xl align-top text-dataText">{unit}</span>
+          {isLoading ? <FaSpinner className="animate-spin text-6xl text-dataText" /> : (
+            <>
+              {Array.isArray(data) ? data[data.length - 1] : data}
+              <span className="text-2xl align-top text-dataText">{unit}</span>
+            </>
+          )}
         </div>
         {showMinMax ? (
           <div className="flex-shrink-0 w-16 flex flex-col items-end pr-6" style={{ flex: "0 0 4rem" }}>
@@ -180,15 +187,15 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
 };
 
 ConditionCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  icon: PropTypes.elementType.isRequired,
-  data: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.string]).isRequired,
-  unit: PropTypes.string.isRequired,
-  min: PropTypes.number,
-  max: PropTypes.number,
-  pastTimestamps: PropTypes.arrayOf(PropTypes.string),
-  showMinMax: PropTypes.bool,
-  cardinalDirection: PropTypes.string
+  title: PropTypes.string.isRequired,                       // Title of the card
+  icon: PropTypes.elementType.isRequired,                   // Icon component to display
+  data: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.string]).isRequired, // Data for the chart or the current value
+  unit: PropTypes.string.isRequired,                        // Unit of measurement
+  min: PropTypes.number,                                    // Minimum value (optional)
+  max: PropTypes.number,                                    // Maximum value (optional)
+  pastTimestamps: PropTypes.arrayOf(PropTypes.string),      // Array of past timestamps (optional)
+  showMinMax: PropTypes.bool,                               // Whether to show min/max values (optional)
+  cardinalDirection: PropTypes.string                       // Cardinal direction (optional)
 };
 
 const MemoizedConditionCard = memo(ConditionCard);
