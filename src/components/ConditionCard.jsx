@@ -1,4 +1,4 @@
-import { useRef, useEffect, useContext, memo, useCallback } from "react";
+import { useRef, useEffect, useContext, memo } from "react";
 import PropTypes from "prop-types";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { WiWindDeg } from "react-icons/wi";
@@ -102,11 +102,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
   }, [data, title, pastTimestamps]);
 
   useEffect(() => {
+    // Update chart colors when the theme changes
     setTimeout(() => {
       if (chartInstanceRef.current) {
         updateChartColors(chartInstanceRef.current);
       }
-    }, 0); // Setting timeout to ensure the DOM has fully applied the new theme
+    }, 100); // Increased timeout to 100ms
   }, [theme]);
 
   return (

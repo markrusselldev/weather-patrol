@@ -104,12 +104,13 @@ const TrendCard = ({ title, icon: Icon, labels, data }) => {
   }, [labels, data, title]);
 
   useEffect(() => {
+    // Trigger chart update explicitly after theme change
     setTimeout(() => {
       if (chartInstanceRef.current) {
         updateChartColors(chartInstanceRef.current); // Update colors after theme is applied
       }
-    }, 0); // Minimal delay to ensure theme is applied
-  }, [theme]);
+    }, 100); // Increased timeout to 100ms
+  }, [theme, labels, data, title]);
 
   useEffect(() => {
     return () => {
