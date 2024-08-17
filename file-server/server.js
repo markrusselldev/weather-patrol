@@ -14,6 +14,8 @@ const dataService = require("./services/dataService"); // Import dataService
 const serveFrontend = require("./serve-frontend"); // Import the frontend serving file
 const path = require("path"); // For resolving file paths
 const { exec } = require("child_process"); // For running the update script
+const net = require("net"); // Import the net module for checking port availability
+
 
 const app = express();
 
@@ -22,6 +24,28 @@ app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 }
 
 const PORT = process.env.PORT || 3000; // Define the port to run the server
+
+// Function to check if the port is occupied
+const checkPortOccupied = (port) => {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+
+    server.once("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        reject(new Error(`Port ${port} is already in use`));
+      } else {
+        reject(err);
+      }
+    });
+
+    server.once("listening", () => {
+      server.close();
+      resolve(false);
+    });
+
+    server.listen(port);
+  });
+};
 
 // Middleware setup
 app.use(express.json()); // Parse incoming JSON requests
@@ -123,7 +147,18 @@ setInterval(() => {
   });
 }, interval);
 
+// Function to start the server
+const startServer = async () => {
+  try {
+    await checkPortOccupied(PORT);
+    http.createServer(app).listen(PORT, () => {
+      log.info(`Server is running on http://localhost:${PORT}`, { page: "server.js", func: "startServer" });
+    });
+  } catch (error) {
+    log.error(`Failed to start server: ${error.message}`, { page: "server.js", func: "startServer" });
+    process.exit(1); // Exit the process with an error code
+  }
+};
+
 // Start the server
-http.createServer(app).listen(PORT, () => {
-  log.info(`Server is running on http://localhost:${PORT}`, { page: "server.js", func: "startServer" });
-});
+startServer();
