@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const PORT = process.env.PORT || 3000; // Define the port to run the server
+const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1"); // Use '0.0.0.0' for Fly.io, '127.0.0.1' for local
 
 // Function to check if the port is occupied
 const checkPortOccupied = port => {
@@ -149,9 +150,9 @@ setInterval(() => {
 // Function to start the server
 const startServer = async () => {
   try {
-    await checkPortOccupied(PORT);
-    http.createServer(app).listen(PORT, () => {
-      log.info(`Server is running on http://localhost:${PORT}`, { page: "server.js", func: "startServer" });
+    await checkPortOccupied(PORT); // Check if the port is available before starting the server
+    http.createServer(app).listen(PORT, HOST, () => {
+      log.info(`Server is running on http://${HOST}:${PORT}`, { page: "server.js", func: "startServer" });
     });
   } catch (error) {
     log.error(`Failed to start server: ${error.message}`, { page: "server.js", func: "startServer" });

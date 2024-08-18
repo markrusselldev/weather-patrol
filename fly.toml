@@ -1,0 +1,21 @@
+app = 'weather-patrol'
+primary_region = 'ord'
+
+[build]
+  command = "npm run build"  # This builds your frontend
+
+[http_service]
+  internal_port = 3000        # Port your Node.js backend listens on
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[mounts]
+  source = "data_storage"
+  destination = "/file-server/data"
