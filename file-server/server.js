@@ -19,7 +19,7 @@ const net = require("net"); // Import the net module for checking port availabil
 const app = express();
 
 if (process.env.NODE_ENV === "production") {
-  app.set("trust proxy", 1); // Trust the first proxy, for Render.com
+  //app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 }
 
 const PORT = process.env.PORT || 3000; // Define the port to run the server
