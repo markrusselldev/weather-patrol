@@ -2,10 +2,21 @@ app = 'weather-patrol'
 primary_region = 'ord'
 
 [build]
-  command = "npm run build"  # This builds your frontend
+  command = "npm run build" # Build frontend
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  API_KEY = "secret_api_key"
+  FRONTEND_URL = "https://weather-patrol.fly.dev"
+  LOG_LEVEL = "info"
+  VITE_API_KEY = "secret_api_key"
+  VITE_API_BASE_URL = "https://weather-patrol.fly.dev/api"
+  VITE_LOG_LEVEL = "warn"
+  HOST = "0.0.0.0"
 
 [http_service]
-  internal_port = 3000        # Port your Node.js backend listens on
+  internal_port = 3000        # Port Node.js backend listens on
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true

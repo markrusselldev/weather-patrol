@@ -150,7 +150,12 @@ setInterval(() => {
 // Function to start the server
 const startServer = async () => {
   try {
-    await checkPortOccupied(PORT); // Check if the port is available before starting the server
+    // Check port availability only in development
+    if (process.env.NODE_ENV === "development") {
+      await checkPortOccupied(PORT);
+    }
+
+    // Start the server
     http.createServer(app).listen(PORT, HOST, () => {
       log.info(`Server is running on http://${HOST}:${PORT}`, { page: "server.js", func: "startServer" });
     });
