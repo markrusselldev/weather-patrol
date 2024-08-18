@@ -2,7 +2,7 @@ app = 'weather-patrol'
 primary_region = 'ord'
 
 [build]
-  command = "npm run build" # Build frontend
+  builder = "heroku/builder:22"
 
 [env]
   NODE_ENV = "production"
