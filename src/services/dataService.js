@@ -7,12 +7,7 @@ const SSE_URL = `${API_BASE_URL}/sse`;
 // Fetch all weather data from the backend
 export const fetchWeatherData = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/data`, {
-      headers: {
-        "x-api-key": import.meta.env.VITE_API_KEY // Use Vite's way to access environment variables
-      },
-      withCredentials: true // Ensure cookies are included
-    });
+    const response = await axios.get(`${API_BASE_URL}/data`);
     log.info("Fetched all weather data:", response.data);
 
     // Add detailed logs to inspect the structure of response.data
@@ -27,7 +22,7 @@ export const fetchWeatherData = async () => {
 
 // Subscribe to Server-Sent Events for real-time updates
 export const subscribeToSSE = onMessage => {
-  const eventSource = new EventSource(SSE_URL, { withCredentials: true });
+  const eventSource = new EventSource(SSE_URL);
   eventSource.onopen = () => {
     log.info("SSE connection opened");
   };

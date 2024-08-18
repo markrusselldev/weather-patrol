@@ -6,8 +6,6 @@ const cors = require("cors"); // CORS middleware for enabling Cross-Origin Resou
 const log = require("./utils/logger"); // Custom logger setup
 const errorHandler = require("./utils/errorHandler"); // Custom error handler
 const rateLimit = require("express-rate-limit"); // Rate limiting middleware to prevent abuse
-const csrf = require("csurf"); // CSRF protection middleware
-const cookieParser = require("cookie-parser"); // Middleware for parsing cookies
 const apiRoutes = require("./routes/api"); // Import API routes
 const { addSSEClient } = require("./services/dataService"); // Import addSSEClient function
 const dataService = require("./services/dataService"); // Import dataService
@@ -19,18 +17,19 @@ const net = require("net"); // Import the net module for checking port availabil
 const app = express();
 
 if (process.env.NODE_ENV === "production") {
-  //app.set("trust proxy", 1); // Trust the first proxy, for Render.com
+  // Uncomment the following line if you're deploying behind a proxy
+  // app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 }
 
 const PORT = process.env.PORT || 3000; // Define the port to run the server
-const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1"); // Use '0.0.0.0' for Fly.io, '127.0.0.1' for local
+const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1"); // Use '0.0.0.0' for production, '127.0.0.1' for local development
 
 // Function to check if the port is occupied
-const checkPortOccupied = port => {
+const checkPortOccupied = (port) => {
   return new Promise((resolve, reject) => {
     const server = net.createServer();
 
-    server.once("error", err => {
+    server.once("error", (err) => {
       if (err.code === "EADDRINUSE") {
         reject(new Error(`Port ${port} is already in use`));
       } else {
@@ -58,17 +57,15 @@ app.use(
   })
 ); // Set security-related HTTP headers
 
-app.use(cookieParser()); // Parse cookies
-
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173", // Allow CORS from specified origin
     credentials: true, // Allow credentials (cookies, authorization headers)
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
-    allowedHeaders: ["Content-Type", "x-api-key", "X-CSRF-TOKEN"], // Allowed headers
+    allowedHeaders: ["Content-Type"], // Allowed headers
     exposedHeaders: "Content-Length,X-Content-Type-Options,X-RateLimit-Limit,X-RateLimit-Remaining,X-RateLimit-Reset", // Exposed headers
     preflightContinue: false, // Do not continue with preflight request
-    optionsSuccessStatus: 204 // Status code for successful preflight request
+    optionsSuccessStatus: 204, // Status code for successful preflight request
   })
 );
 
@@ -80,7 +77,7 @@ const apiLimiter = rateLimit({
   handler: (req, res) => {
     log.warn(`Rate limit exceeded for IP: ${req.ip}`, { page: "server.js", func: "rateLimit" });
     res.status(429).json({ error: "Too many requests from this IP, please try again later." });
-  }
+  },
 });
 
 // Increased rate limiter for the data update route
@@ -91,7 +88,7 @@ const updateLimiter = rateLimit({
   handler: (req, res) => {
     log.warn(`Rate limit exceeded for IP: ${req.ip}`, { page: "server.js", func: "rateLimit" });
     res.status(429).json({ error: "Too many requests from this IP, please try again later." });
-  }
+  },
 });
 
 // Apply the general rate limiter to all API routes
@@ -99,15 +96,6 @@ app.use("/api", apiLimiter);
 
 // Apply the specific rate limiter to the data update route
 app.use("/data/update_toa5_data", updateLimiter);
-
-const csrfProtection = csrf({ cookie: true }); // Enable CSRF protection with cookies
-app.use(csrfProtection); // Apply CSRF protection middleware
-
-// Middleware to set CSRF token cookie
-app.use((req, res, next) => {
-  res.cookie("XSRF-TOKEN", req.csrfToken()); // Set CSRF token cookie
-  next(); // Proceed to the next middleware
-});
 
 // Log incoming requests
 app.use((req, res, next) => {
