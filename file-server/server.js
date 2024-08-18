@@ -16,21 +16,20 @@ const path = require("path"); // For resolving file paths
 const { exec } = require("child_process"); // For running the update script
 const net = require("net"); // Import the net module for checking port availability
 
-
 const app = express();
 
-if (process.env.NODE_ENV === 'production') {
-app.set("trust proxy", 1); // Trust the first proxy, for Render.com
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 }
 
 const PORT = process.env.PORT || 3000; // Define the port to run the server
 
 // Function to check if the port is occupied
-const checkPortOccupied = (port) => {
+const checkPortOccupied = port => {
   return new Promise((resolve, reject) => {
     const server = net.createServer();
 
-    server.once("error", (err) => {
+    server.once("error", err => {
       if (err.code === "EADDRINUSE") {
         reject(new Error(`Port ${port} is already in use`));
       } else {
@@ -130,8 +129,8 @@ app.use((err, req, res, next) => {
 });
 
 // Background worker to update TOA5 data every 15 minutes
-// const interval = 15 * 60 * 1000; // 15 minutes
-const interval = 1 * 60 * 1000; // 1 minute
+const interval = 15 * 60 * 1000; // 15 minutes
+// const interval = 1 * 60 * 1000; // 1 minute for testing
 
 setInterval(() => {
   log.info("Running scheduled TOA5 data update");
