@@ -49,7 +49,15 @@ const checkPortOccupied = port => {
 
 // Middleware setup
 app.use(express.json()); // Parse incoming JSON requests
-app.use(helmet()); // Set security-related HTTP headers
+
+// Updated Helmet middleware configuration for v7.x
+app.use(
+  helmet({
+    // You can customize Helmet options here
+    contentSecurityPolicy: false, // Example: disabling CSP, which is enabled by default
+  })
+); // Set security-related HTTP headers
+
 app.use(cookieParser()); // Parse cookies
 
 app.use(
