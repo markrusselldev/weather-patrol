@@ -82,7 +82,14 @@ hr {
 
 @media (max-width: 640px) {
   .ag-theme-alpine .ag-paging-panel {
-    font-size: 0.7rem; /* smaller than Tailwind's text-xs equivalent, 0.75rem */
+    font-size: 0.5rem; /* smaller than Tailwind's text-xs equivalent, 0.75rem */
+  }
+}
+
+/* Hide paging panel text on small screens */
+@media (max-width: 640px) {
+  .ag-paging-panel .ag-label {
+    display: none;
   }
 }
 
