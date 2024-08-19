@@ -16,13 +16,15 @@ const net = require("net"); // Import the net module for checking port availabil
 
 const app = express();
 
-if (process.env.NODE_ENV === "production") {
-  // Uncomment the following line if you're deploying behind a proxy
-  // app.set("trust proxy", 1); // Trust the first proxy, for Render.com
+const DEPLOYMENT_ENV = process.env.DEPLOYMENT_ENV || "development"; // Default to 'development' if not set
+
+// Set trust proxy and HOST based on deployment environment
+if (DEPLOYMENT_ENV === "render") {
+  app.set("trust proxy", 1); // Trust the first proxy, for Render.com
 }
 
+const HOST = DEPLOYMENT_ENV === "development" ? "127.0.0.1" : "0.0.0.0"; // Use '127.0.0.1' for development, '0.0.0.0' for production-like environments
 const PORT = process.env.PORT || 3000; // Define the port to run the server
-const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1"); // Use '0.0.0.0' for production, '127.0.0.1' for local development
 
 // Function to check if the port is occupied
 const checkPortOccupied = (port) => {
@@ -147,7 +149,7 @@ setInterval(() => {
 const startServer = async () => {
   try {
     // Check port availability only in development
-    if (process.env.NODE_ENV === "development") {
+    if (DEPLOYMENT_ENV === "development") {
       await checkPortOccupied(PORT);
     }
 
