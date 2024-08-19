@@ -64,7 +64,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
 
   useEffect(() => {
     const createChartInstance = () => {
-      if (chartRef.current) {
+      if (chartRef.current && data.length > 0) {
         if (chartInstanceRef.current) {
           chartInstanceRef.current.destroy();
         }
@@ -93,6 +93,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       }
     };
 
+    if (data.length > 0) {
+      setIsLoading(false); // Data is loaded
+    } else {
+      setIsLoading(true); // Data is still loading or empty
+    }
+
     createChartInstance();
 
     return () => {
@@ -106,8 +112,7 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
 
   useEffect(() => {
     if (chartInstanceRef.current) {
-    setTimeout(() => {
-      
+      setTimeout(() => {
         updateChartColors(chartInstanceRef.current);
       }, 200);  // Increased timeout to 200ms
     }
@@ -128,7 +133,11 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       <div className="flex items-center mb-2">
         <div className="flex-shrink-0 w-16" style={{ flex: "0 0 4rem" }}></div>
         <div className="flex-grow text-6xl flex justify-center text-dataText" style={{ flex: "1 1 auto" }}>
-          {isLoading ? <FaSpinner className="animate-spin text-6xl text-dataText" /> : (
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full">
+              <FaSpinner className="animate-spin text-6xl text-dataText" />
+            </div>
+          ) : (
             <>
               {Array.isArray(data) ? data[data.length - 1] : data}
               <span className="text-2xl align-top text-dataText">{unit}</span>
@@ -167,7 +176,12 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
       </div>
       <hr className="border-hrColor" />
       <div className="grid grid-cols-4 gap-2 mb-2">
-        {Array.isArray(data) &&
+        {isLoading ? (
+          <div className="flex justify-center items-center w-full">
+            <FaSpinner className="animate-spin text-2xl text-dataText" />
+          </div>
+        ) : (
+          Array.isArray(data) &&
           data.slice(0, -1).map((value, index) => (
             <div key={index} className="flex flex-col items-center">
               <span className="text-sm text-dataText">
@@ -176,11 +190,18 @@ const ConditionCard = ({ title, icon: Icon, data, unit, min, max, pastTimestamps
               </span>
               <span className="text-xs text-breadcrumbText">{pastTimestamps[index] || "N/A"}</span>
             </div>
-          ))}
+          ))
+        )}
       </div>
       <hr className="border-hrColor" />
       <div className="h-24">
-        <canvas ref={chartRef} className="w-full h-full" />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-full">
+            <FaSpinner className="animate-spin text-2xl text-dataText" />
+          </div>
+        ) : (
+          <canvas ref={chartRef} className="w-full h-full" />
+        )}
       </div>
     </div>
   );

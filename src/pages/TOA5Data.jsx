@@ -57,29 +57,6 @@ const TOA5Data = () => {
           </div>
         </div>
       )}
-
-      {/* Environment Info Accordion */}
-      <div className="my-4">
-        <div
-          className="bg-footerBg text-footerText p-4 text-xs flex justify-between items-center cursor-pointer border border-buttonBorderColor hover:bg-buttonHoverBg transition-colors duration-200 ease-in-out"
-          onClick={toggleAccordion}
-        >
-          <span className="font-bold flex items-center">
-            {isExpanded ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
-            Environment Info
-          </span>
-        </div>
-        <div className={`overflow-hidden transition-max-height duration-300 ease-in-out ${isExpanded ? "max-h-screen" : "max-h-0"}`}>
-          <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 bg-tableThBg text-xs p-4">
-            {environmentData.map((value, index) => (
-              <li key={index} className="flex flex-col text-tableTdText">
-                <span className="font-bold">{environmentLabels[index]}:</span>
-                <span>{value.trim()}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     </section>
   );
 };
