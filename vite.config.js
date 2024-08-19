@@ -29,12 +29,12 @@ export default defineConfig(({ command, mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: "http://localhost:3000",
+          target: env.VITE_API_BASE_URL,
           changeOrigin: true,
           secure: false
         },
         "/sse": {
-          target: "http://localhost:3000",
+          target: env.VITE_API_BASE_URL,
           changeOrigin: true,
           secure: false,
           ws: true
