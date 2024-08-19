@@ -39,7 +39,7 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
   }
 
   return (
-    <div className="breadcrumb flex flex-col pt-4 px-4 text-sm bg-background text-breadcrumbText w-full">
+    <div className="breadcrumb flex flex-col pt-4 px-4 pb-0 text-sm bg-background text-breadcrumbText w-full">
       <div className="flex justify-between items-center h-12">
         <div className="flex items-center">
           {/* Conditionally render the icon */}
@@ -61,7 +61,7 @@ const Breadcrumb = ({ title, icon: Icon, timeframeSelector }) => {
         {timeframeSelector && <div className="flex shrink items-center">{timeframeSelector}</div>}
       </div>
       <div
-        className={`w-full bg-footerBg border border-buttonBorderColor shadow-lg mt-2 transition-all duration-300 ease-in-out ${
+        className={`w-full bg-footerBg border border-buttonBorderColor shadow-lg transition-all duration-300 ease-in-out ${
           isExpanded ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >

@@ -1,29 +1,29 @@
-app = 'weather-patrol'
-primary_region = 'ord'
+app = "weather-patrol"
+primary_region = "ord"
 
 [build]
-  builder = "heroku/builder:22"
+  builder = "heroku/builder:22"  # Using the Heroku buildpack for Node.js
 
 [env]
   NODE_ENV = "production"
   PORT = "3000"
   API_KEY = "secret_api_key"
-  FRONTEND_URL = "https://weather-patrol.fly.dev"
+  FRONTEND_URL = "https://weather-patrol.fly.dev"  # Ensure this matches your actual URL
   LOG_LEVEL = "info"
   VITE_API_BASE_URL = "https://weather-patrol.fly.dev/api"
   VITE_LOG_LEVEL = "warn"
-  HOST = "0.0.0.0"
+  DEPLOYMENT_ENV = "fly"
 
 [http_service]
-  internal_port = 3000        # Port Node.js backend listens on
-  force_https = true
-  auto_stop_machines = 'stop'
-  auto_start_machines = true
-  min_machines_running = 0
+  internal_port = 3000  # Port Node.js backend listens on
+  force_https = false   # Let Fly.io or another service handle HTTPS
+  auto_stop_machines = false  # Prevent the instance from spinning down
+  auto_start_machines = true  # Ensure it starts automatically on deployment or restart
+  min_machines_running = 1  # Keep the machine running for regular updates
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  memory = "1gb"
+  cpu_kind = "shared"
   cpus = 1
 
 [mounts]

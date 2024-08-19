@@ -13,9 +13,9 @@ const Footer = () => {
   }, [environmentInfo]);
 
   return (
-    <footer className="w-full bg-footerBg text-footerText p-4 text-xs h-footer flex sm:justify-around sm:items-center">
-      <div className="flex items-center sm:flex-1 overflow-hidden"></div>
-      <div className="flex items-center justify-end sm:ml-auto">
+    <footer className="w-full bg-footerBg text-footerText p-4 text-xs h-footer flex justify-between">
+      <div className="flex items-center ml-2">Made with &#10084; for Ski Santa Fe &copy; 2024 All Rights Reserved markrussell.io</div>
+      <div className="flex items-center mr-2">
         <ThemeSelector />
       </div>
     </footer>
