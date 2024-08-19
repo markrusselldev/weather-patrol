@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import PropTypes from "prop-types";
+import PropTypes from "prop-types"; // Import PropTypes for type checking
 import { ThemeContext } from "../contexts/ThemeContext";
 import log from "../utils/logger";
 
@@ -13,29 +13,22 @@ const ThemeSelector = () => {
 
   return (
     <div className="flex justify-center space-x-6 my-4">
-      {/* Denim Theme Circle */}
-      <div
-        className={`w-6 h-6 rounded-full border-4 cursor-pointer ${theme === 'denim' ? 'ring-4 ring-blue-500' : ''}`}
-        style={{ backgroundColor: "hsl(210, 30%, 20%)", borderColor: "hsl(210, 30%, 30%)" }}
-        title="Denim"
-        onClick={() => handleThemeChange('denim')}
-      ></div>
-
-      {/* Dark Theme Circle */}
-      <div
-        className={`w-6 h-6 rounded-full border-4 cursor-pointer ${theme === 'dark' ? 'ring-4 ring-blue-500' : ''}`}
-        style={{ backgroundColor: "hsl(0, 0%, 25%)", borderColor: "hsl(0, 0%, 30%)" }}
-        title="Dark"
-        onClick={() => handleThemeChange('dark')}
-      ></div>
-
-      {/* Light Theme Circle */}
-      <div
-        className={`w-6 h-6 rounded-full border-4 cursor-pointer ${theme === 'light' ? 'ring-4 ring-blue-500' : ''}`}
-        style={{ backgroundColor: "hsl(53, 100%, 85%)", borderColor: "hsl(53, 98%, 65%)" }}
-        title="Light"
-        onClick={() => handleThemeChange('light')}
-      ></div>
+      {/* Conditional rendering based on the current theme */}
+      {theme === 'light' ? (
+        <div
+          className={`w-6 h-6 rounded-full border-4 cursor-pointer ${theme === 'dark' ? 'ring-4 ring-blue-500' : ''}`}
+          style={{ backgroundColor: "hsl(0, 0%, 25%)", borderColor: "hsl(0, 0%, 30%)" }}
+          title="Dark"
+          onClick={() => handleThemeChange('dark')}
+        ></div>
+      ) : (
+        <div
+          className={`w-6 h-6 rounded-full border-4 cursor-pointer ${theme === 'light' ? 'ring-4 ring-blue-500' : ''}`}
+          style={{ backgroundColor: "hsl(53, 100%, 85%)", borderColor: "hsl(53, 98%, 65%)" }}
+          title="Light"
+          onClick={() => handleThemeChange('light')}
+        ></div>
+      )}
     </div>
   );
 };
