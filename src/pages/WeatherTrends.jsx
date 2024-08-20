@@ -16,11 +16,13 @@ const WeatherTrends = ({ timeframe }) => {
   const { weatherData, error } = useContext(DataContext);
   const { dataPoints, isLoading } = useFilteredWeatherData(weatherData, timeframe);
 
+  // Handle errors
   if (error) {
     log.error({ page: "src/pages/WeatherTrends.jsx", component: "WeatherTrends", func: "render" }, "Error in WeatherTrends component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
+  // Handle loading state
   if (isLoading) {
     log.info({ page: "src/pages/WeatherTrends.jsx", component: "WeatherTrends", func: "render" }, "Loading filtered data...");
     return (

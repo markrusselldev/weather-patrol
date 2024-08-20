@@ -1,5 +1,3 @@
-// src/pages/CurrentConditions.jsx
-
 import { useContext, memo } from "react";
 import { WiThermometer, WiThermometerExterior, WiStrongWind, WiHumidity, WiBarometer } from "react-icons/wi";
 import { IoBatteryChargingOutline } from "react-icons/io5";
@@ -11,17 +9,19 @@ import { DataContext } from "../contexts/DataContext";
 import useWeatherData from "../hooks/useWeatherData";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
-import { FaSpinner } from "react-icons/fa"; // Add this import if not already included
+import { FaSpinner } from "react-icons/fa";
 
 const CurrentConditions = () => {
   const { weatherData, error } = useContext(DataContext);
   const { data, pastTimestamps, windDirectionCardinal, isLoading } = useWeatherData(weatherData);
 
+  // Handle errors
   if (error) {
     log.error({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Error in CurrentConditions component:", error);
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
+  // Handle loading state
   if (isLoading) {
     log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Loading latest data...");
     return (

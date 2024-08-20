@@ -1,41 +1,35 @@
-import { memo, useState, useEffect, useContext } from "react";
+import { memo } from "react";
 import ErrorMessages from "../components/ErrorMessages";
 import LazyWeatherGrid from "../components/LazyWeatherGrid";
 import useTOA5Data from "../hooks/useTOA5Data";
 import log from "../utils/logger";
 import { FaSpinner } from "react-icons/fa";
-import { DataContext } from "../contexts/DataContext";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import icons for the accordion
 
 const TOA5Data = () => {
   const { weatherData, columnDefs, processedError } = useTOA5Data();
-  const { environmentInfo } = useContext(DataContext);
-  const [loading, setLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false); // State to control the accordion
 
-  // Update loading state based on data fetching
-  useEffect(() => {
-    if ((weatherData && weatherData.length > 0) || processedError) {
-      setLoading(false);
-    }
-  }, [weatherData, processedError]);
+  // Define log context
+  const logContext = { page: "TOA5Data.jsx", component: "TOA5Data", func: "render" };
 
-  // Split the environmentInfo string into an array
-  const environmentData = environmentInfo.split(",");
+  // Determine loading state directly from the hook values
+  const loading = !(weatherData && weatherData.length > 0) && !processedError;
 
-  // Array of corresponding labels for the environment data
-  const environmentLabels = ["Format", "Station", "Logger Model", "Serial Number", "OS Version", "Program Name", "Program Signature", "Table Name"];
-
-  // Function to toggle the accordion
-  const toggleAccordion = () => {
-    setIsExpanded(!isExpanded);
-  };
+  // Log the initial state of weatherData and processedError
+  log.debug({ ...logContext }, "Initial weatherData:", weatherData);
+  log.debug({ ...logContext }, "Initial processedError:", processedError);
 
   // Handle errors
   if (processedError) {
-    log.error({ page: "src/pages/TOA5Data.jsx", component: "TOA5Data", func: "render" }, "Error in TOA5Data component:", processedError);
+    log.error({ ...logContext }, "Error in TOA5Data component:", processedError);
+    log.debug({ ...logContext }, "weatherData at error:", weatherData);
+    log.debug({ ...logContext }, "columnDefs at error:", columnDefs);
     return <ErrorMessages message={processedError} />;
   }
+
+  log.info({ ...logContext }, "TOA5Data component rendered successfully.", {
+    weatherDataLength: weatherData ? weatherData.length : 0,
+    columnDefsLength: columnDefs.length,
+  });
 
   return (
     <section className="toa5-data">
