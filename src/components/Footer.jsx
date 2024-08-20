@@ -22,7 +22,7 @@ const Footer = () => {
         </a>{" "}
         <span className="hidden sm:inline ml-1">Built with</span>
         <FaHeart className="text-red-500 mx-1" />
-        <span className="hidden sm:inline ml-1">for</span>{" "}
+        <span className="hidden sm:inline">for</span>{" "}
         <a href="https://skisantafe.com" className="mx-1 hover:underline">
           Ski Santa Fe
         </a>{" "}

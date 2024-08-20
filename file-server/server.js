@@ -157,11 +157,35 @@ const startServer = async () => {
     http.createServer(app).listen(PORT, HOST, () => {
       log.info(`Server is running on http://${HOST}:${PORT}`, { page: "server.js", func: "startServer" });
     });
+
+    // Log server startup
+    log.info(`Server started successfully at ${new Date().toISOString()}`, { page: "server.js", func: "startServer" });
   } catch (error) {
     log.error(`Failed to start server: ${error.message}`, { page: "server.js", func: "startServer" });
     process.exit(1); // Exit the process with an error code
   }
 };
+
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  log.info(`Received SIGTERM, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown" });
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  log.info(`Received SIGINT, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown" });
+  process.exit(0);
+});
+
+process.on('uncaughtException', (error) => {
+  log.error(`Uncaught Exception: ${error.message}`, { page: "server.js", func: "uncaughtException", error });
+  process.exit(1); // Optional: Shut down the server or continue running
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  log.error(`Unhandled Rejection: ${reason}`, { page: "server.js", func: "unhandledRejection", reason });
+  // Optional: Handle promise rejections globally
+});
 
 // Start the server
 startServer();
