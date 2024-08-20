@@ -113,10 +113,15 @@ app.use("/api", apiRoutes); // Use API routes from apiRoutes module
 
 // SSE endpoint to subscribe to real-time updates
 app.get("/api/sse", (req, res) => {
-  log.debug("Request object received.", { page: "server.js", func: "sseEndpoint", req });
-  log.debug("Response object received.", { page: "server.js", func: "sseEndpoint", res });
-  addSSEClient(req, res);
+  log.debug("Received request to /api/sse", { page: "server.js", func: "sseEndpoint" });
+  try {
+    addSSEClient(req, res);  // Function that handles adding the SSE client
+  } catch (error) {
+    log.error("Error in SSE endpoint:", { page: "server.js", func: "sseEndpoint", error });
+    res.status(500).send("Internal Server Error");
+  }
 });
+
 
 // Serve static frontend files
 app.use(serveFrontend);

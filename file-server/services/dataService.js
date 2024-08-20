@@ -84,7 +84,7 @@ const parseTOA5File = filePath => {
               value = value.replace(/"/g, "").replace(/\.000Z$/, ""); // Remove extra double quotes if present and .000Z
               const parsedDate = moment(value, moment.ISO_8601, true); // Use strict parsing
               if (parsedDate.isValid()) {
-                value = parsedDate.utc().format('YYYY-MM-DDTHH:mm:ss'); // Prevents adding .000Z
+                value = parsedDate.utc().format("YYYY-MM-DDTHH:mm:ss"); // Prevents adding .000Z
               } else {
                 log.error(`Invalid datetime format for value: "${value}"`, { ...logContext, func: "parseTOA5File" });
                 return null;
@@ -256,35 +256,40 @@ const addSSEClient = (req, res) => {
   }
 
   // Log request and response objects for debugging
-  log.debug("Request object received.", { ...logContext, func: "addSSEClient" });
-  log.debug("Response object received.", { ...logContext, func: "addSSEClient" });
+  log.debug("Request object received.", { ...logContext, func: "addSSEClient", req });
+  log.debug("Response object received.", { ...logContext, func: "addSSEClient", res });
 
-  // Set the necessary headers for SSE
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.flushHeaders(); // Flush the headers to establish SSE
+  try {
+    // Set the necessary headers for SSE
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders(); // Flush the headers to establish SSE
 
-  const clientId = Date.now();
+    const clientId = Date.now();
 
-  // Add the client to the clients array
-  const newClient = {
-    id: clientId,
-    res
-  };
+    // Add the client to the clients array
+    const newClient = {
+      id: clientId,
+      res
+    };
 
-  sseClients.push(newClient);
+    sseClients.push(newClient);
 
-  log.info(`SSE client with ID ${clientId} added successfully`, { ...logContext, func: "addSSEClient" });
+    log.info(`SSE client with ID ${clientId} added successfully`, { ...logContext, func: "addSSEClient" });
 
-  // Send a comment to confirm the connection is established
-  res.write(`: SSE client ${clientId} connected\n\n`);
+    // Send a comment to confirm the connection is established
+    res.write(`: SSE client ${clientId} connected\n\n`);
 
-  // Handle client disconnection
-  req.on("close", () => {
-    sseClients = sseClients.filter(client => client.id !== clientId);
-    log.info(`SSE client with ID ${clientId} disconnected`, { ...logContext, func: "addSSEClient" });
-  });
+    // Handle client disconnection
+    req.on("close", () => {
+      sseClients = sseClients.filter(client => client.id !== clientId);
+      log.info(`SSE client with ID ${clientId} disconnected`, { ...logContext, func: "addSSEClient" });
+    });
+  } catch (error) {
+    log.error(`Failed to add SSE client: ${error.message}`, { ...logContext, func: "addSSEClient", error });
+    res.status(500).json({ error: "Failed to establish SSE connection" });
+  }
 };
 
 // Function to get the count of SSE clients connected

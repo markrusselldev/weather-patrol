@@ -56,11 +56,11 @@ const getAllWeatherData = (req, res) => {
 // Controller to handle Server-Sent Events (SSE)
 const sseEndpoint = (req, res) => {
   try {
-    // Add the response object to SSE clients list for real-time updates
+    log.debug("SSE endpoint hit", { page: "dataController.js", func: "sseEndpoint" });
     dataService.addSSEClient(req, res);
     log.info("SSE client added successfully", { ...logContext, func: "sseEndpoint" });
   } catch (error) {
-    log.error(`Error adding SSE client: ${error.message}`, { ...logContext, func: "sseEndpoint" });
+    log.error(`Error adding SSE client: ${error.message}`, { ...logContext, func: "sseEndpoint", error });
     res.status(500).json({ error: "An error occurred while adding SSE client" });
   }
 };
