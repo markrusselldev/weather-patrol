@@ -19,17 +19,21 @@ let previousLatestRecord = null; // To keep track of the previously sent latest 
 const schema = Joi.object(
   config.columns.reduce((schema, col) => {
     switch (col.type) {
-      case "datetime":
+      case "datetime": {
         schema[col.name] = Joi.date().iso();
         break;
-      case "float":
+      }
+      case "float": {
         schema[col.name] = Joi.number().precision(2);
         break;
-      case "int":
+      }
+      case "int": {
         schema[col.name] = Joi.number().integer();
         break;
-      default:
+      }
+      default: {
         schema[col.name] = Joi.string();
+      }
     }
     return schema;
   }, {})
@@ -76,32 +80,37 @@ const parseTOA5File = filePath => {
         for (const [header, meta] of Object.entries(columnMap)) {
           let value = values[meta.index].trim();
           switch (meta.type) {
-            case "datetime":
+            case "datetime": {
               value = value.replace(/"/g, "").replace(/\.000Z$/, ""); // Remove extra double quotes if present and .000Z
-              const parsedDate = moment(value, moment.ISO_8601);
+              const parsedDate = moment(value, moment.ISO_8601, true); // Use strict parsing
               if (parsedDate.isValid()) {
-                value = parsedDate.toISOString();
+                value = parsedDate.utc().format('YYYY-MM-DDTHH:mm:ss'); // Prevents adding .000Z
               } else {
                 log.error(`Invalid datetime format for value: "${value}"`, { ...logContext, func: "parseTOA5File" });
                 return null;
               }
               break;
-            case "float":
+            }
+            case "float": {
               value = parseFloat(value);
               if (isNaN(value)) {
                 log.error(`Invalid float format for value: "${values[meta.index]}" in column: "${header}"`, { ...logContext, func: "parseTOA5File" });
                 return null;
               }
               break;
-            case "int":
+            }
+            case "int": {
               value = parseInt(value, 10);
               if (isNaN(value)) {
                 log.error(`Invalid integer format for value: "${values[meta.index]}" in column: "${header}"`, { ...logContext, func: "parseTOA5File" });
                 return null;
               }
               break;
-            default:
-              value = value;
+            }
+            default: {
+              // Keep the original value
+              break;
+            }
           }
           rowData[header] = value;
         }
@@ -117,7 +126,7 @@ const parseTOA5File = filePath => {
     return { headers, rows, environmentInfo };
   } catch (err) {
     log.error(`Error reading or parsing file: ${err.message}`, { ...logContext, func: "parseTOA5File" });
-    return { headers: [], rows, environmentInfo: "" };
+    return { headers: [], rows: [], environmentInfo: "" };
   }
 };
 
