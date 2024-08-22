@@ -27,27 +27,18 @@
  */
 
 const axios = require("axios");
-const https = require("https");
 const log = require("./utils/logger"); // Include the custom logger
 
 const logContext = { page: "testRateLimit.js", func: "makeRequests" };
 
-// Custom HTTPS agent to accept self-signed certificates
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false // Accept self-signed certificates
-});
+// Use environment variables for server URL
+const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
 
 // Function to make multiple requests to the server
 const makeRequests = async () => {
   for (let i = 0; i < 20; i++) {
-    // Adjust the number of requests as needed
     try {
-      const response = await axios.get("https://localhost:3000/api/latest", {
-        headers: {
-          "x-api-key": "secret_api_key" // Use the correct header name and actual API key
-        },
-        httpsAgent // Use the custom HTTPS agent
-      });
+      const response = await axios.get(`${serverUrl}/api/latest`);
       log.info(`Response data: ${JSON.stringify(response.data)}`, logContext);
     } catch (error) {
       if (error.response) {

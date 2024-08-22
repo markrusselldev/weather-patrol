@@ -78,7 +78,7 @@
 
 ## Usage 📊
 
-Once the application is running, navigate to `http://localhost:5173` in your browser to interact with the frontend. The backend server will automatically monitor changes in the `toa5.dat` file and update the frontend in real-time.
+Once the application is running, navigate to `http://localhost:3000` in your browser to interact with the frontend. The backend server will automatically monitor changes in the `toa5.dat` file and update the frontend in real-time.
 
 ---
 
