@@ -6,37 +6,61 @@ const SSE_URL = `${API_BASE_URL}/sse`;
 
 // Fetch all weather data from the backend
 export const fetchWeatherData = async () => {
+  const fetchStartTime = new Date().toISOString();
+  log.info(`Starting data fetch at: ${fetchStartTime}`);
+  
   try {
     const response = await axios.get(`${API_BASE_URL}/data`);
-    log.info("Fetched all weather data:", response.data);
+    
+    const fetchEndTime = new Date().toISOString();
+    log.info(`Fetched all weather data successfully at: ${fetchEndTime}`, {
+      status: response.status,
+      statusText: response.statusText,
+      duration: `${new Date(fetchEndTime) - new Date(fetchStartTime)}ms`,
+    });
 
     // Add detailed logs to inspect the structure of response.data
     log.debug("Weather data structure:", JSON.stringify(response.data, null, 2));
 
     return response.data; // Ensure the return structure is correct
   } catch (error) {
-    log.error("Error fetching weather data:", error);
+    log.error(`Error fetching weather data at: ${new Date().toISOString()}`, {
+      errorMessage: error.message,
+      errorResponse: error.response,
+    });
     throw error;
   }
 };
 
 // Subscribe to Server-Sent Events for real-time updates
 export const subscribeToSSE = onMessage => {
+  log.info("Opening SSE connection at:", new Date().toISOString());
+  
   const eventSource = new EventSource(SSE_URL);
+  
   eventSource.onopen = () => {
-    log.info("SSE connection opened");
+    log.info("SSE connection opened successfully at:", new Date().toISOString());
   };
+
   eventSource.onmessage = event => {
     try {
       const newData = JSON.parse(event.data);
-      log.info("Received new data via SSE:", newData);
+      log.info("Received new data via SSE at:", new Date().toISOString(), "Data:", newData);
       onMessage(newData);
     } catch (error) {
-      log.error("Error parsing SSE data:", error);
+      log.error("Error parsing SSE data at:", new Date().toISOString(), {
+        errorMessage: error.message,
+        eventData: event.data,
+      });
     }
   };
+
   eventSource.onerror = error => {
-    log.error("Error with SSE:", error);
+    log.error("Error with SSE at:", new Date().toISOString(), {
+      errorMessage: error.message,
+      readyState: eventSource.readyState,
+    });
   };
+
   return eventSource;
 };

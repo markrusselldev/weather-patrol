@@ -113,22 +113,22 @@ app.use("/api", apiRoutes); // Use API routes from apiRoutes module
 
 // SSE endpoint to subscribe to real-time updates
 app.get("/api/sse", (req, res) => {
-  log.debug("Received request to /api/sse", { page: "server.js", func: "sseEndpoint" });
+  log.debug("Received request to /api/sse", { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
   try {
     addSSEClient(req, res);  // Function that handles adding the SSE client
+    log.info("SSE client added successfully", { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
   } catch (error) {
-    log.error("Error in SSE endpoint:", { page: "server.js", func: "sseEndpoint", error });
+    log.error("Error in SSE endpoint:", { page: "server.js", func: "sseEndpoint", error, timestamp: new Date().toISOString() });
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 // Serve static frontend files
 app.use(serveFrontend);
 
 // Error handler middleware
 app.use((err, req, res, next) => {
-  log.error(`Error occurred in ${req.method} ${req.url} from IP: ${req.ip}`, { page: "server.js", func: "errorHandler", err });
+  log.error(`Error occurred in ${req.method} ${req.url} from IP: ${req.ip}`, { page: "server.js", func: "errorHandler", err, timestamp: new Date().toISOString() });
   errorHandler(err, req, res, next);
 });
 
@@ -137,15 +137,15 @@ const interval = 15 * 60 * 1000; // 15 minutes
 // const interval = 1 * 60 * 1000; // 1 minute for testing
 
 setInterval(() => {
-  log.info("Running scheduled TOA5 data update");
+  log.info("Running scheduled TOA5 data update", { page: "server.js", func: "scheduledUpdate", timestamp: new Date().toISOString() });
   exec(`node ${path.resolve(__dirname, "./data/update_toa5_data.js")}`, (error, stdout, stderr) => {
     if (error) {
-      log.error(`Error executing update_toa5_data.js: ${error.message || error}`, { error });
+      log.error(`Error executing update_toa5_data.js: ${error.message || error}`, { error, page: "server.js", func: "scheduledUpdate", timestamp: new Date().toISOString() });
       return;
     }
-    log.info(`update_toa5_data.js output: ${stdout}`);
+    log.info(`update_toa5_data.js output: ${stdout}`, { page: "server.js", func: "scheduledUpdate", timestamp: new Date().toISOString() });
     if (stderr) {
-      log.warn(`update_toa5_data.js stderr: ${stderr}`);
+      log.warn(`update_toa5_data.js stderr: ${stderr}`, { page: "server.js", func: "scheduledUpdate", timestamp: new Date().toISOString() });
     }
   });
 }, interval);
@@ -160,35 +160,35 @@ const startServer = async () => {
 
     // Start the server
     http.createServer(app).listen(PORT, HOST, () => {
-      log.info(`Server is running on http://${HOST}:${PORT}`, { page: "server.js", func: "startServer" });
+      log.info(`Server is running on http://${HOST}:${PORT}`, { page: "server.js", func: "startServer", timestamp: new Date().toISOString() });
     });
 
     // Log server startup
-    log.info(`Server started successfully at ${new Date().toISOString()}`, { page: "server.js", func: "startServer" });
+    log.info(`Server started successfully at ${new Date().toISOString()}`, { page: "server.js", func: "startServer", timestamp: new Date().toISOString() });
   } catch (error) {
-    log.error(`Failed to start server: ${error.message}`, { page: "server.js", func: "startServer" });
+    log.error(`Failed to start server: ${error.message}`, { page: "server.js", func: "startServer", timestamp: new Date().toISOString() });
     process.exit(1); // Exit the process with an error code
   }
 };
 
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
-  log.info(`Received SIGTERM, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown" });
+  log.info(`Received SIGTERM, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown", timestamp: new Date().toISOString() });
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  log.info(`Received SIGINT, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown" });
+  log.info(`Received SIGINT, shutting down at ${new Date().toISOString()}`, { page: "server.js", func: "shutdown", timestamp: new Date().toISOString() });
   process.exit(0);
 });
 
 process.on('uncaughtException', (error) => {
-  log.error(`Uncaught Exception: ${error.message}`, { page: "server.js", func: "uncaughtException", error });
+  log.error(`Uncaught Exception: ${error.message}`, { page: "server.js", func: "uncaughtException", error, timestamp: new Date().toISOString() });
   process.exit(1); // Optional: Shut down the server or continue running
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  log.error(`Unhandled Rejection: ${reason}`, { page: "server.js", func: "unhandledRejection", reason });
+  log.error(`Unhandled Rejection: ${reason}`, { page: "server.js", func: "unhandledRejection", reason, timestamp: new Date().toISOString() });
   // Optional: Handle promise rejections globally
 });
 

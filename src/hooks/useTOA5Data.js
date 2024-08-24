@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { DataContext } from "../contexts/DataContext";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
@@ -6,14 +6,18 @@ import errorHandler from "../utils/errorHandler";
 const useTOA5Data = () => {
   const { weatherData, error, columnDefs } = useContext(DataContext);
 
+  // Memoize log context to avoid unnecessary re-renders
+  const logContext = useMemo(() => ({ page: "src/hooks/useTOA5Data.js", func: "useContext" }), []);
+
   // Log the current state for debugging
-  useMemo(() => {
-    log.info({ page: "src/hooks/useTOA5Data.js", func: "useContext" }, "TOA5Data weatherData:", weatherData);
-    log.info({ page: "src/hooks/useTOA5Data.js", func: "useContext" }, "TOA5Data columnDefs:", columnDefs);
+  useEffect(() => {
+    const startTime = new Date().toISOString();
+    log.info({ ...logContext, startTime }, "TOA5Data weatherData:", weatherData);
+    log.info({ ...logContext, startTime }, "TOA5Data columnDefs:", columnDefs);
     if (error) {
-      log.error({ page: "src/hooks/useTOA5Data.js", func: "useContext" }, "TOA5Data error:", error);
+      log.error({ ...logContext, startTime }, "TOA5Data error:", error);
     }
-  }, [weatherData, columnDefs, error]);
+  }, [weatherData, columnDefs, error, logContext]);
 
   // Process the error using errorHandler
   const processedError = error ? errorHandler(error) : null;

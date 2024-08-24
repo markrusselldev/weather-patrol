@@ -2,14 +2,16 @@
 import log from "../utils/logger";
 
 const errorHandler = error => {
+  const errorId = `ERR_${new Date().getTime()}`;  // Unique error identifier
   let message = "An unknown error occurred";
 
   // Log the entire error object for detailed analysis
-  log.error("Error details:", {
+  log.error(`Error ID: ${errorId}`, "Error details:", {
     response: error.response,
     request: error.request,
     message: error.message,
     stack: error.stack || "No stack trace available",
+    timestamp: new Date().toISOString(),
   });
 
   if (error.response) {
@@ -26,7 +28,7 @@ const errorHandler = error => {
   }
 
   // Log the final error message for tracking
-  log.error("Final error message:", message);
+  log.error(`Final error message with ID: ${errorId}`, "Message:", message);
 
   return message;
 };
