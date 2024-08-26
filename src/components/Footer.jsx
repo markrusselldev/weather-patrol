@@ -17,9 +17,9 @@ const Footer = () => {
     <footer className="w-full bg-footerBg text-footerText p-4 text-xs h-footer flex justify-between">
       <div className="flex items-center ml-2">
         &copy; 2024{" "}
-        <a href="https://markrussell.io" className="mx-1 hover:underline">
+        {/* <a href="https://markrussell.io" className="mx-1 hover:underline"> */}
           markrussell.io
-        </a>{" "}
+        {/* </a> */}{" "}
         <span className="hidden sm:inline ml-1">Built with</span>
         <FaHeart className="text-red-500 mx-1" />
         <span className="hidden sm:inline">for</span>{" "}
