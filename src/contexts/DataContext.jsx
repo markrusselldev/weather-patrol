@@ -6,6 +6,9 @@ import log from "../utils/logger";
 // Create the DataContext
 export const DataContext = createContext();
 
+// Common log context for all log messages
+const logContext = { page: "DataContext.js", component: "DataProvider" };
+
 /**
  * Fetches initial weather data and sets the state accordingly.
  * @param {function} setWeatherData - Function to update weather data state.
@@ -30,14 +33,14 @@ const fetchInitialData = async (setWeatherData, setColumnDefs, setLatestTimestam
       // Track initial timestamps to avoid duplicates
       data.data.rows.forEach(row => processedTimestampsRef.current.add(row.TIMESTAMP));
 
-      log.info({ page: "DataContext", component: "DataProvider", func: "fetchInitialData" }, "Initial weather data fetched:", data.data.rows);
-      log.info({ page: "DataContext", component: "DataProvider", func: "fetchInitialData" }, "Initial latest timestamp set:", initialTimestamp);
+      log.info({ ...logContext, func: "fetchInitialData" }, "Initial weather data fetched:", data.data.rows);
+      log.info({ ...logContext, func: "fetchInitialData" }, "Initial latest timestamp set:", initialTimestamp);
     } else {
-      log.warn({ page: "DataContext", component: "DataProvider", func: "fetchInitialData" }, "No data found in the initial fetch");
+      log.warn({ ...logContext, func: "fetchInitialData" }, "No data found in the initial fetch");
     }
   } catch (err) {
     setError(err);
-    log.error({ page: "DataContext", component: "DataProvider", func: "fetchInitialData" }, "Error fetching initial weather data:", err);
+    log.error({ ...logContext, func: "fetchInitialData" }, "Error fetching initial weather data:", err);
   }
 };
 
@@ -49,37 +52,34 @@ const fetchInitialData = async (setWeatherData, setColumnDefs, setLatestTimestam
  * @param {function} setError - Function to update error state.
  */
 const initializeSSE = (setWeatherData, setLatestTimestamp, processedTimestampsRef, setError) => {
-  const eventSource = subscribeToSSE(newData => {
-    if (!newData.TIMESTAMP) {
-      log.warn({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Malformed data received via SSE:", newData);
-      return;
+  return subscribeToSSE(
+    newData => {
+      if (!newData.TIMESTAMP) {
+        log.warn({ ...logContext, func: "subscribeToSSE" }, "Malformed data received via SSE:", newData);
+        return;
+      }
+
+      if (processedTimestampsRef.current.has(newData.TIMESTAMP)) {
+        log.warn({ ...logContext, func: "subscribeToSSE" }, "Duplicate data received via SSE:", newData);
+        return;
+      }
+
+      log.debug({ ...logContext, func: "subscribeToSSE" }, "Processing new data via SSE:", newData);
+
+      setWeatherData(prevData => {
+        const updatedData = [newData, ...prevData];
+        setLatestTimestamp(newData.TIMESTAMP);
+        processedTimestampsRef.current.add(newData.TIMESTAMP);
+
+        log.info({ ...logContext, func: "subscribeToSSE" }, "Updated weather data with SSE:", newData);
+        return updatedData;
+      });
+    },
+    () => {
+      log.warn({ ...logContext, func: "subscribeToSSE" }, "SSE connection failed, no fallback mechanism provided.");
+      setError(new Error("SSE connection failed"));
     }
-
-    if (processedTimestampsRef.current.has(newData.TIMESTAMP)) {
-      log.warn({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Duplicate data received via SSE:", newData);
-      return;
-    }
-
-    log.debug({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Processing new data via SSE:", newData);
-
-    setWeatherData(prevData => {
-      const updatedData = [newData, ...prevData];
-      setLatestTimestamp(newData.TIMESTAMP);
-      processedTimestampsRef.current.add(newData.TIMESTAMP);
-
-      log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated weather data with SSE:", newData);
-      log.info({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "Updated latest timestamp with SSE:", newData.TIMESTAMP);
-      log.debug({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "New weatherData array:", updatedData);
-      return updatedData;
-    });
-  });
-
-  eventSource.onerror = err => {
-    setError(err);
-    log.error({ page: "DataContext", component: "DataProvider", func: "subscribeToSSE" }, "SSE error:", err);
-  };
-
-  return eventSource;
+  );
 };
 
 export const DataProvider = ({ children }) => {
@@ -126,7 +126,7 @@ export const DataProvider = ({ children }) => {
   // Log updates to latestTimestamp
   useEffect(() => {
     if (latestTimestamp) {
-      log.info({ page: "DataContext", component: "DataProvider", func: "useEffect" }, "latestTimestamp updated:", latestTimestamp);
+      log.info({ ...logContext, func: "useEffect" }, "latestTimestamp updated:", latestTimestamp);
     }
   }, [latestTimestamp]);
 
