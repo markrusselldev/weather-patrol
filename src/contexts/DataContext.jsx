@@ -41,6 +41,7 @@ const fetchInitialData = async (setWeatherData, setColumnDefs, setLatestTimestam
   } catch (err) {
     setError(err);
     log.error({ ...logContext, func: "fetchInitialData" }, "Error fetching initial weather data:", err);
+    throw err; // Propagate the error to ensure the SSE is not started if fetching fails
   }
 };
 
@@ -90,26 +91,32 @@ export const DataProvider = ({ children }) => {
   const [environmentInfo, setEnvironmentInfo] = useState("Unknown");
   const eventSourceRef = useRef(null);
   const processedTimestampsRef = useRef(new Set());
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Fetch initial weather data on mount
   useEffect(() => {
-    fetchInitialData(setWeatherData, setColumnDefs, setLatestTimestamp, setEnvironmentInfo, processedTimestampsRef, setError);
+    (async () => {
+      try {
+        await fetchInitialData(setWeatherData, setColumnDefs, setLatestTimestamp, setEnvironmentInfo, processedTimestampsRef, setError);
+        setDataLoaded(true); // Set the flag to true once data is successfully loaded
+      } catch (error) {
+        log.error({ ...logContext, func: "useEffect" }, "Failed to load initial data. SSE will not be started.", error);
+      }
+    })();
   }, []);
 
-  // Subscribe to SSE for real-time updates
+  // Establish SSE connection only after data is loaded
   useEffect(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
+    if (dataLoaded && !eventSourceRef.current) {
+      eventSourceRef.current = initializeSSE(setWeatherData, setLatestTimestamp, processedTimestampsRef, setError);
     }
-
-    eventSourceRef.current = initializeSSE(setWeatherData, setLatestTimestamp, processedTimestampsRef, setError);
 
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
     };
-  }, []);
+  }, [dataLoaded]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(

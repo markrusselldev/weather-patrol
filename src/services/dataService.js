@@ -97,10 +97,8 @@ export const subscribeToSSE = (onMessage, onError, maxRetries = 5, baseDelay = 1
     return eventSource;
   };
 
-  // Introduce a small delay before first connect
-  setTimeout(() => {
-    eventSource = connect();
-  }, 500); // 500ms delay before attempting initial SSE connection
+  // Immediately attempt SSE connection
+  eventSource = connect();
 
   return eventSource;
 };
