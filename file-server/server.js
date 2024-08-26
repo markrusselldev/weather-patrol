@@ -114,9 +114,16 @@ app.use("/api", apiRoutes); // Use API routes from apiRoutes module
 // SSE endpoint to subscribe to real-time updates
 app.get("/api/sse", (req, res) => {
   log.debug("Received request to /api/sse", { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
+  
   try {
     addSSEClient(req, res);  // Function that handles adding the SSE client
-    log.info("SSE client added successfully", { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
+    log.info(`SSE client added successfully from IP: ${req.ip}`, { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
+
+    // Log connection closure
+    req.on('close', () => {
+      log.warn(`SSE client from IP: ${req.ip} disconnected`, { page: "server.js", func: "sseEndpoint", timestamp: new Date().toISOString() });
+    });
+
   } catch (error) {
     log.error("Error in SSE endpoint:", { page: "server.js", func: "sseEndpoint", error, timestamp: new Date().toISOString() });
     res.status(500).send("Internal Server Error");

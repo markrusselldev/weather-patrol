@@ -1,8 +1,11 @@
+// dataService.js
 import axios from "axios";
 import log from "../utils/logger";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 const SSE_URL = `${API_BASE_URL}/sse`;
+
+let eventSource = null;
 
 // Fetch all weather data from the backend
 export const fetchWeatherData = async () => {
@@ -33,34 +36,52 @@ export const fetchWeatherData = async () => {
 };
 
 // Subscribe to Server-Sent Events for real-time updates
-export const subscribeToSSE = onMessage => {
-  log.info("Opening SSE connection at:", new Date().toISOString());
-  
-  const eventSource = new EventSource(SSE_URL);
-  
-  eventSource.onopen = () => {
-    log.info("SSE connection opened successfully at:", new Date().toISOString());
+export const subscribeToSSE = (onMessage) => {
+  const attemptReconnection = () => {
+    log.warn("SSE connection lost, attempting to reconnect in 5 seconds...");
+    setTimeout(() => {
+      if (eventSource.readyState === EventSource.CLOSED) {
+        log.info("Reconnecting to SSE...");
+        eventSource = new EventSource(SSE_URL);
+        setEventSourceHandlers(onMessage);
+      }
+    }, 5000); // Reconnect after 5 seconds
   };
 
-  eventSource.onmessage = event => {
-    try {
-      const newData = JSON.parse(event.data);
-      log.info("Received new data via SSE at:", new Date().toISOString(), "Data:", newData);
-      onMessage(newData);
-    } catch (error) {
-      log.error("Error parsing SSE data at:", new Date().toISOString(), {
+  const setEventSourceHandlers = (onMessage) => {
+    eventSource.onopen = () => {
+      log.info("SSE connection opened successfully at:", new Date().toISOString());
+    };
+
+    eventSource.onmessage = (event) => {
+      try {
+        const newData = JSON.parse(event.data);
+        log.info("Received new data via SSE at:", new Date().toISOString(), "Data:", newData);
+        onMessage(newData);
+      } catch (error) {
+        log.error("Error parsing SSE data at:", new Date().toISOString(), {
+          errorMessage: error.message,
+          eventData: event.data,
+        });
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      log.error("Error with SSE at:", new Date().toISOString(), {
         errorMessage: error.message,
-        eventData: event.data,
+        readyState: eventSource.readyState,
       });
-    }
+
+      if (eventSource.readyState === EventSource.CLOSED) {
+        attemptReconnection();
+      }
+    };
   };
 
-  eventSource.onerror = error => {
-    log.error("Error with SSE at:", new Date().toISOString(), {
-      errorMessage: error.message,
-      readyState: eventSource.readyState,
-    });
-  };
+  if (!eventSource || eventSource.readyState === EventSource.CLOSED) {
+    eventSource = new EventSource(SSE_URL);
+    setEventSourceHandlers(onMessage);
+  }
 
   return eventSource;
 };
