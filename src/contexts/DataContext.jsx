@@ -18,10 +18,18 @@ const logContext = { page: "DataContext.js", component: "DataProvider" };
  * @param {object} processedTimestampsRef - Ref to store processed timestamps.
  * @param {function} setError - Function to update error state.
  */
-const fetchInitialData = async (setWeatherData, setColumnDefs, setLatestTimestamp, setEnvironmentInfo, processedTimestampsRef, setError) => {
+const fetchInitialData = async (
+  setWeatherData,
+  setColumnDefs,
+  setLatestTimestamp,
+  setEnvironmentInfo,
+  processedTimestampsRef,
+  setError
+) => {
   try {
     const data = await fetchWeatherData();
     if (data?.data?.rows) {
+      // Set column definitions based on the headers from the fetched data
       const headers = data.data.rows.length > 1 ? Object.keys(data.data.rows[1]) : [];
       const columnDefs = headers.map(header => ({ headerName: header, field: header }));
       setWeatherData(data.data.rows);
@@ -51,15 +59,23 @@ const fetchInitialData = async (setWeatherData, setColumnDefs, setLatestTimestam
  * @param {function} setLatestTimestamp - Function to update latest timestamp state.
  * @param {object} processedTimestampsRef - Ref to store processed timestamps.
  * @param {function} setError - Function to update error state.
+ * @returns {EventSource} - The EventSource object for SSE connection.
  */
-const initializeSSE = (setWeatherData, setLatestTimestamp, processedTimestampsRef, setError) => {
-  return subscribeToSSE(
+const initializeSSE = (
+  setWeatherData,
+  setLatestTimestamp,
+  processedTimestampsRef,
+  setError
+) => {
+  let eventSource = subscribeToSSE(
     newData => {
+      // Validate the incoming data from SSE
       if (!newData.TIMESTAMP) {
         log.warn({ ...logContext, func: "subscribeToSSE" }, "Malformed data received via SSE:", newData);
         return;
       }
 
+      // Check for duplicate data based on timestamp
       if (processedTimestampsRef.current.has(newData.TIMESTAMP)) {
         log.warn({ ...logContext, func: "subscribeToSSE" }, "Duplicate data received via SSE:", newData);
         return;
@@ -77,10 +93,12 @@ const initializeSSE = (setWeatherData, setLatestTimestamp, processedTimestampsRe
       });
     },
     () => {
-      log.warn({ ...logContext, func: "subscribeToSSE" }, "SSE connection failed, no fallback mechanism provided.");
+      log.warn({ ...logContext, func: "subscribeToSSE" }, "SSE connection encountered an issue.");
       setError(new Error("SSE connection failed"));
     }
   );
+
+  return eventSource;
 };
 
 export const DataProvider = ({ children }) => {
@@ -97,7 +115,14 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       try {
-        await fetchInitialData(setWeatherData, setColumnDefs, setLatestTimestamp, setEnvironmentInfo, processedTimestampsRef, setError);
+        await fetchInitialData(
+          setWeatherData,
+          setColumnDefs,
+          setLatestTimestamp,
+          setEnvironmentInfo,
+          processedTimestampsRef,
+          setError
+        );
         setDataLoaded(true); // Set the flag to true once data is successfully loaded
       } catch (error) {
         log.error({ ...logContext, func: "useEffect" }, "Failed to load initial data. SSE will not be started.", error);
@@ -108,15 +133,33 @@ export const DataProvider = ({ children }) => {
   // Establish SSE connection only after data is loaded
   useEffect(() => {
     if (dataLoaded && !eventSourceRef.current) {
-      eventSourceRef.current = initializeSSE(setWeatherData, setLatestTimestamp, processedTimestampsRef, setError);
+      if (shouldEstablishSSEConnection()) {
+        eventSourceRef.current = initializeSSE(
+          setWeatherData,
+          setLatestTimestamp,
+          processedTimestampsRef,
+          setError
+        );
+      } else {
+        log.info({ ...logContext, func: "useEffect" }, "Skipping SSE connection due to fresh cache.");
+      }
     }
 
+    // Cleanup eventSource on unmount
     return () => {
       if (eventSourceRef.current) {
+        log.info({ ...logContext, func: "useEffect cleanup" }, "Closing SSE connection at:", new Date().toISOString());
         eventSourceRef.current.close();
+        eventSourceRef.current = null; // Ensure it is nullified
       }
     };
-  }, [dataLoaded]);
+  }, [dataLoaded]); // Ensures useEffect only re-runs if dataLoaded changes
+
+  // Placeholder for your caching logic
+  const shouldEstablishSSEConnection = () => {
+    // Implement your caching check here
+    return true;
+  };
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
@@ -125,9 +168,10 @@ export const DataProvider = ({ children }) => {
       columnDefs,
       error,
       latestTimestamp,
-      environmentInfo
+      environmentInfo,
+      dataLoaded, // Expose dataLoaded so other components can use it
     }),
-    [weatherData, columnDefs, error, latestTimestamp, environmentInfo]
+    [weatherData, columnDefs, error, latestTimestamp, environmentInfo, dataLoaded]
   );
 
   // Log updates to latestTimestamp
@@ -142,5 +186,5 @@ export const DataProvider = ({ children }) => {
 
 // Define prop types for the component
 DataProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };

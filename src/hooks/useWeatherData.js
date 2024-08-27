@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useContext } from "react";
 import log from "../utils/logger";
 import { formatTimestamp } from "../utils/utils";
+import { DataContext } from "../contexts/DataContext";
 
 // Helper function to convert wind direction degrees into cardinal direction
 const getCardinalDirection = degrees => {
@@ -10,11 +11,17 @@ const getCardinalDirection = degrees => {
 };
 
 const useWeatherData = weatherData => {
+  const { dataLoaded } = useContext(DataContext); // Access dataLoaded from context
   const [latestData, setLatestData] = useState(null); // State to store the latest weather data
   const [pastData, setPastData] = useState([]); // State to store past weather data
 
   useEffect(() => {
     const logContext = { page: "src/hooks/useWeatherData.js", func: "useEffect" };
+    if (!dataLoaded) {
+      log.info(logContext, "Data is not yet loaded. Hook execution paused.");
+      return;
+    }
+
     log.info(logContext, "Effect triggered: weatherData changed", weatherData);
 
     if (weatherData && weatherData.length > 0) {
@@ -26,7 +33,9 @@ const useWeatherData = weatherData => {
 
       // Determine the number of past records to store (up to 4)
       const pastRecordsCount = Math.min(weatherData.length - 1, 4);
-      const sortedPastData = weatherData.slice(1, 1 + pastRecordsCount).sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
+      const sortedPastData = weatherData
+        .slice(1, 1 + pastRecordsCount)
+        .sort((a, b) => new Date(a.TIMESTAMP) - new Date(b.TIMESTAMP));
       setPastData(sortedPastData);
 
       log.info(logContext, "Latest data and past data set successfully", {
@@ -40,7 +49,7 @@ const useWeatherData = weatherData => {
       setLatestData(null);
       setPastData([]);
     }
-  }, [weatherData]);
+  }, [weatherData, dataLoaded]);
 
   // Function to create an array of data points for a given key
   const createDataArray = useCallback(
@@ -53,10 +62,7 @@ const useWeatherData = weatherData => {
 
   // Function to create an array of formatted past timestamps
   const createPastTimestampsArray = useCallback(() => {
-    return pastData.map(row => {
-      const formattedTimestamp = formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false });
-      return formattedTimestamp === "Invalid timestamp" ? "Invalid timestamp" : formattedTimestamp;
-    });
+    return pastData.map(row => formatTimestamp(row.TIMESTAMP, { showTime: true, showDate: false }));
   }, [pastData]);
 
   // Memoized object containing various weather data arrays

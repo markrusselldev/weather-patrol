@@ -6,6 +6,7 @@ const chokidar = require("chokidar"); // Chokidar for file watching
 const NodeCache = require("node-cache"); // NodeCache for in-memory caching
 const log = require("../utils/logger"); // Custom logger
 const config = require("../config/config.json"); // Configuration file
+const os = require("os"); // OS module for system information
 
 const logContext = { page: "dataService.js" };
 
@@ -38,6 +39,18 @@ const schema = Joi.object(
     return schema;
   }, {})
 );
+
+// Function to log server status, including memory usage and uptime
+const logServerStatus = () => {
+  const memoryUsage = process.memoryUsage();
+  const uptime = process.uptime();
+  const loadAverage = os.loadavg();
+  log.info({ ...logContext, func: "logServerStatus" }, "Server status:", {
+    memoryUsage,
+    uptime,
+    loadAverage,
+  });
+};
 
 // Function to parse the TOA5 file
 const parseTOA5File = filePath => {
@@ -222,9 +235,16 @@ const notifyClients = () => {
   if (!previousLatestRecord || JSON.stringify(latestRecord) !== JSON.stringify(previousLatestRecord)) {
     log.debug("Notifying clients with updated data:", latestRecord, { ...logContext, func: "notifyClients" });
     sseClients.forEach(client => {
-      client.res.write(`data: ${JSON.stringify(latestRecord)}\n\n`);
+      try {
+        client.res.write(`data: ${JSON.stringify(latestRecord)}\n\n`);
+        log.debug(`Sent data to SSE client ID ${client.id}`, { ...logContext, func: "notifyClients" });
+      } catch (error) {
+        log.error(`Failed to send data to SSE client ID ${client.id}: ${error.message}`, { ...logContext, func: "notifyClients", error });
+      }
     });
     previousLatestRecord = latestRecord;
+  } else {
+    log.debug("No new data to notify SSE clients.", { ...logContext, func: "notifyClients" });
   }
 };
 
@@ -235,6 +255,7 @@ watcher.on("change", () => {
     loadData();
     notifyClients(); // Function call to notify clients after data is reloaded and cached
   }, 100); // Use a debounce delay to handle rapid successive changes
+  logServerStatus(); // Log server status after reloading data
 });
 
 // Function to get environment information
@@ -267,13 +288,13 @@ const addSSEClient = (req, res) => {
     res.flushHeaders(); // Flush the headers to establish SSE
 
     const clientId = Date.now();
+    log.debug(`SSE client ID assigned: ${clientId}`, { ...logContext, func: "addSSEClient" });
 
     // Add the client to the clients array
     const newClient = {
       id: clientId,
       res
     };
-
     sseClients.push(newClient);
 
     log.info(`SSE client with ID ${clientId} added successfully`, { ...logContext, func: "addSSEClient" });

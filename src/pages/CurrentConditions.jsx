@@ -3,17 +3,27 @@ import { WiThermometer, WiThermometerExterior, WiStrongWind, WiHumidity, WiBarom
 import { IoBatteryChargingOutline } from "react-icons/io5";
 import { PiCompassRose } from "react-icons/pi";
 import { GiDew } from "react-icons/gi";
+import { FaSpinner } from "react-icons/fa";
 import ConditionCard from "../components/ConditionCard";
 import ErrorMessages from "../components/ErrorMessages";
 import { DataContext } from "../contexts/DataContext";
 import useWeatherData from "../hooks/useWeatherData";
 import log from "../utils/logger";
 import errorHandler from "../utils/errorHandler";
-import { FaSpinner } from "react-icons/fa";
 
 const CurrentConditions = () => {
-  const { weatherData, error } = useContext(DataContext);
+  const { weatherData, error, dataLoaded } = useContext(DataContext);
   const { data, pastTimestamps, windDirectionCardinal, isLoading } = useWeatherData(weatherData);
+
+  // Check if the data is loaded before rendering the component
+  if (!dataLoaded) {
+    log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Waiting for data to load...");
+    return (
+      <div className="flex justify-center items-center h-full">
+        <FaSpinner className="animate-spin text-3xl text-gray-300" />
+      </div>
+    );
+  }
 
   // Handle errors
   if (error) {
@@ -21,7 +31,7 @@ const CurrentConditions = () => {
     return <ErrorMessages message={errorHandler(error)} />;
   }
 
-  // Handle loading state
+  // Handle loading state for weather data
   if (isLoading) {
     log.info({ page: "src/pages/CurrentConditions.jsx", component: "CurrentConditions", func: "render" }, "Loading latest data...");
     return (

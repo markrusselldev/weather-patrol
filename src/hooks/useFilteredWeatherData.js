@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import log from "../utils/logger";
 import { formatTimestamp } from "../utils/utils";
+import { DataContext } from "../contexts/DataContext";
 
 // Function to downsample data
 const downsampleData = (data, factor) => {
@@ -13,12 +14,19 @@ const downsampleData = (data, factor) => {
 };
 
 const useFilteredWeatherData = (weatherData, timeframe) => {
+  const { dataLoaded } = useContext(DataContext); // Access dataLoaded from context
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Effect to filter data based on selected timeframe
   useEffect(() => {
     const logContext = { page: "src/hooks/useFilteredWeatherData.js", func: "useEffect" };
+    if (!dataLoaded) {
+      log.info(logContext, "Data is not yet loaded. Hook execution paused.");
+      setIsLoading(false);
+      return;
+    }
+
     log.info(logContext, "Filtering data based on selected timeframe");
 
     if (!weatherData || weatherData.length === 0) {
@@ -58,7 +66,7 @@ const useFilteredWeatherData = (weatherData, timeframe) => {
     }
 
     setIsLoading(false);
-  }, [weatherData, timeframe]);
+  }, [weatherData, timeframe, dataLoaded]);
 
   const dataPoints = useMemo(() => {
     if (!filteredData || filteredData.length === 0) {
