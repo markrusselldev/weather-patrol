@@ -16,7 +16,11 @@ export const fetchWeatherData = async () => {
   log.info({ ...logContext, func: "fetchWeatherData" }, `Starting data fetch at: ${fetchStartTime}`);
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/data`);
+    const response = await axios.get(`${API_BASE_URL}/data`, {
+      headers: {
+        "x-api-key": import.meta.env.VITE_API_KEY
+      }
+    });
     
     const fetchEndTime = new Date().toISOString();
     log.info(
